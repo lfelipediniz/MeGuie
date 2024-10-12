@@ -1,0 +1,43 @@
+@startuml
+
+!theme amiga
+
+package "MeGuie - Arquitetura do Sistema" {
+
+  node "Frontend" {
+    component "Next.js App"
+  }
+
+  node "Backend" {
+    component "Django REST API"
+    component "Gerenciador de Conteúdo"
+  }
+
+  node "Banco de Dados" {
+    database "UserDB"
+    database "RoadmapDB"
+    database "ProgressoDB"
+  }
+
+  actor Estudante
+  actor Administrador
+
+  Estudante --> "Next.js App" : "Acessa e utiliza funcionalidades"
+  Administrador --> "Next.js App" : "Gerencia conteúdo e roadmaps"
+
+  "Next.js App" --> "Django REST API" : "Requisições HTTP (cadastro, login, acesso a roadmaps)"
+  "Django REST API" --> "UserDB" : "Valida e armazena dados de usuários"
+  "Django REST API" --> "RoadmapDB" : "Acessa e atualiza informações de roadmaps"
+  "Django REST API" --> "ProgressoDB" : "Salva e consulta progresso dos estudantes"
+
+  "Gerenciador de Conteúdo" --> "RoadmapDB" : "Edita e organiza os conteúdos de estudo"
+  
+  cloud "Sistema de E-mail" {
+    component "Serviço de E-mail" : "Confirmação de cadastro e notificações"
+  }
+
+  "Django REST API" --> "Serviço de E-mail" : "Envia confirmação de e-mail e notificações"
+
+}
+
+@enduml

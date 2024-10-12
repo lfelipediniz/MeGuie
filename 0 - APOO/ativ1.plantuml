@@ -1,0 +1,23 @@
+@startuml
+
+!theme amiga
+
+actor Estudante
+actor Administrador
+
+Estudante --> (Realizar Cadastro)
+Estudante --> (Acessar Roadmap)
+Estudante --> (Consultar Progresso)
+Estudante --> (Acessar Material de Apoio)
+
+Administrador --> (Realizar Cadastro)
+Administrador --> (Atualizar Roadmaps)
+Administrador --> (Gerenciar Conteúdo)
+
+(Atualizar Roadmaps) .> (Realizar Cadastro) : <<include>>
+(Gerenciar Conteúdo) .> (Realizar Cadastro) : <<include>>
+(Consultar Progresso) .> (Realizar Cadastro) : <<include>>
+(Consultar Progresso) .> (Acessar Roadmap) : <<extend>>
+(Acessar Material de Apoio) .> (Acessar Roadmap) : <<extend>>
+
+@enduml
