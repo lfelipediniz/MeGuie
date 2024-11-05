@@ -5,6 +5,7 @@ import LogoIcon from "../icons/logo";
 import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
 import { useEffect, useState } from "react";
+import FAQ from "./components/FAQ";
 
 export default function DashboardPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -36,6 +37,25 @@ export default function DashboardPage() {
   ];
 
   const t = useTranslations("");
+
+  const faqData = [
+    {
+      question: "Como o MeGuie funciona?",
+      answer:
+        "O MeGuie organiza conteúdos gratuitos e de qualidade encontrados na internet em um formato de roadmap, onde você pode seguir uma sequência de estudos estruturada para o vestibular. Cada matéria tem um caminho de aprendizado claro, com tópicos essenciais para cobrir o conteúdo necessário de forma eficaz e prática.",
+    },
+    {
+      question: "Preciso pagar para usar o MeGuie?",
+      answer:
+        "Não sei",
+    },
+    {
+      question: "Qual é a diferença entre o MeGuie e outros métodos de estudo online?",
+      answer: "Não sei",
+    },
+    // Adicione mais perguntas e respostas conforme necessário
+  ];
+
   return (
     <div className="mt-32">
       <section
@@ -73,26 +93,26 @@ export default function DashboardPage() {
           />
         </div>
       </section>
-
+      <br />
       <h2 className="text-center">Sobre o Projeto</h2>
       <br />
       <p className="text-center">
-        O MeGuie é uma plataforma que oferece Roadmaps completos para
-        estudantes do ensino fundamental e médio, criando um caminho claro e
-        eficiente para quem deseja se preparar para o vestibular de forma
-        gratuita. Nosso objetivo é democratizar o acesso ao conhecimento de
-        qualidade disponível na internet e ajudar cada aluno a alcançar seu
-        potencial máximo.Sabemos que há uma infinidade de conteúdos educativos
-        gratuitos e de alta qualidade online, mas a falta de uma organização
-        estruturada muitas vezes impede os estudantes de aproveitarem esses
-        recursos ao máximo. O MeGuie resolve esse problema ao indexar e
-        organizar esses conteúdos, criando uma jornada de aprendizado com um
-        passo a passo em cada matéria, para que você possa estudar com mais foco
-        e direção.
+        O MeGuie é uma plataforma que oferece Roadmaps completos para estudantes
+        do ensino fundamental e médio, criando um caminho claro e eficiente para
+        quem deseja se preparar para o vestibular de forma gratuita. Nosso
+        objetivo é democratizar o acesso ao conhecimento de qualidade disponível
+        na internet e ajudar cada aluno a alcançar seu potencial máximo.Sabemos
+        que há uma infinidade de conteúdos educativos gratuitos e de alta
+        qualidade online, mas a falta de uma organização estruturada muitas
+        vezes impede os estudantes de aproveitarem esses recursos ao máximo. O
+        MeGuie resolve esse problema ao indexar e organizar esses conteúdos,
+        criando uma jornada de aprendizado com um passo a passo em cada matéria,
+        para que você possa estudar com mais foco e direção.
       </p>
       <br />
 
-      <h2 className="text-center">Nossos Patrocinadores</h2>
+      <h2 className="text-center">Perguntas Frequentes</h2>
+      <FAQ data={faqData} />
     </div>
   );
 }

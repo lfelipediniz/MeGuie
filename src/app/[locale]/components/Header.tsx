@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Link, usePathname } from "@/src/navigation";
 import { useTranslations } from "next-intl";
 import { FC } from "react";
@@ -18,10 +18,6 @@ export const Header: FC<Props> = ({ locale }) => {
   const pathname = usePathname(); // Captura a URL atual
   const [menuOpen, setMenuOpen] = useState(false); // state to control the menu
   const menuRef = useRef<HTMLDivElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(true);
-  const [isScrollingUp, setIsScrollingUp] = useState(false);
-  const [hasScrolled, setHasScrolled] = useState(false);
 
   const eventPages = [
     { name: "Understanding DL", path: "/pages/events/understandingDL" },
@@ -35,39 +31,6 @@ export const Header: FC<Props> = ({ locale }) => {
       ? "text-data-purple"
       : "";
   };
-
-  // Monitor scroll direction and visibility
-  useEffect(() => {
-    let lastScrollTop = 0;
-
-    const handleScroll = () => {
-      const currentScrollTop =
-        window.pageYOffset || document.documentElement.scrollTop;
-
-      if (currentScrollTop > lastScrollTop) {
-        // Scrolling down
-        setIsScrollingUp(false);
-        setIsVisible(false);
-      } else if (currentScrollTop < lastScrollTop && currentScrollTop > 0) {
-        // Scrolling up
-        setIsScrollingUp(true);
-        setIsVisible(true);
-        setHasScrolled(true);
-      } else if (currentScrollTop === 0) {
-        // Back to top of the page
-        setIsVisible(true);
-        setHasScrolled(false);
-      }
-
-      lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop; // For Mobile or negative scrolling
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   // Close the menu when clicking outside
   useEffect(() => {
@@ -90,14 +53,7 @@ export const Header: FC<Props> = ({ locale }) => {
 
   return (
     <div
-      ref={headerRef}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isVisible && hasScrolled
-          ? "translate-y-0 bg-background shadow-md"
-          : isVisible
-            ? "translate-y-0 bg-transparent"
-            : "-translate-y-full"
-      }`}
+      className="fixed top-0 left-0 right-0 z-50 bg-background shadow-md transition-all duration-300"
     >
       <div className="mx-auto flex max-w-screen-2xl items-center justify-between p-5">
         <Link
@@ -150,30 +106,6 @@ export const Header: FC<Props> = ({ locale }) => {
             >
               {t("Header.About")}
             </Link>
-            {/* <Link
-              lang={locale}
-              href={`/pages/competitions`}
-              className={`${getLinkClass("/pages/competitions")} block`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t("Header.Competitions")}
-            </Link> */}
-            {/* <Link
-              lang={locale}
-              href={`/pages/learn`}
-              className={`${getLinkClass("/pages/learn")} block`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t("Header.Learn")}
-            </Link> */}
-            {/* <Link
-              lang={locale}
-              href={`/pages/projects`}
-              className={`${getLinkClass("/pages/projects")} block`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {t("Header.Projects")}
-            </Link> */}
             {
               <PageList
                 locale={locale}
