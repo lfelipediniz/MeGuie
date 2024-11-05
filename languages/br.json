@@ -62,7 +62,6 @@
     "No_Related_Posts": "Nenhum post relacionado ainda.",
     "Back_To_Previous_Post": "Voltar ao Post Anterior"
   },
-
   "MemberCard": {
     "Sponsorship": "Patrocínio",
     "Marketing": "Marketing",
@@ -93,8 +92,72 @@
     "Events": "Understand Deep Learning",
     "PrivacyPolicy": "Política de Privacidade",
     "TermsConditions": "Termos & Condições",
-    "Legal": "Acontecendo...", 
+    "Legal": "Acontecendo...",
     "Fronts": "Frentes do grupo",
     "Courses": "Python para Data Science"
-  }
+  },
+  "UDLHero": {
+    "title": "Understanding Deep Learning 2024",
+    "description": "Junte-se a nós em outubro para uma série de palestras online, com pesquisadores renomados das principais universidades e instituições do mundo, discutindo os últimos avanços em Deep Learning.",
+    "eventDateTitle": "14-18 de Outubro",
+    "dateText": "Dias 14 a 18 de outubro de 2024 para uma exploração aprofundada de Deep Learning, abordando tópicos como LLM's, Graph Neural Networks, Topological Deep Learning, Reinforcement Learning e aplicações de Deep Learning nas fronteiras da ciência.",
+    "speakersTitle": "Palestrantes Internacionais Renomados",
+    "speakersText": "Ouça especialistas de MIT, Cambridge, UC Santa Barbara, Purdue University, University of Amsterdam e instituições como DeepMind e Cohere. Insights de ponta dos melhores especialistas em IA.",
+    "speakersButtonText": "Ver Palestrantes",
+    "dateButtonText": "Inscreva-se"
+  },
+  "Schedule_Title": "CRONOGRAMA",
+  "Select_Day": "Selecionar o dia",
+  "Weekdays": {
+    "Sunday": "Domingo",
+    "Monday": "Segunda",
+    "Tuesday": "Terça",
+    "Wednesday": "Quarta",
+    "Thursday": "Quinta",
+    "Friday": "Sexta",
+    "Saturday": "Sábado"
+  },
+  "Speakers_UDL": "Palestrantes da UDL",
+  "RegisterUDL": {
+    "RegisterForEvent": "Registrar para o Evento UDL",
+    "FullName": "Nome Completo",
+    "Email": "Email",
+    "MobileNumber": "Número de Celular",
+    "TelegramHandle": "Telegram @",
+    "Optional": "Opcional",
+    "USPNumber": "Número USP",
+    "USPNumberTooltip": "O evento é aberto a todos; o Número USP é solicitado apenas para controle interno.",
+    "AgreeTerms": "Eu concordo com os",
+    "TermsAndConditions": "termos e condições",
+    "RegisterButton": "Registrar",
+    "TermsTitle": "Termos e Condições",
+    "TermsContent": "Ao se inscrever no UnderstandingDL 2024, você aceita voluntariamente todos os termos e condições estabelecidos: O evento ocorrerá em formato híbrido, com sessões presenciais na USP São Carlos e transmissões ao vivo pelo canal do Data no YouTube. Todos os conteúdos, incluindo palestras, slides e materiais de apoio, são protegidos por direitos autorais e pertencem aos palestrantes ou ao Grupo Data, salvo indicação em contrário. Ao participar, você autoriza o uso de sua imagem e voz em fotos, vídeos e outras gravações, para fins promocionais, sem remuneração. Seus dados pessoais serão utilizados apenas para organização e comunicação do evento, comprometendo-nos a não compartilhar suas informações sem seu consentimento explícito, exceto conforme exigido por lei. O Grupo Data reserva-se o direito de alterar o cronograma ou cancelar o evento por motivos de força maior, notificando todos os inscritos com antecedência. Não nos responsabilizamos por problemas técnicos ou de conexão à internet que possam impedir a participação no evento. Ao se inscrever, você assume todos os riscos associados à sua participação no evento.",
+    "AgreeAndClose": "Concordar e Fechar",
+    "InvalidEmail": "Por favor, insira um email válido contendo \"@\".",
+    "InvalidMobileNumber": "Por favor, insira um número de celular válido com 11 dígitos.",
+    "FixErrorsAlert": "Por favor, corrija os erros antes de enviar o formulário.",
+    "FormSuccess": "Formulário enviado com sucesso!",
+    "FormError": "Erro ao enviar o formulário:"
+  },
+  "AboutEvent": {
+    "Parte_1": "SOBRE O EVENTO",
+    "Parte_2": "O UnderstandingDL 2024 ",
+    "Parte_3": "é um evento internacional organizado pelo grupo",
+    "Parte_4": "Data",
+    "Parte_5": "da USP São Carlos, ",
+    "Parte_5-1": "do Instituto de Ciências Matemáticas e de Computação (ICMC)",
+    "Parte_6": "Dedicado ao estudo e à disseminação do conhecimento em Ciência de Dados ao público interno e externo à universidade. Se você deseja saber mais sobre o Data: ",
+    "Parte_7": "Clique Aqui.",
+    "Parte_8": " O objetivo do evento é reunir pesquisadores de várias partes do mundo para apresentar suas pesquisas e tornar o conhecimento mais acessível a todos. Entre os temas abordados nas palestras estão",
+    "Parte_9": "LLMs Multilíngues, Representação de Imagem em Multirresolução usando Redes Neurais, entre muitos outros",
+    "Parte_10": " O UnderstandingDL 2024 visa dar visibilidade aos pesquisadores e suas contribuições. Grupos como",
+    "Parte_11": "Brains",
+    "Parte_12": "e ",
+    "Parte_13": "C4AI",
+    "Parte_14": "apoiam e patrocinam o evento, juntamente com o apoio da maior universidade da América Latina,",
+    "Parte_15": " a Universidade de São Paulo"
+  },
+  "No_Events": "Nenhum evento disponível no momento.",
+  "Watch_Lecture": "Assistir Palestra",
+  "Add_to_Google_Calendar": "Adicionar ao Google Calendar"
 }

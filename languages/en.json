@@ -94,9 +94,70 @@
     "TermsConditions": "Terms & Conditions",
     "Legal": "Happenings...",
     "Fronts": "Group fronts",
-    "Footer.Courses": "Python for Data Science"
-
-
-
-  }
+    "Courses": "Python for Data Science"
+  },
+  "UDLHero": {
+    "title": "Understanding Deep Learning 2024",
+    "description": "Join us this October for a series of online lectures, with renowned researchers from the world's leading universities and institutions, discussing the latest advances in Deep Learning.",
+    "eventDateTitle": "October 14-18",
+    "dateText": "October 14th to 18th, 2024 for an in-depth exploration of Deep Learning, covering topics such as LLM's, Graph Neural Networks, Topological Deep Learning, Reinforcement Learning and applications of Deep Learning at the frontiers of science.",
+    "speakersTitle": "Renowned International Speakers",
+    "speakersText": "Hear from experts from MIT, Cambridge, UC Santa Barbara, Purdue University, University of Amsterdam, and institutions like DeepMind and Cohere. Cutting-edge insights from top AI experts.",
+    "speakersButtonText": "View Speakers",
+    "dateButtonText": "Subscribe"
+  },
+  "Schedule_Title": "SCHEDULE",
+  "Select_Day": "Select Day",
+  "Weekdays": {
+    "Sunday": "Sunday",
+    "Monday": "Monday",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
+    "Saturday": "Saturday"
+  },
+  "Speakers_UDL": "UDL Speakers",
+  "RegisterUDL": {
+    "RegisterForEvent": "Register for UDL Event",
+    "FullName": "Full Name",
+    "Email": "Email",
+    "MobileNumber": "Mobile Number",
+    "TelegramHandle": "Telegram @",
+    "Optional": "Optional",
+    "USPNumber": "USP Number",
+    "USPNumberTooltip": "The event is open to everyone; the USP number is only requested for internal control.",
+    "AgreeTerms": "I agree to the",
+    "TermsAndConditions": "terms and conditions",
+    "RegisterButton": "Register",
+    "TermsTitle": "Terms and Conditions",
+    "TermsContent": "By registering for UnderstandingDL 2024, you voluntarily accept all set terms and conditions: The event will take place in a hybrid format, with in-person sessions at USP São Carlos and live broadcasts through Data's YouTube channel. All content, including lectures, slides, and supporting materials, is copyrighted and belongs to the speakers or the Data Group, unless otherwise stated. By participating, you consent to the use of your image and voice in photos, videos, and other recordings for promotional purposes, without compensation. Your personal data will only be used for event organization and communication, and we commit not to share your information without your explicit consent, except as required by law. The Data Group reserves the right to change the schedule or cancel the event due to force majeure, notifying all registrants in advance. We are not responsible for technical or internet connection issues that may prevent participation in the event. By registering, you assume all risks associated with your participation in the event.",
+    "AgreeAndClose": "Agree and Close",
+    "InvalidEmail": "Please enter a valid email containing \"@\".",
+    "InvalidMobileNumber": "Please enter a valid mobile number with 11 digits.",
+    "FixErrorsAlert": "Please fix the errors before submitting the form.",
+    "FormSuccess": "Form successfully submitted!",
+    "FormError": "Error submitting the form:"
+  },
+  "AboutEvent": {
+    "Parte_1": "ABOUT THE EVENT",
+    "Parte_2": "The UnderstandingDL 2024 ",
+    "Parte_3": "is an international event organized by the group ",
+    "Parte_4": "Data ",
+    "Parte_5": "at USP São Carlos, ",
+    "Parte_5-1": "of the Institute of Mathematical and Computer Sciences (ICMC) ",
+    "Parte_6": "Dedicated to the study and dissemination of knowledge in Data Science to both the internal and external public of the university. If you want to know more about Data: ",
+    "Parte_7": "Click Here.",
+    "Parte_8": " The goal of the event is to bring together researchers from various parts of the world to present their research and make knowledge more accessible to everyone. Among the topics covered in the lectures are ",
+    "Parte_9": "Multilingual LLMs, Image Representation in Multiresolution using Neural Networks, among many others ",
+    "Parte_10": " The UnderstandingDL 2024 aims to give visibility to researchers and their contributions. Groups like ",
+    "Parte_11": "Brains ",
+    "Parte_12": "and ",
+    "Parte_13": "C4AI ",
+    "Parte_14": "support and sponsor the event, along with the support of the largest university in Latin America, ",
+    "Parte_15": " the University of São Paulo "
+  },
+  "No_Events": "No events available at this time.",
+  "Watch_Lecture": "Watch Lecture",
+  "Add_to_Google_Calendar": "Add to Google Calendar"
 }

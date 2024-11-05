@@ -1,103 +1,92 @@
-'use client';
-import { FC, useState } from "react";
-import Button from "./Button";
-import * as Dialog from '@radix-ui/react-dialog';
-import * as Icons from 'react-icons/fa'; // Certifique-se de importar os ícones corretamente
+import { FaCalendarAlt, FaUserFriends } from "react-icons/fa"; // Importando ícones
+import Button from "./Button"; // Importando o componente Button
+import Link from "next/link"; // Importando Link do Next.js
 
 interface HeroProps {
+  title: string;
+  description: string;
+  eventDateTitle: string;
   dateText: string;
-  titleText: string;
-  descriptionText: string;
-  buttonText: string;
-  buttonLink?: string;
-  buttonIcon?: keyof typeof Icons;
-  progress?: boolean;
+  speakersTitle: string;
+  speakersText: string;
+  imgLink: string;
+  dateLink: string;
+  speakersLink: string;
+  dateButtonText: string;
+  eventButtonText: string;
 }
 
-const Hero: FC<HeroProps> = ({
+export default function Hero({
+  title,
+  description,
+  eventDateTitle,
   dateText,
-  titleText,
-  descriptionText,
-  buttonText,
-  buttonLink,
-  buttonIcon,
-  progress = true,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleButtonClick = () => {
-    if (!progress) {
-      setIsOpen(true);
-    } else if (buttonLink) {
-      window.location.href = buttonLink;
-    }
-  };
-
+  speakersTitle,
+  speakersText,
+  imgLink,
+  dateLink,
+  speakersLink,
+  dateButtonText,
+  eventButtonText,
+}: HeroProps) {
   return (
-    <div
-      className={`relative min-h-screen w-full pt-[var(--header-height)] -mt-[160px] hero-bg-blur ${
-        isOpen ? 'backdrop-filter backdrop-blur-sm bg-opacity-50' : ''
-      }`}
-      style={{
-        backgroundImage: "url('/images/placeholder.JPEG')",
-        position: 'absolute',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        width: '100vw',
-        maxWidth: '2425px',
-        right: '0',
-      }}
-    >
-      <br />
-      <br />
+    <section className="relative w-full flex flex-col lg:flex-row items-center lg:items-start justify-between text-center lg:text-left p-4">
+      <div className="w-full lg:w-2/3 lg:pr-16 mb-6">
+        <div className="flex flex-col items-center lg:items-start mb-6">
+          <h1 className="text-primary dark:text-primary font-montserrat font-bold leading-tight text-3xl sm:text-5xl mb-4">
+            {title}
+          </h1>
+        </div>
+        <p className="text-text-secondary dark:text-text-secondary font-inter mb-4">
+          {description}
+        </p>
+        <br />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
+          <div className="flex flex-col items-center lg:items-start">
+            <FaCalendarAlt className="w-10 h-10 text-primary dark:text-primary mb-4" />
+            <div>
+              <h3 className="text-primary dark:text-primary text-xl font-bold mb-2">
+                {eventDateTitle}
+              </h3>
+              <p className="text-text-secondary dark:text-text-secondary font-inter mb-4">
+                {dateText}
+              </p>
+            </div>
+          </div>
 
-      <div className="grid min-h-screen px-4 md:px-8">
-        <div className="container relative z-10 my-auto mx-auto grid place-items-center text-center bg-black bg-opacity-50 p-6 rounded-lg">
-          <h5 className="mb-2 text-lg md:text-lg text-white">
-            {dateText}
-          </h5>
-          <h2 className="text-3xl md:text-5xl lg:max-w-3xl text-white">
-            {titleText}
-          </h2>
-          <p className="mt-1 mb-8 text-sm md:text-lg w-full md:max-w-full lg:max-w-2xl text-white">
-            {descriptionText}
-          </p>
-          <div className="flex flex-col md:flex-row items-center gap-4">
-            <Button variant="primary" size="medium" onClick={handleButtonClick}>
-              {buttonText}
-            </Button>
+          <div className="flex flex-col items-center lg:items-start">
+            <FaUserFriends className="w-10 h-10 text-primary dark:text-primary mb-4" />
+            <div>
+              <h3 className="text-primary dark:text-primary text-xl font-bold mb-2">
+                {speakersTitle}
+              </h3>
+              <p className="text-text-secondary dark:text-text-secondary font-inter mb-4">
+                {speakersText}
+              </p>
+            </div>
           </div>
         </div>
+
+        <div className="relative mt-8 flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center">
+          <Link href={dateLink} passHref>
+            <Button variant="primary" size="medium">
+              {dateButtonText}
+            </Button>
+          </Link>
+
+          <Link href={speakersLink} passHref>
+            <Button variant="secondary" size="medium" className="lg:ml-auto mt-4 lg:mt-0">
+              {eventButtonText}
+            </Button>
+          </Link>
+        </div>
       </div>
-
-      {/* modal/alerta usando @radix-ui/react-dialog */}
-      <Dialog.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Dialog.Portal>
-          <Dialog.Content
-            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 p-6 rounded-lg z-30 max-w-md w-full shadow-lg"
-            style={{
-              backgroundColor: "var(--background)",
-              color: "var(--primary)",
-            }}
-          >
-            <Dialog.Title className="text-lg font-medium">
-              Evento Não Disponível
-            </Dialog.Title>
-            <Dialog.Description className="mt-2 text-sm">
-              O evento ainda não está aberto para inscrições. Por favor, volte mais tarde.
-            </Dialog.Description>
-            <div className="mt-4 flex justify-end">
-              <Dialog.Close asChild>
-                <Button variant="secondary" size="medium">
-                  OK
-                </Button>
-              </Dialog.Close>
-            </div>
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
-    </div>
+      <div
+  className="w-full lg:w-1/3 mt-8 lg:mt-0 bg-contain bg-center rounded-lg min-h-[200px] max-h-[400px] aspect-[4/3] bg-no-repeat"
+  style={{
+    backgroundImage: `url('${imgLink}')`,
+  }}
+></div>
+    </section>
   );
-};
-
-export default Hero;
+}

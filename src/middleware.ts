@@ -7,15 +7,27 @@ type CustomMiddleware = (req: NextRequest) => Promise<NextRequest | NextResponse
 
 const customMiddleware: CustomMiddleware = async req => {
   console.log('Custom middleware executed before next-intl');
+  
+  const pathname = req.nextUrl.pathname;
+  
+  if(pathname == "/br/pages/events/undertandingDL"){
+    const url = req.nextUrl.clone();
+    url.pathname= "/br/pages/events/understandingDL"
+    return NextResponse.redirect(url)
+  }
+  
+  // Caso a rota não contenha o prefixo do locale
+  if (!locales.some(locale => pathname.startsWith(`/${locale}`))) {
+    const url = req.nextUrl.clone();
+    url.pathname = `/br${pathname}`;
+    return NextResponse.redirect(url);
+  }
 
-  // verifica se o cookie `preferredLocale` está presente
-  const preferredLocale = req.cookies.get('preferredLocale')?.value;
-
-  if (!preferredLocale) {
-    // seta o cookie `preferredLocale` como "br" se não existir
-    const response = NextResponse.next();
-    response.cookies.set('preferredLocale', 'br', { path: '/' });
-    return response;
+  // redireciona a URL incorreta "undertandingDL" pra correta "understandingDL"
+  if (pathname.includes('/events/undertandingDL')) {
+    const correctedUrl = req.nextUrl.clone();
+    correctedUrl.pathname = pathname.replace('/events/undertandingDL', '/events/understandingDL');
+    return NextResponse.redirect(correctedUrl);
   }
 
   return req;
@@ -32,12 +44,10 @@ export default async function middleware(
 ): Promise<ReturnType<typeof intlMiddleware>> {
   const result = await customMiddleware(req);
 
-  // se `customMiddleware` retornar `NextResponse`, usar essa resposta
   if (result instanceof NextResponse) {
     return result;
   }
 
-  // caso contrário, continuar com o `intlMiddleware`
   return intlMiddleware(result);
 }
 

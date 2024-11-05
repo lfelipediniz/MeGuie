@@ -70,7 +70,7 @@ export default function Contact() {
         <button
           onClick={() =>
             window.open(
-              "https://www.linkedin.com/school/data-icmc/mycompany/",
+              "https://www.linkedin.com/school/meguie/mycompany/",
               "_blank"
             )
           }

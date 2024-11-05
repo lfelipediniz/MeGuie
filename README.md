@@ -1,6 +1,6 @@
-# MeGuie
+# Data ICMC
 
-Welcome to the MeGuie website repository, built with Next.js. MeGuie is a platform designed to support students in their preparation for college entrance exams. It offers a curated selection of content, organized through indexed links based on study paths structured as roadmaps. The platform provides step-by-step guidance through essential subjects, offering an efficient and organized approach to studying and tracking progress.
+Welcome to the Data ICMC website repository. This project is built with Next.js and provides information about the Data ICMC group from the Institute of Mathematical and Computer Sciences (ICMC) at the University of São Paulo (USP), located in São Carlos.
 
 ## Prerequisites
 
@@ -27,3 +27,4 @@ To install and run the project locally, follow these steps:
     ```
 
 4. Open your browser and navigate to `http://localhost:3000` to see the website.
+
