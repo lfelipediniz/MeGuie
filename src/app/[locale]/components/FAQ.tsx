@@ -31,7 +31,7 @@ const FAQ: React.FC<FAQProps> = ({ data }) => {
     <>
 
       <div className="faq-section w-full p-4">
-        <div className="faq-container bg-[var(--background-secondary)] w-full rounded-md"> 
+        <div > 
           {data.map((faq, index) => (
             <div
               key={index}
