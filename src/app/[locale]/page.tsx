@@ -39,7 +39,7 @@ export default function DashboardPage() {
     {
       question: "Como o MeGuie funciona?",
       answer:
-        "O MeGuie organiza conteúdos gratuitos e de qualidade encontrados na internet em um formato de roadmap...",
+        "O MeGuie organiza conteúdos gratuitos e de qualidade encontrados na internet em um formato de roadmap.",
     },
     {
       question: "Preciso pagar para usar o MeGuie?",
@@ -84,8 +84,8 @@ export default function DashboardPage() {
           className={`flex justify-center -mt-[100px] -mb-[50px] ${isSmallScreen ? "" : "md:-mt-30 ml-44"} float-animation`}
         >
           <LottieStudy
-            height={isSmallScreen ? 300 : 500}
-            width={isSmallScreen ? 300 : 500}
+            height={isSmallScreen ? 250 : 500}
+            width={isSmallScreen ? 250 : 500}
           />
         </div>
       </section>

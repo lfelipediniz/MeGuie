@@ -1,6 +1,6 @@
 "use client";
+import { FaInstagram, FaFacebook, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
-import { FaYoutube, FaInstagram, FaLinkedin } from "react-icons/fa";
 import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState, FC } from "react";
@@ -77,15 +77,19 @@ export const Footer: FC<Props> = ({ locale }) => {
           </span>
           <div className="flex mt-4 sm:justify-center sm:mt-0">
             <a href="https://www.youtube.com/c/DataICMC" className="text-text-secondary hover:text-primary dark:hover:text-primary me-5">
-              <FaYoutube className="w-4 h-4" />
+              <FaInstagram className="w-4 h-4" />
               <span className="sr-only">YouTube</span>
             </a>
             <a href="https://www.instagram.com/data.icmc/" className="text-text-secondary hover:text-primary dark:hover:text-primary me-5">
-              <FaInstagram className="w-4 h-4" />
+              <FaFacebook className="w-4 h-4" />
               <span className="sr-only">Instagram</span>
             </a>
             <a href="https://www.linkedin.com/school/meguie/" className="text-text-secondary hover:text-primary dark:hover:text-primary me-5">
-              <FaLinkedin className="w-4 h-4" />
+              <FaWhatsapp className="w-4 h-4" />
+              <span className="sr-only">LinkedIn</span>
+            </a>
+            <a href="https://www.linkedin.com/school/meguie/" className="text-text-secondary hover:text-primary dark:hover:text-primary me-5">
+              <FaEnvelope className="w-4 h-4" />
               <span className="sr-only">LinkedIn</span>
             </a>
           </div>
