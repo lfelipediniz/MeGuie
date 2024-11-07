@@ -6,6 +6,7 @@ import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
 import { useEffect, useState } from "react";
 import FAQ from "./components/FAQ";
+import { FaInstagram, FaFacebook, FaWhatsapp, FaEnvelope } from "react-icons/fa";
 
 export default function DashboardPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -18,11 +19,9 @@ export default function DashboardPage() {
       setIsMobile(width <= 880);
     };
 
-    // Definindo o estado inicial e adicionando o listener
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    // Cleanup do listener ao desmontar o componente
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -32,8 +31,6 @@ export default function DashboardPage() {
     { logoUrl: "/images/icmc-logo.png" },
     { logoUrl: "/images/brains.png" },
     { logoUrl: "/images/centerIA.png" },
-
-    // adicione mais patrocinadores conforme necessário
   ];
 
   const t = useTranslations("");
@@ -42,18 +39,17 @@ export default function DashboardPage() {
     {
       question: "Como o MeGuie funciona?",
       answer:
-        "O MeGuie organiza conteúdos gratuitos e de qualidade encontrados na internet em um formato de roadmap, onde você pode seguir uma sequência de estudos estruturada para o vestibular. Cada matéria tem um caminho de aprendizado claro, com tópicos essenciais para cobrir o conteúdo necessário de forma eficaz e prática.",
+        "O MeGuie organiza conteúdos gratuitos e de qualidade encontrados na internet em um formato de roadmap...",
     },
     {
       question: "Preciso pagar para usar o MeGuie?",
-      answer:
-        "Não sei",
-    },
-    {
-      question: "Qual é a diferença entre o MeGuie e outros métodos de estudo online?",
       answer: "Não sei",
     },
-    // Adicione mais perguntas e respostas conforme necessário
+    {
+      question:
+        "Qual é a diferença entre o MeGuie e outros métodos de estudo online?",
+      answer: "Não sei",
+    },
   ];
 
   return (
@@ -113,6 +109,29 @@ export default function DashboardPage() {
 
       <h2 className="text-center">Perguntas Frequentes</h2>
       <FAQ data={faqData} />
+
+      
+      <h2 className="text-center">Fale Conosco</h2>
+      <br />
+      <p className="text-center">
+        Ficou com alguma dúvida não respondida ou tem alguma sugestão?
+        <br />
+        Entre em contato conosco nas redes sociais!
+      </p>
+      <div className="flex justify-center space-x-6 mt-4">
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+          <FaInstagram size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        </a>
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+          <FaFacebook size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        </a>
+        <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
+          <FaWhatsapp size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        </a>
+        <a href="mailto:contato@meguie.com" target="_blank" rel="noopener noreferrer">
+          <FaEnvelope size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        </a>
+      </div>
     </div>
   );
 }
