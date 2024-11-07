@@ -30,7 +30,7 @@ const orbitron = Orbitron({
 });
 
 export const metadata: Metadata = {
-  title: "Data ICMC",
+  title: "MeGuie",
   description:
     "Grupo de Extensão em Ciência de Dados e Inteligência Artificial da Universidade de São Paulo",
 };

@@ -28,9 +28,9 @@ export const Footer: FC<Props> = ({ locale }) => {
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">
             <a href={`/${locale}/`} className="flex items-center">
-              <img src={logoSrc} className="h-8 me-3" alt="Data ICMC Logo" />
+              <img src={logoSrc} className="h-8 me-3" alt="MeGuie Logo" />
               <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-primary">
-                Data ICMC
+                MeGuie
               </span>
             </a>
           </div>
@@ -73,7 +73,7 @@ export const Footer: FC<Props> = ({ locale }) => {
         <hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
         <div className="sm:flex sm:items-center sm:justify-between">
           <span className="text-sm text-text-secondary sm:text-center dark:text-text-secondary">
-            © 2024 <a href={`/${locale}/`} className="hover:underline">Data ICMC</a>. {t("Footer.AllRightsReserved")}
+            © 2024 <a href={`/${locale}/`} className="hover:underline">MeGuie</a>. {t("Footer.AllRightsReserved")}
           </span>
           <div className="flex mt-4 sm:justify-center sm:mt-0">
             <a href="https://www.youtube.com/c/DataICMC" className="text-text-secondary hover:text-primary dark:hover:text-primary me-5">
