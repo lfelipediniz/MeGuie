@@ -4,10 +4,13 @@ import React from "react";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import Button from "../../components/Button";
 import { useRouter } from "next/navigation";
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
-const inputClassName = "p-2 pl-3 border rounded-full border-gray-500 text-gray-600 bg-background-primary placeholder-gray-700";
+const inputClassName = "p-2 pl-11 border rounded-full border-gray-500 text-gray-600 bg-background-primary placeholder-gray-700 w-full";
 
-const errorInputClassName = "p-2 pl-3 border rounded-full border-red-500 text-gray-600 bg-background-primary placeholder-red-500";
+const errorInputClassName = "p-2 pl-11 border rounded-full border-red-500 text-gray-600 bg-background-primary placeholder-red-500 w-full";
 
 const errorTextClassName = "text-red-500 text-xs -mt-1";
 
@@ -80,57 +83,86 @@ export default function SignUp() {
             <div className="flex flex-col gap-y-3">
                 <p>Insira as suas informações:</p>
                     
-                <input // todo: add icons :)
-                    type="text" name="name"
-                    placeholder="Nome Completo"
-                    aria-label="Nome Completo"
-                    aria-describedby={errors.name ? "name-error" : undefined}
-                    className={errors.name ? errorInputClassName : inputClassName}
-                    value={formData.name}
-                    onChange={handleFormChange}
-                />
+                <div className="relative flex items-center">
+                    <span className="absolute left-3 text-gray-400">
+                        <PersonOutlineIcon 
+                            className={errors.name ? 'text-red-500' : ''}
+                        />
+                    </span>
+                    <input
+                        type="text" name="name"
+                        placeholder="Nome Completo"
+                        aria-label="Nome Completo"
+                        aria-describedby={errors.name ? "name-error" : undefined}
+                        className={errors.name ? errorInputClassName : inputClassName}
+                        value={formData.name}
+                        onChange={handleFormChange}
+                    />
+                </div>
                 {errors.name && 
                     <p id="name-error" className={errorTextClassName}>
                         {errors.name}
                     </p>
                 }
-                <input
-                    type="text" name="email"
-                    placeholder="E-mail"
-                    aria-label="E-mail"
-                    aria-describedby={errors.email ? "email-error" : undefined}
-                    className={errors.email ? errorInputClassName : inputClassName}
-                    value={formData.email}
-                    onChange={handleFormChange}
-                />
+                <div className="relative flex items-center">
+                    <span className="absolute left-3 text-gray-400">
+                        <MailOutlineIcon 
+                            className={errors.email ? 'text-red-500' : ''}
+                        />
+                    </span>
+                    <input
+                        type="text"
+                        name="email"
+                        placeholder="E-mail"
+                        aria-label="E-mail"
+                        aria-describedby={errors.email ? "email-error" : undefined}
+                        className={`${errors.email ? errorInputClassName : inputClassName} pl-10`}
+                        value={formData.email}
+                        onChange={handleFormChange}
+                    />
+                </div>
                 {errors.email && 
                     <p id="email-error" className={errorTextClassName}>
                         {errors.email}
                     </p>
                 }
-                <input
-                    type="password" name="password"
-                    placeholder="Senha"
-                    aria-label="Senha"
-                    aria-describedby={errors.password ? "password-error" : undefined}
-                    className={errors.password ? errorInputClassName : inputClassName}
-                    value={formData.password}
-                    onChange={handleFormChange}
-                />
+                <div className="relative flex items-center">
+                    <span className="absolute left-3 text-gray-400">
+                        <LockOutlinedIcon 
+                            className={errors.password ? 'text-red-500' : ''}
+                        />
+                    </span>
+                    <input
+                        type="password" name="password"
+                        placeholder="Senha"
+                        aria-label="Senha"
+                        aria-describedby={errors.password ? "password-error" : undefined}
+                        className={errors.password ? errorInputClassName : inputClassName}
+                        value={formData.password}
+                        onChange={handleFormChange}
+                    />
+                </div>
                 {errors.password && 
                     <p id="password-error" className={errorTextClassName}>
                         {errors.password}
                     </p>
                 }
-                <input
-                    type="password" name="confirm"
-                    placeholder="Confirmar Senha"
-                    aria-label="Confirmar Senha"
-                    aria-describedby={errors.confirm ? "confirm-error" : undefined}
-                    className={errors.confirm ? errorInputClassName : inputClassName}
-                    value={formData.confirm}
-                    onChange={handleFormChange}
-                />
+                <div className="relative flex items-center">
+                    <span className="absolute left-3 text-gray-400">
+                        <LockOutlinedIcon 
+                            className={errors.confirm ? 'text-red-500' : ''}
+                        />
+                    </span>
+                    <input
+                        type="password" name="confirm"
+                        placeholder="Confirmar Senha"
+                        aria-label="Confirmar Senha"
+                        aria-describedby={errors.confirm ? "confirm-error" : undefined}
+                        className={errors.confirm ? errorInputClassName : inputClassName}
+                        value={formData.confirm}
+                        onChange={handleFormChange}
+                    />
+                </div>
                 {errors.confirm && 
                     <p id="confirm-error" className={errorTextClassName}>
                         {errors.confirm}

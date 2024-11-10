@@ -71,11 +71,11 @@ export default function DashboardPage() {
               aprovação.
             </p>
             <br />
-            <Button variant="secondary" size="medium" pageLink="/pages/about">
+            <Button variant="secondary" size="medium" pageLink="/pages/signup">
               Começar
             </Button>
             &nbsp; &nbsp;
-            <Button variant="secondary" size="medium" pageLink="/pages/about">
+            <Button variant="secondary" size="medium" pageLink="/pages/login">
               Entrar
             </Button>
           </div>
