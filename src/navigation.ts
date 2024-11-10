@@ -17,7 +17,9 @@ export const pathnames = {
   '/pages/contact': '/pages/contact',
   '/pages/events/dataDay': '/pages/events/dataDay',
   '/pages/events/understandingDL': '/pages/events/understandingDL',
-  '/pages/events/understandingDL/speakers': '/pages/events/understandingDL/speakers'
+  '/pages/events/understandingDL/speakers': '/pages/events/understandingDL/speakers',
+  '/pages/signup': '/pages/signup',
+  '/pages/login': '/pages/login', 
 } as const satisfies Pathnames<typeof locales>
 
 export const { Link, redirect, usePathname, useRouter } =
