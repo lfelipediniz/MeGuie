@@ -28,7 +28,7 @@ export default function Home() {
         </div>
       ) : (
         <div className="transition-opacity duration-500 opacity-100">
-          <RoadmapCard image={"https://via.placeholder.com/250x300"} title="Matemática" progress={50} topics={mathTopics} />
+          <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} topics={mathTopics} />
         </div>
       )}
     </div>
