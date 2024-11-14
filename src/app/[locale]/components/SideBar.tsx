@@ -15,38 +15,41 @@ import MenuIcon from "@mui/icons-material/Menu";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
-  const [compressed, setCompressed] = useState(true); // Controle para o estado comprimido
 
   const toggleSidebar = () => {
-    if (compressed) {
-      setExpanded(true); // expande o Drawer como temporário
-      setCompressed(false); // alterna para o estado expandido temporariamente
-    } else {
-      setExpanded(false);
-      setCompressed(true);
-    }
+    setExpanded(!expanded);
   };
 
   return (
-    <div style={{ marginRight: "-270px" }} className="z-50"> 
+    <div className="z-50">
       <div className="hidden md:block">
         {/* Botão para abrir/fechar a sidebar */}
-        <IconButton onClick={toggleSidebar}>
+        <IconButton
+          onClick={toggleSidebar}
+          sx={{
+            position: "fixed",
+            top: 16,
+            left: 16,
+            zIndex: 1300,
+          }}
+        >
           <MenuIcon />
         </IconButton>
 
         <Drawer
-          variant={expanded ? "temporary" : "permanent"}
-          open={expanded || compressed}
-          onClose={() => setExpanded(false)}
+          variant="permanent"
+          open={expanded}
           sx={{
-            width: compressed ? 60 : 240,
+            position: "fixed",
+            width: expanded ? 240 : 60,
             flexShrink: 0,
+            transition: "width 0.3s",
             "& .MuiDrawer-paper": {
-              width: compressed ? 60 : 240,
-              transition: "width 0.3s",
+              width: expanded ? 240 : 60,
               overflowX: "hidden",
-              zIndex: expanded ? 1300 : "auto", // permite que o Drawer fique acima dos outros itens ao expandir
+              position: "fixed",
+              zIndex: 1200,
+              transition: "width 0.3s",
             },
           }}
         >
@@ -55,21 +58,21 @@ const Sidebar: React.FC = () => {
               <ListItemIcon>
                 <MenuIcon />
               </ListItemIcon>
-              {!compressed && <ListItemText primary="Menu" />}
+              {expanded && <ListItemText primary="Menu" />}
             </ListItem>
 
-            <ListItem component="li" onClick={toggleSidebar}>
+            <ListItem component="li">
               <ListItemIcon>
                 <InboxIcon />
               </ListItemIcon>
-              {!compressed && <ListItemText primary="Inbox" />}
+              {expanded && <ListItemText primary="Inbox" />}
             </ListItem>
 
-            <ListItem component="li" onClick={toggleSidebar}>
+            <ListItem component="li">
               <ListItemIcon>
                 <MailIcon />
               </ListItemIcon>
-              {!compressed && <ListItemText primary="Mail" />}
+              {expanded && <ListItemText primary="Mail" />}
             </ListItem>
           </List>
         </Drawer>
