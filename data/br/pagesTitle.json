@@ -1,0 +1,14 @@
+{
+    "/": "Início",
+    "/pages/about": "Sobre",
+    "/pages/competitions": "Competições",
+    "/pages/contact": "Contato",
+    "/pages/events": "Eventos",
+    "/pages/fronts": "Frentes",
+    "/pages/learn": "Aprender",
+    "/pages/login": "Entrar",
+    "/pages/projects": "Projetos",
+    "/pages/signup": "Cadastrar",
+    "/pages/events/understandingDL": "Understanding DL",
+    "/pages/events/dataDay": "DataDay"
+}
