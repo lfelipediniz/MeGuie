@@ -33,7 +33,6 @@ const Sidebar: React.FC = () => {
             zIndex: 1300,
           }}
         >
-          <MenuIcon />
         </IconButton>
 
         <Drawer
