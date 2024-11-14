@@ -13,6 +13,7 @@ import "./globals.css";
 import { Footer } from "../[locale]/components/Footer";
 import { cookies } from 'next/headers'; // para ler cookies no lado do servidor
 import Sponsors from "./components/Sponsors";
+import Sidebar from "./components/SideBar";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -57,38 +58,31 @@ export default function RootLayout({
 
   return (
     <html lang={languageCode} className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}>
-      <body className="relative min-h-screen flex flex-col">
-        <ThemeProvider
-          enableSystem
-          attribute="class"
-          defaultTheme="system"
-          themes={["light", "dark"]}
-        >
-          <NextIntlClientProvider
-            locale={locale}
-            messages={messages as AbstractIntlMessages}
-          >
-            <NextTopLoader
-              initialPosition={0.08}
-              crawlSpeed={200}
-              height={3}
-              crawl={true}
-              easing="ease"
-              speed={200}
-              color="var(--primary)"
-              showSpinner={false}
-            />
-            <Header locale={languageCode} />
-            <div className="absolute inset-0 z-0">
-              {/* <Particle />  removendo particulas do Data*/} 
-            </div>
-            <main className="relative z-10 flex-grow">
+    <body className="relative min-h-screen flex flex-col">
+      <ThemeProvider enableSystem attribute="class" defaultTheme="system" themes={["light", "dark"]}>
+        <NextIntlClientProvider locale={locale} messages={messages as AbstractIntlMessages}>
+          <NextTopLoader
+            initialPosition={0.08}
+            crawlSpeed={200}
+            height={3}
+            crawl={true}
+            easing="ease"
+            speed={200}
+            color="var(--primary)"
+            showSpinner={false}
+          />
+          <Header locale={languageCode} />
+          <div className="flex">
+            
+            <Sidebar /> {/* Sidebar adicionada aqui */}
+            <main className="relative z-10 flex-grow ml-64"> {/* Adiciona uma margem para o conteúdo */}
               {children}
             </main>
-            <Footer locale={locale} />
-          </NextIntlClientProvider>
-        </ThemeProvider>
-      </body>
-    </html>
+          </div>
+          <Footer locale={locale} />
+        </NextIntlClientProvider>
+      </ThemeProvider>
+    </body>
+  </html>
   );
 }

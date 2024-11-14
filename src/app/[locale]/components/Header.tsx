@@ -45,10 +45,10 @@ export const Header: FC<Props> = ({ locale }) => {
   }, [menuOpen]);
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-background shadow-md transition-all duration-300">
+    <div className="fixed top-0 left-0 right-0 z-40 bg-background shadow-md transition-all duration-300">
       <div className="mx-auto flex max-w-screen-2xl items-center justify-between p-5">
         {/* Logo */}
-        <Link
+        {/* <Link
           lang={locale}
           href={"/"}
           className={getLinkClass("/")}
@@ -59,9 +59,10 @@ export const Header: FC<Props> = ({ locale }) => {
               <LogoIcon />
             </div>
           </div>
-        </Link>
+        </Link> */}
 
-        <div className="flex-1 flex justify-center md:justify-center text-center font-bold">
+        {/* Apenas aplica margin-left em dispositivos desktop */}
+        <div className="flex-1 flex justify-center text-center font-bold ml-0 md:ml-16">
           {atualPageName}
         </div>
 
@@ -91,7 +92,6 @@ export const Header: FC<Props> = ({ locale }) => {
 
         <div className="hidden md:flex flex-row items-center gap-3">
           <ThemeSwitch />
-
         </div>
       </div>
     </div>
