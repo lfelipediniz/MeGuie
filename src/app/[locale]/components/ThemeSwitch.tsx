@@ -3,6 +3,8 @@
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 import { FiSun, FiMoon } from 'react-icons/fi';
+import { IoIosContrast } from "react-icons/io";
+import { IoContrast } from "react-icons/io5";
 
 export default function ThemeSwitch() {
   const [mounted, setMounted] = useState(false);
@@ -26,7 +28,7 @@ export default function ThemeSwitch() {
       onClick={toggleTheme}
       style={{ backgroundColor: 'transparent' }}
     >
-      {isDarkMode ? <FiSun size={24} color='var(--primary)' /> : <FiMoon size={24} color='var(--primary)' />}
+      {isDarkMode ? <IoIosContrast size={24} color='var(--primary)' /> : <IoContrast size={24} color='var(--primary)' />}
     </button>
   );
 }

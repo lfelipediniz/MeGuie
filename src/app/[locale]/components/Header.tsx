@@ -6,7 +6,8 @@ import { FC } from "react";
 import LogoIcon from "../../icons/logo";
 import LangSwitcher from "./LangSwitcher";
 import ThemeSwitch from "./ThemeSwitch";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { RxAccessibility } from "react-icons/rx";
+import { MdOutlineSettingsAccessibility } from "react-icons/md";
 import pageNamesData from "@/data/br/pagesTitle.json";
 
 interface Props {
@@ -15,18 +16,16 @@ interface Props {
 
 export const Header: FC<Props> = ({ locale }) => {
   const t = useTranslations("");
-  const pathname = usePathname(); // capturando a url atual
-  const [menuOpen, setMenuOpen] = useState(false); // state to control the menu
+  const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Define o nome da página atual com base no JSON
   const atualPageName = pageNamesData[pathname as keyof typeof pageNamesData] || "Página Não Encontrada";
 
   const getLinkClass = (path: string) => {
     return pathname === path ? "text-data-purple font-bold" : "";
   };
 
-  // Close the menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -70,9 +69,9 @@ export const Header: FC<Props> = ({ locale }) => {
         <div className="flex md:hidden">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? (
-              <XMarkIcon className="h-8 w-8 text-primary" />
+              <MdOutlineSettingsAccessibility className="h-8 w-8 text-primary" />
             ) : (
-              <Bars3Icon className="h-8 w-8 text-primary" />
+              <RxAccessibility className="h-8 w-8 text-primary" />
             )}
           </button>
         </div>
@@ -80,20 +79,19 @@ export const Header: FC<Props> = ({ locale }) => {
         {/* Menu para dispositivos móveis */}
         <div
           ref={menuRef}
-          className={`md:hidden absolute right-0 top-full mt-2 bg-white shadow-md rounded-md ${
+          className={`md:hidden absolute right-0 top-full mt-2 rounded-md shadow-md ${
             menuOpen ? "block" : "hidden"
           } z-50`}
+          style={{ backgroundColor: "var(--background-secondary)" }} // Acompanha o tema
         >
           <div className="flex flex-col items-center justify-center p-4">
             <ThemeSwitch />
-            <LangSwitcher locale={locale} />
           </div>
         </div>
 
-        {/* Theme e language switcher para desktop */}
         <div className="hidden md:flex flex-row items-center gap-3">
           <ThemeSwitch />
-          <LangSwitcher locale={locale} />
+
         </div>
       </div>
     </div>
