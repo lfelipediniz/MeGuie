@@ -53,7 +53,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="mt-32">
+    <div className="mt-32 mx-auto max-w-screen-2xl p-4 md:p-8">
       <section
         className={`flex ${isSmallScreen ? "flex-col-reverse" : "flex-row"} relative py-0`}
       >

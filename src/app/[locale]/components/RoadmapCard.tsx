@@ -26,7 +26,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
   }
 
   return (
-    <button onClick={handleClick} className="bg-white rounded-3xl shadow-xl overflow-hidden w-96 h-auto">
+    <div onClick={handleClick} className="bg-white rounded-3xl shadow-xl overflow-hidden h-auto max-w-full cursor-pointer">
       <Image
         src={`/images/cards/${props.image}`}
         alt={`Imagem de ${props.title}`}
@@ -51,7 +51,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
           </button>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
 

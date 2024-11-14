@@ -7,10 +7,11 @@
     --primary: #2b2b2b;
     --secondary: #315D6D;
     --background: #ffffff;
-    --background-secondary: #f5f5f5;
+    --background-secondary: #eeeeee;
     --background-opacity: rgba( 255, 255, 255,0.4); /* Nova variável com opacidade */
     --button-text: #000000;
     --text-secondary: #444444;
+    --text-tertiary: #666666;
     --dropdown: #e0e0e0;
     --dropdown-hover: #cccccc;
     --button-secondary: #f0f0f0;
@@ -47,6 +48,7 @@
     --background-opacity: rgba( 18,18,18,0.4); /* Nova variável com opacidade no tema escuro */
     --button-text: #fff;
     --text-secondary: #bbbbbb;
+    --text-tertiary: #666666;
     --dropdown: #2d2d2d;
     --dropdown-hover: #454545;
     --button-secondary: #1d1d1d;

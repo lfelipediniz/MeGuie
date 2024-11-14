@@ -82,7 +82,7 @@ export default function RootLayout({
             <div className="absolute inset-0 z-0">
               {/* <Particle />  removendo particulas do Data*/} 
             </div>
-            <main className="relative z-10 mx-auto max-w-screen-2xl p-4 md:p-8 flex-grow">
+            <main className="relative z-10 flex-grow">
               {children}
             </main>
             <Footer locale={locale} />
