@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Drawer, IconButton, Tooltip, Menu, MenuItem } from "@mui/material";
+import { Drawer, IconButton, Tooltip, Menu, MenuItem, Divider } from "@mui/material";
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -12,12 +12,13 @@ import {
   FaTextHeight,
 } from "react-icons/fa";
 import { IoAccessibility, IoContrastSharp } from "react-icons/io5";
-import Image from "next/image";
 import LogoIcon from "@/src/app/icons/logo";
+import { useRouter } from "@/src/navigation";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const router = useRouter();
 
   const toggleSidebar = () => {
     setExpanded(!expanded);
@@ -50,16 +51,17 @@ const Sidebar: React.FC = () => {
         }}
       >
         {/* Logo do App */}
-
-        {/* Logo do App */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: expanded ? "flex-start" : "center",
             padding: "10px 16px",
+            marginBottom: "5px",
             transition: "all 0.3s",
           }}
+          onClick={() => router.push("/")}
+          className="cursor-pointer"
         >
           <div
             style={{
@@ -87,6 +89,9 @@ const Sidebar: React.FC = () => {
           </span>
         </div>
 
+        <Divider style={{ margin: "10px 0" }} />
+
+        {/* Navegação */}
         <div
           style={{
             display: "flex",
@@ -96,24 +101,72 @@ const Sidebar: React.FC = () => {
         >
           {[
             {
-              icon: <IoAccessibility />,
-              label: "Acessibilidade",
-              onClick: handleAccessibilityClick,
-            },
-            {
               icon: <FaHome />,
               label: "Tela Principal",
-              onClick: () => alert("Navegar para Tela Principal"),
+              onClick: () => router.push("/pages/home"),
             },
             {
               icon: <FaCalendarAlt />,
               label: "Calendário",
-              onClick: () => alert("Navegar para Calendário"),
+              onClick: () => router.push("/pages/calendar"),
             },
             {
               icon: <FaStar />,
               label: "Favoritos",
-              onClick: () => alert("Navegar para Favoritos"),
+              onClick: () => router.push("/pages/savedroads"),
+            },
+          ].map(({ icon, label, onClick }, index) => (
+            <Tooltip title={!expanded ? label : ""} key={index}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  padding: "10px 16px",
+                  transition: "all 0.3s",
+                  cursor: "pointer",
+                }}
+                onClick={onClick}
+              >
+                <div
+                  style={{
+                    color: "var(--contrast-bt-nav)",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  {icon}
+                </div>
+                <span
+                  style={{
+                    marginLeft: "15px",
+                    opacity: expanded ? 1 : 0,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    transition: "opacity 0.3s",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {label}
+                </span>
+              </div>
+            </Tooltip>
+          ))}
+        </div>
+
+        <Divider style={{ margin: "10px 0" }} />
+
+        {/* Acessibilidade e outros botões */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          {[
+            {
+              icon: <IoAccessibility />,
+              label: "Acessibilidade",
+              onClick: handleAccessibilityClick,
             },
           ].map(({ icon, label, onClick }, index) => (
             <Tooltip title={!expanded ? label : ""} key={index}>
