@@ -13,11 +13,12 @@ import {
 } from "react-icons/fa";
 import { IoAccessibility, IoContrastSharp } from "react-icons/io5";
 import LogoIcon from "@/src/app/icons/logo";
-import { useRouter } from "@/src/navigation";
+import { usePathname, useRouter } from "@/src/navigation";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const pathname = usePathname();
   const router = useRouter();
 
   const toggleSidebar = () => {
@@ -31,6 +32,24 @@ const Sidebar: React.FC = () => {
   const handleAccessibilityClose = () => {
     setAnchorEl(null);
   };
+
+  const navItems: { icon: JSX.Element; label: string; path: string }[] = [
+    {
+      icon: <FaHome />,
+      label: "Tela Principal",
+      path: "/pages/home",
+    },
+    {
+      icon: <FaCalendarAlt />,
+      label: "Calendário",
+      path: "/pages/calendar",
+    },
+    {
+      icon: <FaStar />,
+      label: "Favoritos",
+      path: "/pages/savedroads",
+    },
+  ];
 
   return (
     <div className="z-50">
@@ -99,23 +118,7 @@ const Sidebar: React.FC = () => {
             marginTop: "10px",
           }}
         >
-          {[
-            {
-              icon: <FaHome />,
-              label: "Tela Principal",
-              onClick: () => router.push("/pages/home"),
-            },
-            {
-              icon: <FaCalendarAlt />,
-              label: "Calendário",
-              onClick: () => router.push("/pages/calendar"),
-            },
-            {
-              icon: <FaStar />,
-              label: "Favoritos",
-              onClick: () => router.push("/pages/savedroads"),
-            },
-          ].map(({ icon, label, onClick }, index) => (
+          {navItems.map(({ icon, label, path }, index) => (
             <Tooltip title={!expanded ? label : ""} key={index}>
               <div
                 style={{
@@ -126,11 +129,11 @@ const Sidebar: React.FC = () => {
                   transition: "all 0.3s",
                   cursor: "pointer",
                 }}
-                onClick={onClick}
+                onClick={() => router.push(path as any)}
               >
                 <div
                   style={{
-                    color: "var(--contrast-bt-nav)",
+                    color: pathname === path ? "var(--action)" : "var(--contrast-bt-nav)",
                     fontSize: "1.5rem",
                   }}
                 >
@@ -144,6 +147,7 @@ const Sidebar: React.FC = () => {
                     overflow: "hidden",
                     transition: "opacity 0.3s",
                     fontSize: "1.1rem",
+                    color: pathname === path ? "var(--action)" : "var(--contrast-bt-nav)",
                   }}
                 >
                   {label}
@@ -155,58 +159,49 @@ const Sidebar: React.FC = () => {
 
         <Divider style={{ margin: "10px 0" }} />
 
-        {/* Acessibilidade e outros botões */}
+        {/* Botões de acessibilidade */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
           }}
         >
-          {[
-            {
-              icon: <IoAccessibility />,
-              label: "Acessibilidade",
-              onClick: handleAccessibilityClick,
-            },
-          ].map(({ icon, label, onClick }, index) => (
-            <Tooltip title={!expanded ? label : ""} key={index}>
+          <Tooltip title={!expanded ? "Acessibilidade" : ""}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                padding: "10px 16px",
+                transition: "all 0.3s",
+                cursor: "pointer",
+              }}
+              onClick={handleAccessibilityClick}
+            >
               <div
                 style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "flex-start",
-                  padding: "10px 16px",
-                  transition: "all 0.3s",
-                  cursor: "pointer",
+                  color: "var(--contrast-bt-nav)",
+                  fontSize: "1.5rem",
                 }}
-                onClick={onClick}
               >
-                <div
-                  style={{
-                    color: "var(--contrast-bt-nav)",
-                    fontSize: "1.5rem",
-                  }}
-                >
-                  {icon}
-                </div>
-                <span
-                  style={{
-                    marginLeft: "15px",
-                    opacity: expanded ? 1 : 0,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    transition: "opacity 0.3s",
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  {label}
-                </span>
+                <IoAccessibility />
               </div>
-            </Tooltip>
-          ))}
+              <span
+                style={{
+                  marginLeft: "15px",
+                  opacity: expanded ? 1 : 0,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  transition: "opacity 0.3s",
+                  fontSize: "1.1rem",
+                }}
+              >
+                Acessibilidade
+              </span>
+            </div>
+          </Tooltip>
         </div>
 
-        {/* Dropdown menu para Acessibilidade */}
         <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
