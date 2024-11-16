@@ -44,6 +44,7 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
+    <div className="h-md:block hidden">
     <div className="z-50 md:block hidden">
       <Drawer
         variant="permanent"
@@ -215,6 +216,7 @@ const Sidebar: React.FC = () => {
 
         
       </Drawer>
+    </div>
     </div>
   );
 };

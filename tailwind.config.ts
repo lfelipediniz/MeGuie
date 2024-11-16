@@ -19,8 +19,11 @@ const config = {
     },
     extend: {
       screens: {
-        'md': '880px', // Redefinindo o breakpoint 'md' para 880px
-        'lg': '1166px', // Redefinindo o breakpoint 'lg' para 1166px
+        'md': '880px', 
+        'lg': '1166px', 
+        'h-md': { raw: '(min-height: 390px)' }, 
+        'h-sm': { raw: '(max-height: 390px)' }, 
+
       },
       backgroundImage: {
         'span-bg': 'var(--span-bg)'

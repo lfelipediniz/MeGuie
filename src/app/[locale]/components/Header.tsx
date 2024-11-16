@@ -72,12 +72,21 @@ export const Header: FC<Props> = ({ locale }) => {
         >
           {atualPageName}
         </div>
-
+        
+          {/* Menu de navegação */}
         {/* Botão do menu hambúrguer para mobile */}
-        <div className="flex md:hidden">
+        <div>
+
+        <div className="h-md:hidden flex">
           <button onClick={() => setMenuOpen(!menuOpen)}>
             <FaBars className="h-8 w-8" style={{ color: "var(--background)" }} /> {/* Ícone do menu hambúrguer */}
           </button>
+        </div>
+        <div className="flex md:hidden h-sm:hidden">
+          <button onClick={() => setMenuOpen(!menuOpen)}>
+            <FaBars className="h-8 w-8" style={{ color: "var(--background)" }} /> {/* Ícone do menu hambúrguer */}
+          </button>
+        </div>
         </div>
 
         {/* Menu para dispositivos móveis */}
@@ -92,7 +101,6 @@ export const Header: FC<Props> = ({ locale }) => {
             <ThemeSwitch />
           </div>
         </div>
-
       </div>
     </div>
   );
