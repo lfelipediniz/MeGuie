@@ -1,132 +1,118 @@
 "use client";
 
 import React, { useState } from "react";
-import { Drawer, IconButton, Tooltip } from "@mui/material";
-import { FaAngleLeft, FaAngleRight, FaHome, FaCalendarAlt, FaStar } from "react-icons/fa";
-import { IoAccessibility } from "react-icons/io5";
-import { MdContrast, MdTextFields } from "react-icons/md";
-import { GiHand } from "react-icons/gi";
+import { Drawer, IconButton, Tooltip, Menu, MenuItem } from "@mui/material";
+import {
+  FaAngleLeft,
+  FaAngleRight,
+  FaHome,
+  FaCalendarAlt,
+  FaStar,
+  FaSignLanguage,
+  FaTextHeight
+} from "react-icons/fa";
+import { IoAccessibility , IoContrastSharp} from "react-icons/io5";
+
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const toggleSidebar = () => {
     setExpanded(!expanded);
   };
 
+  const handleAccessibilityClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleAccessibilityClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <div className="z-50">
-      <div className="hidden md:block">
-        <Drawer
-          variant="permanent"
-          open={expanded}
-          sx={{
+      <Drawer
+        variant="permanent"
+        open={expanded}
+        sx={{
+          width: expanded ? 240 : 60,
+          flexShrink: 0,
+          transition: "width 0.3s",
+          "& .MuiDrawer-paper": {
             width: expanded ? 240 : 60,
-            flexShrink: 0,
+            overflowX: "hidden",
+            position: "fixed",
+            zIndex: 1200,
             transition: "width 0.3s",
-            "& .MuiDrawer-paper": {
-              width: expanded ? 240 : 60,
-              overflowX: "hidden",
-              position: "fixed",
-              zIndex: 1200,
-              transition: "width 0.3s",
-            },
-          }}
+          },
+        }}
+      >
+        <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
+          {[
+            { icon: <IoAccessibility />, label: "Acessibilidade", onClick: handleAccessibilityClick },
+            { icon: <FaHome />, label: "Tela Principal", onClick: () => alert("Navegar para Tela Principal") },
+            { icon: <FaCalendarAlt />, label: "Calendário", onClick: () => alert("Navegar para Calendário") },
+            { icon: <FaStar />, label: "Favoritos", onClick: () => alert("Navegar para Favoritos") },
+          ].map(({ icon, label, onClick }, index) => (
+            <Tooltip title={!expanded ? label : ""} key={index}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-start",
+                  padding: "10px 16px",
+                  transition: "all 0.3s",
+                  cursor: "pointer",
+                }}
+                onClick={onClick}
+              >
+                <div style={{ color: "var(--contrast-bt-nav)", fontSize: "1.5rem" }}>{icon}</div>
+                <span
+                  style={{
+                    marginLeft: "15px",
+                    opacity: expanded ? 1 : 0,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    transition: "opacity 0.3s",
+                    fontSize: "1.1rem",
+                  }}
+                >
+                  {label}
+                </span>
+              </div>
+            </Tooltip>
+          ))}
+        </div>
+
+        {/* Dropdown menu para Acessibilidade */}
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleAccessibilityClose}
+          style={{ zIndex: 1300 }}
         >
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: "10px" }}>
-            <Tooltip title="Acessibilidade">
-              <IconButton onClick={toggleSidebar} size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <IoAccessibility /> &nbsp; Acessibilidade
-                  </span>
-                ) : (
-                  <IoAccessibility />
-                )}
-              </IconButton>
-            </Tooltip>
+          <MenuItem onClick={() => alert("Ativar Libras")}>
+            <FaSignLanguage style={{ marginRight: "10px" }} />
+            Ativar Libras
+          </MenuItem>
+          <MenuItem onClick={() => alert("Aumentar Texto")}>
+            <FaTextHeight style={{ marginRight: "10px" }} />
+            Aumentar Texto
+          </MenuItem>
+          <MenuItem onClick={() => alert("Ativar Alto Contraste")}>
+            <IoContrastSharp style={{ marginRight: "10px" }} />
+            Alto Contraste
+          </MenuItem>
+        </Menu>
 
-            <Tooltip title="Alto Contraste">
-              <IconButton size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <MdContrast /> &nbsp; Alto Contraste
-                  </span>
-                ) : (
-                  <MdContrast />
-                )}
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Libras">
-              <IconButton size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <GiHand /> &nbsp; Libras
-                  </span>
-                ) : (
-                  <GiHand />
-                )}
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Texto">
-              <IconButton size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <MdTextFields /> &nbsp; Texto
-                  </span>
-                ) : (
-                  <MdTextFields />
-                )}
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Tela Principal">
-              <IconButton size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <FaHome /> &nbsp; Tela Principal
-                  </span>
-                ) : (
-                  <FaHome />
-                )}
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Calendário">
-              <IconButton size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <FaCalendarAlt /> &nbsp; Calendário
-                  </span>
-                ) : (
-                  <FaCalendarAlt />
-                )}
-              </IconButton>
-            </Tooltip>
-
-            <Tooltip title="Roadmaps Favoritos">
-              <IconButton size="medium">
-                {expanded ? (
-                  <span style={{ display: "flex", alignItems: "center" }}>
-                    <FaStar /> &nbsp; Favoritos
-                  </span>
-                ) : (
-                  <FaStar />
-                )}
-              </IconButton>
-            </Tooltip>
-          </div>
-
-          {/* Botão para abrir/fechar a sidebar */}
-          <div style={{ position: "absolute", bottom: "30px", width: "100%", display: "flex", justifyContent: "center" }}>
-            <IconButton onClick={toggleSidebar} size="medium">
-              {expanded ? <FaAngleLeft /> : <FaAngleRight />}
-            </IconButton>
-          </div>
-        </Drawer>
-      </div>
+        {/* Botão para abrir/fechar a sidebar */}
+        <div style={{ position: "absolute", bottom: "30px", width: "100%", display: "flex", justifyContent: "center" }}>
+          <IconButton onClick={toggleSidebar} size="medium" style={{ color: "var(--contrast-bt-nav)" }}>
+            {expanded ? <FaAngleLeft /> : <FaAngleRight />}
+          </IconButton>
+        </div>
+      </Drawer>
     </div>
   );
 };
