@@ -6,8 +6,8 @@ interface LogoIconProps {
 }
 
 const LogoIcon: React.FC<LogoIconProps> = ({
-  width = 50,
-  height = 50,
+  width = 35,
+  height = 35,
 }) => {
   return (
 <svg width={width} height={height} viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">

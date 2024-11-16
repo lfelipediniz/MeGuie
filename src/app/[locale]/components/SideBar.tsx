@@ -9,12 +9,11 @@ import {
   FaCalendarAlt,
   FaStar,
   FaSignLanguage,
-  FaTextHeight
+  FaTextHeight,
 } from "react-icons/fa";
 import { IoAccessibility, IoContrastSharp } from "react-icons/io5";
 import Image from "next/image";
 import LogoIcon from "@/src/app/icons/logo";
-
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -51,38 +50,71 @@ const Sidebar: React.FC = () => {
         }}
       >
         {/* Logo do App */}
+
+        {/* Logo do App */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
             justifyContent: expanded ? "flex-start" : "center",
-            padding: "12px",
+            padding: "10px 16px",
             transition: "all 0.3s",
           }}
         >
-          <LogoIcon />
-          {expanded && (
-            <span
-              style={{
-                marginLeft: "15px",
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                color: "var(--contrast-bt-nav)",
-                transition: "opacity 0.3s",
-              }}
-            >
-              MeGuie
-            </span>
-          )}
+          <div
+            style={{
+              color: "var(--contrast-bt-nav)",
+              fontSize: "1.8rem",
+              marginTop: "10px",
+            }}
+          >
+            <LogoIcon />
+          </div>
+          <span
+            style={{
+              marginLeft: expanded ? "15px" : "0",
+              opacity: expanded ? 1 : 0,
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              transition: "opacity 0.3s, margin-left 0.3s",
+              fontSize: "1.2rem",
+              color: "var(--contrast-bt-nav)",
+              fontWeight: "bold",
+              marginTop: "10px",
+            }}
+          >
+            MeGuie
+          </span>
         </div>
 
-        {/* Itens do Menu */}
-        <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            marginTop: "10px",
+          }}
+        >
           {[
-            { icon: <IoAccessibility />, label: "Acessibilidade", onClick: handleAccessibilityClick },
-            { icon: <FaHome />, label: "Tela Principal", onClick: () => alert("Navegar para Tela Principal") },
-            { icon: <FaCalendarAlt />, label: "Calendário", onClick: () => alert("Navegar para Calendário") },
-            { icon: <FaStar />, label: "Favoritos", onClick: () => alert("Navegar para Favoritos") },
+            {
+              icon: <IoAccessibility />,
+              label: "Acessibilidade",
+              onClick: handleAccessibilityClick,
+            },
+            {
+              icon: <FaHome />,
+              label: "Tela Principal",
+              onClick: () => alert("Navegar para Tela Principal"),
+            },
+            {
+              icon: <FaCalendarAlt />,
+              label: "Calendário",
+              onClick: () => alert("Navegar para Calendário"),
+            },
+            {
+              icon: <FaStar />,
+              label: "Favoritos",
+              onClick: () => alert("Navegar para Favoritos"),
+            },
           ].map(({ icon, label, onClick }, index) => (
             <Tooltip title={!expanded ? label : ""} key={index}>
               <div
@@ -96,7 +128,14 @@ const Sidebar: React.FC = () => {
                 }}
                 onClick={onClick}
               >
-                <div style={{ color: "var(--contrast-bt-nav)", fontSize: "1.5rem" }}>{icon}</div>
+                <div
+                  style={{
+                    color: "var(--contrast-bt-nav)",
+                    fontSize: "1.5rem",
+                  }}
+                >
+                  {icon}
+                </div>
                 <span
                   style={{
                     marginLeft: "15px",
@@ -135,9 +174,20 @@ const Sidebar: React.FC = () => {
           </MenuItem>
         </Menu>
 
-        {/* Botão para abrir/fechar a sidebar */}
-        <div style={{ position: "absolute", bottom: "30px", width: "100%", display: "flex", justifyContent: "center" }}>
-          <IconButton onClick={toggleSidebar} size="medium" style={{ color: "var(--contrast-bt-nav)" }}>
+        <div
+          style={{
+            position: "absolute",
+            bottom: "30px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <IconButton
+            onClick={toggleSidebar}
+            size="medium"
+            style={{ color: "var(--contrast-bt-nav)" }}
+          >
             {expanded ? <FaAngleLeft /> : <FaAngleRight />}
           </IconButton>
         </div>
