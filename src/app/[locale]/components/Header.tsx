@@ -1,11 +1,18 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Link, usePathname } from "@/src/navigation";
+import { Link, usePathname, useRouter } from "@/src/navigation";
 import { useTranslations } from "next-intl";
 import { FC } from "react";
 import LogoIcon from "../../icons/binaryLogo";
 import ThemeSwitch from "./ThemeSwitch";
-import { FaBars } from "react-icons/fa"; // Novo ícone de menu hambúrguer
+import {
+  FaBars,
+  FaTimes,
+  FaHome,
+  FaCalendarAlt,
+  FaStar,
+  FaSignOutAlt,
+} from "react-icons/fa";
 import pageNamesData from "@/data/br/pagesTitle.json";
 
 interface Props {
@@ -15,13 +22,22 @@ interface Props {
 export const Header: FC<Props> = ({ locale }) => {
   const t = useTranslations("");
   const pathname = usePathname();
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const atualPageName = pageNamesData[pathname as keyof typeof pageNamesData] || "Página Não Encontrada";
+  const atualPageName =
+    pageNamesData[pathname as keyof typeof pageNamesData] ||
+    "Página Não Encontrada";
 
-  const getLinkClass = (path: string) => {
-    return pathname === path ? "text-data-purple font-bold" : "";
+  const navItems: { icon: JSX.Element; label: string; path: "pages/home" | "pages/calendar" | "pages/savedroads" }[] = [
+    { icon: <FaHome />, label: "Tela Principal", path: "pages/home" },
+    { icon: <FaCalendarAlt />, label: "Calendário", path: "pages/calendar" },
+    { icon: <FaStar />, label: "Favoritos", path: "pages/savedroads" },
+  ];
+
+  const handleLogout = () => {
+    router.push("/");
   };
 
   useEffect(() => {
@@ -46,18 +62,12 @@ export const Header: FC<Props> = ({ locale }) => {
     <div
       className="fixed top-0 left-0 right-0 z-40 transition-all duration-300"
       style={{
-        backgroundColor: "var(--marine)", // Cor de fundo
-        boxShadow: "none", // Remove a sombra
+        backgroundColor: "var(--marine)",
+        boxShadow: "none",
       }}
     >
       <div className="mx-auto flex max-w-screen-2xl items-center justify-between p-5">
-        {/* Logo */}
-        <Link
-          lang={locale}
-          href={"/"}
-          className={getLinkClass("/")}
-          onClick={() => setMenuOpen(false)}
-        >
+        <Link lang={locale} href={"/"} onClick={() => setMenuOpen(false)}>
           <div className="flex flex-row items-center md:hidden">
             <div className="w-14">
               <LogoIcon />
@@ -65,43 +75,89 @@ export const Header: FC<Props> = ({ locale }) => {
           </div>
         </Link>
 
-        {/* Nome da página atual */}
         <div
           className="flex-1 flex justify-center text-center font-bold ml-0 md:ml-16"
-          style={{ color: "var(--background)" }} // Cor do texto
+          style={{ color: "var(--background)" }}
         >
           {atualPageName}
         </div>
-        
-          {/* Menu de navegação */}
+
+        {/* Menu de navegação */}
         {/* Botão do menu hambúrguer para mobile */}
         <div>
-
-        <div className="h-md:hidden flex">
-          <button onClick={() => setMenuOpen(!menuOpen)}>
-            <FaBars className="h-8 w-8" style={{ color: "var(--background)" }} /> {/* Ícone do menu hambúrguer */}
-          </button>
-        </div>
-        <div className="flex md:hidden h-sm:hidden">
-          <button onClick={() => setMenuOpen(!menuOpen)}>
-            <FaBars className="h-8 w-8" style={{ color: "var(--background)" }} /> {/* Ícone do menu hambúrguer */}
-          </button>
-        </div>
-        </div>
-
-        {/* Menu para dispositivos móveis */}
-        <div
-          ref={menuRef}
-          className={`md:hidden absolute right-0 top-full mt-2 rounded-md shadow-md ${
-            menuOpen ? "block" : "hidden"
-          } z-50`}
-          style={{ backgroundColor: "var(--background-secondary)" }}
-        >
-          <div className="flex flex-col items-center justify-center p-4">
-            <ThemeSwitch />
+          <div className="h-md:hidden flex">
+            <button onClick={() => setMenuOpen(!menuOpen)}>
+              <FaBars
+                className="h-8 w-8"
+                style={{ color: "var(--background)" }}
+              />{" "}
+              {/* Ícone do menu hambúrguer */}
+            </button>
+          </div>
+          <div className="flex md:hidden h-sm:hidden">
+            <button onClick={() => setMenuOpen(!menuOpen)}>
+              <FaBars
+                className="h-8 w-8"
+                style={{ color: "var(--background)" }}
+              />{" "}
+              {/* Ícone do menu hambúrguer */}
+            </button>
           </div>
         </div>
       </div>
+
+      {/* Sobreposição escura para fundo */}
+      {menuOpen && (
+        <>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setMenuOpen(false)}
+          ></div>
+
+          {/* Menu de tela cheia */}
+          <div
+            ref={menuRef}
+            className="fixed inset-0 z-50 flex flex-col items-center justify-center relative"
+            style={{ backgroundColor: "var(--background-secondary)" }}
+          >
+            {/* Botão de fechar */}
+            <button
+              className="absolute top-5 right-5 text-3xl text-white hover:text-gray-300"
+              onClick={() => setMenuOpen(false)}
+            >
+              <FaTimes />
+            </button>
+
+            <div className="flex flex-col items-center space-y-8 text-center">
+              {navItems.map(({ icon, label, path }, index) => (
+                <button
+                  key={index}
+                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500"
+                  style={{ color: "var(--primary)" }}
+                  onClick={() => {
+                    router.push(path);
+                    setMenuOpen(false);
+                  }}
+                >
+                  <div>{icon}</div>
+                  <span>{label}</span>
+                </button>
+              ))}
+              <button
+                className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300"
+                style={{ color: "var(--primary)" }}
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt />
+                <span style={{ color: "red" }}>Logout</span>
+              </button>
+              <div className="mt-4">
+                <ThemeSwitch />
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
