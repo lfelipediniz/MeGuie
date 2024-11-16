@@ -11,7 +11,7 @@ import { Header } from "./components/Header";
 import Particle from "./components/Particle";
 import "./globals.css";
 import { Footer } from "../[locale]/components/Footer";
-import { cookies } from 'next/headers'; // para ler cookies no lado do servidor
+import { cookies } from "next/headers"; // para ler cookies no lado do servidor
 import Sponsors from "./components/Sponsors";
 import Sidebar from "./components/SideBar";
 
@@ -46,7 +46,7 @@ export default function RootLayout({
   const messages = useMessages();
 
   // ler o cookie para determinar o idioma
-  const userLocaleCookie = cookies().get('preferredLocale')?.value;
+  const userLocaleCookie = cookies().get("preferredLocale")?.value;
   const languageCode = userLocaleCookie || "br"; // se o cookie não existir, use "br"
 
   const sponsorsData = [
@@ -57,32 +57,42 @@ export default function RootLayout({
   ];
 
   return (
-    <html lang={languageCode} className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}>
-    <body className="relative min-h-screen flex flex-col">
-      <ThemeProvider enableSystem attribute="class" defaultTheme="system" themes={["light", "dark"]}>
-        <NextIntlClientProvider locale={locale} messages={messages as AbstractIntlMessages}>
-          <NextTopLoader
-            initialPosition={0.08}
-            crawlSpeed={200}
-            height={3}
-            crawl={true}
-            easing="ease"
-            speed={200}
-            color="var(--primary)"
-            showSpinner={false}
-          />
-          <Header locale={languageCode} />
-          <div className="flex">
-            
-            <Sidebar /> 
-            <main className="relative z-10 flex-grow md:ml-10"> 
-              {children}
-            </main>
-          </div>
-          <Footer locale={locale} />
-        </NextIntlClientProvider>
-      </ThemeProvider>
-    </body>
-  </html>
+    <html
+      lang={languageCode}
+      className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}
+    >
+      <body className="relative min-h-screen flex flex-col">
+        <ThemeProvider
+          enableSystem
+          attribute="class"
+          defaultTheme="system"
+          themes={["light", "dark"]}
+        >
+          <NextIntlClientProvider
+            locale={locale}
+            messages={messages as AbstractIntlMessages}
+          >
+            <NextTopLoader
+              initialPosition={0.08}
+              crawlSpeed={200}
+              height={3}
+              crawl={true}
+              easing="ease"
+              speed={200}
+              color="var(--primary)"
+              showSpinner={false}
+            />
+            <Header locale={languageCode} />
+            <div className="flex">
+              <Sidebar />
+              <main className="relative z-10 flex-grow md:ml-10">
+                {children}
+              </main>
+            </div>
+            <Footer locale={locale} />
+          </NextIntlClientProvider>
+        </ThemeProvider>
+      </body>
+    </html>
   );
 }

@@ -23,7 +23,8 @@ export const Footer: FC<Props> = ({ locale }) => {
   }, [resolvedTheme]);
 
   return (
-    <footer className="bg-background-secondary relative z-20 mt-auto w-full">
+<footer className="bg-background-secondary relative z-20 mt-auto w-full between-lg-md:p-54">
+
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">

@@ -19,11 +19,16 @@ const config = {
     },
     extend: {
       screens: {
-        'md': '880px', 
+        'md': '950px', 
         'lg': '1166px', 
         'h-md': { raw: '(min-height: 390px)' }, 
         'h-sm': { raw: '(max-height: 390px)' }, 
+        'between-lg-md': { raw: '(min-width: 880px) and (max-width: 1380px)' },
+        
 
+      },
+      spacing: {
+        54: '54px',
       },
       backgroundImage: {
         'span-bg': 'var(--span-bg)'
