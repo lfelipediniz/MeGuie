@@ -11,7 +11,9 @@ import {
   FaSignLanguage,
   FaTextHeight
 } from "react-icons/fa";
-import { IoAccessibility , IoContrastSharp} from "react-icons/io5";
+import { IoAccessibility, IoContrastSharp } from "react-icons/io5";
+import Image from "next/image";
+import LogoIcon from "@/src/app/icons/logo";
 
 
 const Sidebar: React.FC = () => {
@@ -48,6 +50,33 @@ const Sidebar: React.FC = () => {
           },
         }}
       >
+        {/* Logo do App */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: expanded ? "flex-start" : "center",
+            padding: "12px",
+            transition: "all 0.3s",
+          }}
+        >
+          <LogoIcon />
+          {expanded && (
+            <span
+              style={{
+                marginLeft: "15px",
+                fontSize: "1.5rem",
+                fontWeight: "bold",
+                color: "var(--contrast-bt-nav)",
+                transition: "opacity 0.3s",
+              }}
+            >
+              MeGuie
+            </span>
+          )}
+        </div>
+
+        {/* Itens do Menu */}
         <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
           {[
             { icon: <IoAccessibility />, label: "Acessibilidade", onClick: handleAccessibilityClick },
