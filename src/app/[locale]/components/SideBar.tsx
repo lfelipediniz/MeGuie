@@ -52,23 +52,23 @@ const Sidebar: React.FC = () => {
   ];
 
   return (
-    <div className="z-50">
-      <Drawer
-        variant="permanent"
-        open={expanded}
-        sx={{
+    <div className="z-50 md:block hidden">
+    <Drawer
+      variant="permanent"
+      open={expanded}
+      sx={{
+        width: expanded ? 240 : 60,
+        flexShrink: 0,
+        transition: "width 0.3s",
+        "& .MuiDrawer-paper": {
           width: expanded ? 240 : 60,
-          flexShrink: 0,
+          overflowX: "hidden",
+          position: "fixed",
+          zIndex: 1200,
           transition: "width 0.3s",
-          "& .MuiDrawer-paper": {
-            width: expanded ? 240 : 60,
-            overflowX: "hidden",
-            position: "fixed",
-            zIndex: 1200,
-            transition: "width 0.3s",
-          },
-        }}
-      >
+        },
+      }}
+    >
         {/* Logo do App */}
         <div
           style={{
