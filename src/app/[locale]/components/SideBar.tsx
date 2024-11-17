@@ -38,22 +38,14 @@ const Sidebar: React.FC = () => {
     setAccessibilityModalOpen(false);
   };
 
+  const handleLogout = () => {
+    router.push("/");
+  };
+
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
-    {
-      icon: <FaHome />,
-      label: "Tela Principal",
-      path: "/pages/home",
-    },
-    {
-      icon: <FaCalendarAlt />,
-      label: "Calendário",
-      path: "/pages/calendar",
-    },
-    {
-      icon: <FaStar />,
-      label: "Favoritos",
-      path: "/pages/savedroads",
-    },
+    { icon: <FaHome />, label: "Tela Principal", path: "/pages/home" },
+    { icon: <FaCalendarAlt />, label: "Calendário", path: "/pages/calendar" },
+    { icon: <FaStar />, label: "Favoritos", path: "/pages/savedroads" },
   ];
 
   return (
@@ -191,6 +183,7 @@ const Sidebar: React.FC = () => {
             onClose={closeAccessibilityModal}
           />
 
+          {/* Botão de Expandir/Contrair */}
           <div
             style={{
               position: "absolute",
@@ -206,6 +199,57 @@ const Sidebar: React.FC = () => {
               style={{ color: "var(--contrast-bt-nav)" }}
             >
               {expanded ? <FaAngleLeft /> : <FaAngleRight />}
+            </IconButton>
+          </div>
+
+          {/* Seção de Perfil */}
+          <div
+            style={{
+              position: "absolute",
+              bottom: "80px",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <img
+              src="https://thispersondoesnotexist.com/"
+              alt="Foto de Fulano de Tal"
+              style={{
+                width: "45px",
+                height: "45px",
+                borderRadius: "10px",
+                marginLeft: "6px",
+                objectFit: "cover",
+                marginRight: expanded ? "10px" : "0",
+                transition: "margin-right 0.3s",
+              }}
+            />
+            <span
+              style={{
+                flexGrow: 1,
+                opacity: expanded ? 1 : 0,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                transition: "opacity 0.3s",
+                fontSize: "1rem",
+                color: "var(--contrast-bt-nav)",
+                fontWeight: "bold",
+              }}
+            >
+              Fulano de Tal
+            </span>
+            <IconButton
+              onClick={handleLogout}
+              size="small"
+              style={{
+                color: "var(--contrast-bt-nav)",
+                marginLeft: "8px",
+                marginRight: "8px",
+              }}
+            >
+              <FaSignOutAlt color="var(--red)" size={20} />
             </IconButton>
           </div>
         </Drawer>
