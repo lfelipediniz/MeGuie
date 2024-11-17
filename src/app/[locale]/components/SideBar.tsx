@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Drawer, IconButton, Tooltip, Divider } from "@mui/material";
+import { Drawer, IconButton, Tooltip, Divider, Menu, MenuItem } from "@mui/material";
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -8,12 +8,15 @@ import {
   FaCalendarAlt,
   FaStar,
   FaSignOutAlt,
+  FaUniversalAccess,
 } from "react-icons/fa";
 import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
+  const [accessibilityMenuAnchor, setAccessibilityMenuAnchor] =
+    useState<null | HTMLElement>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -25,6 +28,13 @@ const Sidebar: React.FC = () => {
     router.push("/"); // Redireciona para a página principal
   };
 
+  const openAccessibilityMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAccessibilityMenuAnchor(event.currentTarget);
+  };
+
+  const closeAccessibilityMenu = () => {
+    setAccessibilityMenuAnchor(null);
+  };
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
       icon: <FaHome />,
@@ -42,6 +52,8 @@ const Sidebar: React.FC = () => {
       path: "/pages/savedroads",
     },
   ];
+
+  
 
   return (
     <div className="h-md:block hidden">
@@ -157,6 +169,63 @@ const Sidebar: React.FC = () => {
           </div>
 
           <Divider style={{ margin: "10px 0" }} />
+
+                {/* Botão de Acessibilidade */}
+                <Tooltip title={!expanded ? "Acessibilidade" : ""}>
+  <div
+    style={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: expanded ? "flex-start" : "center",
+      padding: "10px 16px",
+      transition: "all 0.3s",
+      cursor: "pointer",
+    }}
+    onClick={openAccessibilityMenu}
+  >
+    <FaUniversalAccess
+      style={{
+        color: "var(--contrast-bt-nav)",
+        fontSize: "1.5rem",
+      }}
+    />
+    {expanded && (
+      <span
+        style={{
+          marginLeft: "15px",
+          opacity: expanded ? 1 : 0,
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          transition: "opacity 0.3s",
+          fontSize: "1.1rem",
+          color: "var(--contrast-bt-nav)",
+        }}
+      >
+        Acessibilidade
+      </span>
+    )}
+  </div>
+</Tooltip>
+
+
+          {/* Menu de Acessibilidade */}
+          <Menu
+            anchorEl={accessibilityMenuAnchor}
+            open={Boolean(accessibilityMenuAnchor)}
+            onClose={closeAccessibilityMenu}
+            keepMounted
+          >
+            <MenuItem onClick={() => alert("Libras selecionado")}>
+              Libras
+            </MenuItem>
+            <MenuItem onClick={() => alert("Auto Contraste selecionado")}>
+              Auto Contraste
+            </MenuItem>
+            <MenuItem onClick={() => alert("Aumentar Fonte selecionado")}>
+              Aumentar Fonte
+            </MenuItem>
+          </Menu>
+
 
           <div
             style={{
