@@ -30,7 +30,11 @@ export const Header: FC<Props> = ({ locale }) => {
     pageNamesData[pathname as keyof typeof pageNamesData] ||
     "Página Não Encontrada";
 
-  const navItems: { icon: JSX.Element; label: string; path: "pages/home" | "pages/calendar" | "pages/savedroads" }[] = [
+  const navItems: {
+    icon: JSX.Element;
+    label: string;
+    path: "pages/home" | "pages/calendar" | "pages/savedroads";
+  }[] = [
     { icon: <FaHome />, label: "Tela Principal", path: "pages/home" },
     { icon: <FaCalendarAlt />, label: "Calendário", path: "pages/calendar" },
     { icon: <FaStar />, label: "Favoritos", path: "pages/savedroads" },
@@ -82,16 +86,13 @@ export const Header: FC<Props> = ({ locale }) => {
           {atualPageName}
         </div>
 
-        {/* Menu de navegação */}
-        {/* Botão do menu hambúrguer para mobile */}
         <div>
           <div className="h-md:hidden flex">
             <button onClick={() => setMenuOpen(!menuOpen)}>
               <FaBars
                 className="h-8 w-8"
                 style={{ color: "var(--background)" }}
-              />{" "}
-              {/* Ícone do menu hambúrguer */}
+              />
             </button>
           </div>
           <div className="flex md:hidden h-sm:hidden">
@@ -99,14 +100,12 @@ export const Header: FC<Props> = ({ locale }) => {
               <FaBars
                 className="h-8 w-8"
                 style={{ color: "var(--background)" }}
-              />{" "}
-              {/* Ícone do menu hambúrguer */}
+              />
             </button>
           </div>
         </div>
       </div>
 
-      {/* Sobreposição escura para fundo */}
       {menuOpen && (
         <>
           <div
@@ -114,45 +113,53 @@ export const Header: FC<Props> = ({ locale }) => {
             onClick={() => setMenuOpen(false)}
           ></div>
 
-          {/* Menu de tela cheia */}
           <div
             ref={menuRef}
-            className="fixed inset-0 z-50 flex flex-col items-center justify-center relative"
-            style={{ backgroundColor: "var(--background-secondary)" }}
+            className="fixed inset-0 z-50 flex items-center justify-center relative"
+            style={{
+              backgroundColor: "var(--background-secondary)",
+            }}
           >
-            {/* Botão de fechar */}
             <button
-              className="absolute top-5 right-5 text-3xl text-white hover:text-gray-300"
+              className="absolute top-5 right-5 text-3xl"
+              style={{ color: "var(--action)" }}
               onClick={() => setMenuOpen(false)}
             >
               <FaTimes />
             </button>
 
-            <div className="flex flex-col items-center space-y-8 text-center">
-              {navItems.map(({ icon, label, path }, index) => (
+            <div
+              className="flex flex-col items-center text-center p-4 w-full max-w-lg overflow-y-auto"
+              style={{
+                height: "100vh",
+                maxHeight: "100vh",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div className="space-y-8 w-full">
+                {navItems.map(({ icon, label, path }, index) => (
+                  <button
+                    key={index}
+                    className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500 w-full justify-center"
+                    style={{ color: "var(--primary)" }}
+                    onClick={() => {
+                      router.push(path);
+                      setMenuOpen(false);
+                    }}
+                  >
+                    <div>{icon}</div>
+                    <span>{label}</span>
+                  </button>
+                ))}
                 <button
-                  key={index}
-                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500"
+                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
                   style={{ color: "var(--primary)" }}
-                  onClick={() => {
-                    router.push(path);
-                    setMenuOpen(false);
-                  }}
+                  onClick={handleLogout}
                 >
-                  <div>{icon}</div>
-                  <span>{label}</span>
+                  <FaSignOutAlt style={{ color: "var(--red)" }} />
+                  <span style={{ color: "var(--red)" }}>Logout</span>
                 </button>
-              ))}
-              <button
-                className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300"
-                style={{ color: "var(--primary)" }}
-                onClick={handleLogout}
-              >
-                <FaSignOutAlt />
-                <span style={{ color: "red" }}>Logout</span>
-              </button>
-              <div className="mt-4">
-                <ThemeSwitch />
               </div>
             </div>
           </div>
