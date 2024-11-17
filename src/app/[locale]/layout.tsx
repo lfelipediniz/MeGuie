@@ -65,8 +65,8 @@ export default function RootLayout({
         <ThemeProvider
           enableSystem
           attribute="class"
-          defaultTheme="system"
-          themes={["light", "dark"]}
+          defaultTheme="root" // Definindo o tema padrão como root
+          themes={["root", "light", "dark"]} // Incluindo root como uma opção de tema
         >
           <NextIntlClientProvider
             locale={locale}

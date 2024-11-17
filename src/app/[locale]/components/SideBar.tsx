@@ -17,12 +17,12 @@ import {
 } from "react-icons/fa";
 import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
-import AccessibilityModal from "./AccessibilityModal";
+import AccessibilityModal from "./AccessibilityModal"; // Importe o modal
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
-  const [isAccessibilityModalOpen, setAccessibilityModalOpen] = useState(false);
-
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] =
+    useState(false);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -30,22 +30,34 @@ const Sidebar: React.FC = () => {
     setExpanded(!expanded);
   };
 
+  const handleLogout = () => {
+    router.push("/"); // Redireciona para a página principal
+  };
+
   const openAccessibilityModal = () => {
-    setAccessibilityModalOpen(true);
+    setIsAccessibilityModalOpen(true);
   };
 
   const closeAccessibilityModal = () => {
-    setAccessibilityModalOpen(false);
-  };
-
-  const handleLogout = () => {
-    router.push("/");
+    setIsAccessibilityModalOpen(false);
   };
 
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
-    { icon: <FaHome />, label: "Tela Principal", path: "/pages/home" },
-    { icon: <FaCalendarAlt />, label: "Calendário", path: "/pages/calendar" },
-    { icon: <FaStar />, label: "Favoritos", path: "/pages/savedroads" },
+    {
+      icon: <FaHome />,
+      label: "Tela Principal",
+      path: "/pages/home",
+    },
+    {
+      icon: <FaCalendarAlt />,
+      label: "Calendário",
+      path: "/pages/calendar",
+    },
+    {
+      icon: <FaStar />,
+      label: "Favoritos",
+      path: "/pages/savedroads",
+    },
   ];
 
   return (
@@ -67,7 +79,7 @@ const Sidebar: React.FC = () => {
             },
           }}
         >
-          {/* Logo */}
+          {/* Logo do App */}
           <div
             style={{
               display: "flex",
@@ -80,38 +92,54 @@ const Sidebar: React.FC = () => {
             onClick={() => router.push("/")}
             className="cursor-pointer"
           >
-            <div style={{ color: "var(--contrast-bt-nav)", fontSize: "1.8rem" }}>
+            <div
+              style={{
+                color: "var(--contrast-bt-nav)",
+                fontSize: "1.8rem",
+                marginTop: "10px",
+              }}
+            >
               <LogoIcon />
             </div>
-            {expanded && (
-              <span
-                style={{
-                  marginLeft: "15px",
-                  fontSize: "1.2rem",
-                  color: "var(--contrast-bt-nav)",
-                  fontWeight: "bold",
-                }}
-              >
-                MeGuie
-              </span>
-            )}
+            <span
+              style={{
+                marginLeft: expanded ? "15px" : "0",
+                opacity: expanded ? 1 : 0,
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                transition: "opacity 0.3s, margin-left 0.3s",
+                fontSize: "1.2rem",
+                color: "var(--contrast-bt-nav)",
+                fontWeight: "bold",
+                marginTop: "14px",
+              }}
+            >
+              MeGuie
+            </span>
           </div>
 
           <Divider style={{ margin: "10px 0" }} />
 
           {/* Navegação */}
-          <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              marginTop: "10px",
+            }}
+          >
             {navItems.map(({ icon, label, path }, index) => (
               <Tooltip title={!expanded ? label : ""} key={index}>
                 <div
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: expanded ? "flex-start" : "center",
+                    justifyContent: "flex-start",
                     padding: "10px 16px",
+                    transition: "all 0.3s",
                     cursor: "pointer",
                   }}
-                  onClick={() => router.push(path)}
+                  onClick={() => router.push(path as any)}
                 >
                   <div
                     style={{
@@ -124,20 +152,22 @@ const Sidebar: React.FC = () => {
                   >
                     {icon}
                   </div>
-                  {expanded && (
-                    <span
-                      style={{
-                        marginLeft: "15px",
-                        fontSize: "1.1rem",
-                        color:
-                          pathname === path
-                            ? "var(--action)"
-                            : "var(--contrast-bt-nav)",
-                      }}
-                    >
-                      {label}
-                    </span>
-                  )}
+                  <span
+                    style={{
+                      marginLeft: "15px",
+                      opacity: expanded ? 1 : 0,
+                      whiteSpace: "nowrap",
+                      overflow: "hidden",
+                      transition: "opacity 0.3s",
+                      fontSize: "1.1rem",
+                      color:
+                        pathname === path
+                          ? "var(--action)"
+                          : "var(--contrast-bt-nav)",
+                    }}
+                  >
+                    {label}
+                  </span>
                 </div>
               </Tooltip>
             ))}
@@ -153,9 +183,10 @@ const Sidebar: React.FC = () => {
                 alignItems: "center",
                 justifyContent: expanded ? "flex-start" : "center",
                 padding: "10px 16px",
+                transition: "all 0.3s",
                 cursor: "pointer",
               }}
-              onClick={openAccessibilityModal}
+              onClick={openAccessibilityModal} // Abre o modal
             >
               <FaUniversalAccess
                 style={{
@@ -167,6 +198,10 @@ const Sidebar: React.FC = () => {
                 <span
                   style={{
                     marginLeft: "15px",
+                    opacity: expanded ? 1 : 0,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    transition: "opacity 0.3s",
                     fontSize: "1.1rem",
                     color: "var(--contrast-bt-nav)",
                   }}
@@ -177,13 +212,6 @@ const Sidebar: React.FC = () => {
             </div>
           </Tooltip>
 
-          {/* Modal de Acessibilidade */}
-          <AccessibilityModal
-            isOpen={isAccessibilityModalOpen}
-            onClose={closeAccessibilityModal}
-          />
-
-          {/* Botão de Expandir/Contrair */}
           <div
             style={{
               position: "absolute",
@@ -254,6 +282,12 @@ const Sidebar: React.FC = () => {
           </div>
         </Drawer>
       </div>
+
+      {/* Modal de Acessibilidade */}
+      <AccessibilityModal
+        isOpen={isAccessibilityModalOpen}
+        onClose={closeAccessibilityModal}
+      />
     </div>
   );
 };
