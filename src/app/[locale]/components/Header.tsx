@@ -1,10 +1,8 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import { Link, usePathname, useRouter } from "@/src/navigation";
-import { useTranslations } from "next-intl";
+import { Link, usePathname, useRouter } from "@/src/navigation"; // Link e router localizados
 import { FC } from "react";
 import LogoIcon from "../../icons/binaryLogo";
-import ThemeSwitch from "./ThemeSwitch";
 import {
   FaBars,
   FaTimes,
@@ -20,7 +18,6 @@ interface Props {
 }
 
 export const Header: FC<Props> = ({ locale }) => {
-  const t = useTranslations("");
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -30,14 +27,22 @@ export const Header: FC<Props> = ({ locale }) => {
     pageNamesData[pathname as keyof typeof pageNamesData] ||
     "Página Não Encontrada";
 
-  const navItems: {
-    icon: JSX.Element;
-    label: string;
-    path: "pages/home" | "pages/calendar" | "pages/savedroads";
-  }[] = [
-    { icon: <FaHome />, label: "Tela Principal", path: "pages/home" },
-    { icon: <FaCalendarAlt />, label: "Calendário", path: "pages/calendar" },
-    { icon: <FaStar />, label: "Favoritos", path: "pages/savedroads" },
+  const navItems = [
+    {
+      icon: <FaHome />,
+      label: "Tela Principal",
+      path: "/",
+    },
+    {
+      icon: <FaCalendarAlt />,
+      label: "Calendário",
+      path: "/pages/calendar",
+    },
+    {
+      icon: <FaStar />,
+      label: "Roadmaps Favoritos",
+      path: "/pages/savedroads",
+    },
   ];
 
   const handleLogout = () => {
@@ -71,7 +76,7 @@ export const Header: FC<Props> = ({ locale }) => {
       }}
     >
       <div className="mx-auto flex max-w-screen-2xl items-center justify-between p-5">
-        <Link lang={locale} href={"/"} onClick={() => setMenuOpen(false)}>
+        <Link lang={locale} href="/" onClick={() => setMenuOpen(false)}>
           <div className="flex flex-row items-center md:hidden">
             <div className="w-14">
               <LogoIcon />
@@ -115,7 +120,7 @@ export const Header: FC<Props> = ({ locale }) => {
 
           <div
             ref={menuRef}
-            className="fixed inset-0 z-50 flex items-center justify-center relative"
+            className="fixed inset-0 z-50 flex items-center justify-center"
             style={{
               backgroundColor: "var(--background-secondary)",
             }}
@@ -139,18 +144,17 @@ export const Header: FC<Props> = ({ locale }) => {
             >
               <div className="space-y-8 w-full">
                 {navItems.map(({ icon, label, path }, index) => (
-                  <button
+                  <Link
                     key={index}
+                    lang={locale}
+                    href={path}
+                    onClick={() => setMenuOpen(false)}
                     className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500 w-full justify-center"
                     style={{ color: "var(--primary)" }}
-                    onClick={() => {
-                      router.push(path);
-                      setMenuOpen(false);
-                    }}
                   >
                     <div>{icon}</div>
                     <span>{label}</span>
-                  </button>
+                  </Link>
                 ))}
                 <button
                   className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
@@ -158,7 +162,7 @@ export const Header: FC<Props> = ({ locale }) => {
                   onClick={handleLogout}
                 >
                   <FaSignOutAlt style={{ color: "var(--red)" }} />
-                  <span style={{ color: "var(--red)" }}>Logout</span>
+                  <span style={{ color: "var(--red)" }}>Sair</span>
                 </button>
               </div>
             </div>
