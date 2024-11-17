@@ -12,7 +12,7 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import pageNamesData from "@/data/br/pagesTitle.json";
-
+import { BsPersonArmsUp } from "react-icons/bs";
 interface Props {
   locale: string;
 }
@@ -156,6 +156,19 @@ export const Header: FC<Props> = ({ locale }) => {
                     <span>{label}</span>
                   </Link>
                 ))}
+
+                {/* Divider */}
+                <div className="border-t border-gray-300 my-4"></div>
+
+                {/* Accessibility Section */}
+                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center">
+                  <BsPersonArmsUp style={{ color: "var(--primary)" }} />
+                  <span style={{ color: "var(--primary)" }}>
+                    Acessibilidade
+                  </span>
+                </div>
+                {/* Divider */}
+                <div className="border-t border-gray-300 my-4"></div>
                 <button
                   className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
                   style={{ color: "var(--primary)" }}

@@ -9,9 +9,13 @@ import {
   FaStar,
   FaSignOutAlt,
   FaUniversalAccess,
+  FaTextHeight
 } from "react-icons/fa";
 import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
+
+import { PiHandWavingFill } from "react-icons/pi";
+import { IoContrast } from "react-icons/io5";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -208,23 +212,27 @@ const Sidebar: React.FC = () => {
 </Tooltip>
 
 
-          {/* Menu de Acessibilidade */}
-          <Menu
-            anchorEl={accessibilityMenuAnchor}
-            open={Boolean(accessibilityMenuAnchor)}
-            onClose={closeAccessibilityMenu}
-            keepMounted
-          >
-            <MenuItem onClick={() => alert("Libras selecionado")}>
-              Libras
-            </MenuItem>
-            <MenuItem onClick={() => alert("Auto Contraste selecionado")}>
-              Auto Contraste
-            </MenuItem>
-            <MenuItem onClick={() => alert("Aumentar Fonte selecionado")}>
-              Aumentar Fonte
-            </MenuItem>
-          </Menu>
+{/* Menu de Acessibilidade */}
+
+<Menu
+  anchorEl={accessibilityMenuAnchor}
+  open={Boolean(accessibilityMenuAnchor)}
+  onClose={closeAccessibilityMenu}
+  keepMounted
+>
+  <MenuItem onClick={() => alert("Libras selecionado")}>
+    <PiHandWavingFill style={{ marginRight: "8px", color: "var(--contrast-bt-nav)" }} />
+    Libras
+  </MenuItem>
+  <MenuItem onClick={() => alert("Auto Contraste selecionado")}>
+    <IoContrast style={{ marginRight: "8px", color: "var(--contrast-bt-nav)" }} />
+    Auto Contraste
+  </MenuItem>
+  <MenuItem onClick={() => alert("Aumentar Fonte selecionado")}>
+    <FaTextHeight style={{ marginRight: "8px", color: "var(--contrast-bt-nav)" }} />
+    Aumentar Fonte
+  </MenuItem>
+</Menu>
 
 
           <div
