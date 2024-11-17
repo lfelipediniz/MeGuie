@@ -1,5 +1,6 @@
 "use client";
-import { useState, useRef, useEffect } from "react";
+
+import React, { useState, useRef, useEffect } from "react";
 import { Link, usePathname, useRouter } from "@/src/navigation"; // Link e router localizados
 import { FC } from "react";
 import LogoIcon from "../../icons/binaryLogo";
@@ -11,8 +12,10 @@ import {
   FaStar,
   FaSignOutAlt,
 } from "react-icons/fa";
-import pageNamesData from "@/data/br/pagesTitle.json";
 import { BsPersonArmsUp } from "react-icons/bs";
+import AccessibilityModal from "./AccessibilityModal"; // Import do modal
+import pageNamesData from "@/data/br/pagesTitle.json";
+
 interface Props {
   locale: string;
 }
@@ -21,7 +24,21 @@ export const Header: FC<Props> = ({ locale }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const [expanded, setExpanded] = useState(false);
+  const [accessibilityMenuAnchor, setAccessibilityMenuAnchor] =
+    useState<null | HTMLElement>(null);
+
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const openAccessibilityMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAccessibilityMenuAnchor(event.currentTarget);
+  };
+
+  const closeAccessibilityMenu = () => {
+    setAccessibilityMenuAnchor(null);
+  };
 
   const atualPageName =
     pageNamesData[pathname as keyof typeof pageNamesData] ||
@@ -48,6 +65,9 @@ export const Header: FC<Props> = ({ locale }) => {
   const handleLogout = () => {
     router.push("/");
   };
+
+  const openModal = () => setModalOpen(true);
+  const closeModal = () => setModalOpen(false);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -157,17 +177,18 @@ export const Header: FC<Props> = ({ locale }) => {
                   </Link>
                 ))}
 
-                {/* Divider */}
                 <div className="border-t border-gray-300 my-4"></div>
 
-                {/* Accessibility Section */}
-                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center">
-                  <BsPersonArmsUp style={{ color: "var(--primary)" }} />
-                  <span style={{ color: "var(--primary)" }}>
-                    Acessibilidade
-                  </span>
+                {/* Accessibility Button */}
+                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center cursor-pointer" >
+                  <button onClick={openModal} className="flex items-center">
+                    <BsPersonArmsUp style={{ color: "var(--primary)" }} />
+                    <span style={{ color: "var(--primary)" }}>
+                      Acessibilidade
+                    </span>
+                  </button>
                 </div>
-                {/* Divider */}
+
                 <div className="border-t border-gray-300 my-4"></div>
                 <button
                   className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
@@ -182,6 +203,9 @@ export const Header: FC<Props> = ({ locale }) => {
           </div>
         </>
       )}
+
+      {/* Accessibility Modal */}
+      <AccessibilityModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
 };
