@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import { FiMinus, FiPlus, FiRefreshCw } from "react-icons/fi"; // Ícones para ajuste de fonte
+import { IoIosContrast } from "react-icons/io"; // Ícone para contraste
 
 const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
-  const [fontSizeClicks, setFontSizeClicks] = useState(0); // Número de cliques para aumentar o tamanho
-  const maxClicks = 5; // Limite de aumentos
-  const originalFontSize = 16; // Tamanho original da fonte
+  const [fontSizeClicks, setFontSizeClicks] = useState(0);
+  const [isHighContrast, setIsHighContrast] = useState(false); // Estado para o modo de alto contraste
+  const maxClicks = 5;
+  const originalFontSize = 16;
 
   const changeFontSize = (delta: number) => {
     const root = document.documentElement;
@@ -11,20 +14,18 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
       getComputedStyle(root).getPropertyValue("--base-font-size")
     );
 
-    // Limitar os cliques para não diminuir abaixo do original ou aumentar além do limite
     if ((delta > 0 && fontSizeClicks >= maxClicks) || (delta < 0 && fontSizeClicks <= 0)) return;
 
     const newFontSize = currentFontSize + delta;
     root.style.setProperty("--base-font-size", `${newFontSize}px`);
 
-    // Atualiza o contador apenas quando aumentar ou diminuir
     if (delta > 0) setFontSizeClicks(fontSizeClicks + 1);
     if (delta < 0) setFontSizeClicks(fontSizeClicks - 1);
   };
 
   const resetFontSize = () => {
     document.documentElement.style.setProperty("--base-font-size", `${originalFontSize}px`);
-    setFontSizeClicks(0); // Reseta o contador
+    setFontSizeClicks(0);
   };
 
   const toggleContrastTheme = () => {
@@ -32,8 +33,10 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
     const isDark = root.classList.contains("dark");
     if (isDark) {
       root.classList.remove("dark");
+      setIsHighContrast(false);
     } else {
       root.classList.add("dark");
+      setIsHighContrast(true);
     }
   };
 
@@ -67,9 +70,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
             <div className="flex space-x-2">
               <button
                 className={`px-3 py-1 rounded ${
-                  fontSizeClicks <= 0
-                    ? "cursor-not-allowed opacity-50"
-                    : "bg-button-secondary hover:opacity-90"
+                  fontSizeClicks <= 0 ? "cursor-not-allowed opacity-50" : "bg-button-secondary hover:opacity-90"
                 }`}
                 style={{
                   backgroundColor: fontSizeClicks <= 0 ? "var(--button-secondary)" : "var(--action)",
@@ -78,13 +79,11 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 onClick={() => changeFontSize(-2)}
                 disabled={fontSizeClicks <= 0}
               >
-                A-
+                <FiMinus />
               </button>
               <button
                 className={`px-3 py-1 rounded ${
-                  fontSizeClicks >= maxClicks
-                    ? "cursor-not-allowed opacity-50"
-                    : "bg-button-secondary hover:opacity-90"
+                  fontSizeClicks >= maxClicks ? "cursor-not-allowed opacity-50" : "bg-button-secondary hover:opacity-90"
                 }`}
                 style={{
                   backgroundColor: fontSizeClicks >= maxClicks ? "var(--button-secondary)" : "var(--action)",
@@ -93,7 +92,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 onClick={() => changeFontSize(2)}
                 disabled={fontSizeClicks >= maxClicks}
               >
-                A+
+                <FiPlus />
               </button>
               <button
                 className="px-3 py-1 rounded hover:opacity-90"
@@ -103,7 +102,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 }}
                 onClick={resetFontSize}
               >
-                Resetar
+                <FiRefreshCw />
               </button>
             </div>
           </div>
@@ -111,7 +110,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
           {/* Alternar modo de contraste */}
           <div className="flex items-center justify-between">
             <span className="text-secondary" style={{ color: "var(--text-secondary)" }}>
-              Modo de Contraste:
+              {isHighContrast ? "Tirar Alto Contraste" : "Ativar Alto Contraste"}
             </span>
             <button
               className="px-3 py-1 rounded hover:opacity-90"
@@ -121,7 +120,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
               }}
               onClick={toggleContrastTheme}
             >
-              Alternar
+              <IoIosContrast />
             </button>
           </div>
         </div>
