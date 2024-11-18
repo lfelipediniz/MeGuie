@@ -20,6 +20,8 @@
 
     /* Cores do MeGuie */
     --marine: #315D6D;
+    --marine-header: #315D6D;
+
     --red: #AD0123;
     --purple: #860B8E;
     --gray: #3D3C3C;
@@ -59,6 +61,8 @@
     --link: #9bd7f6;
 
     --marine: #000000;
+    --marine-header: #ffffff;
+
     --red: #000000;
     --purple: #000000;
     --gray: #000000;

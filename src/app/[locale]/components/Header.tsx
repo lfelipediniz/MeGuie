@@ -91,7 +91,7 @@ export const Header: FC<Props> = ({ locale }) => {
     <div
       className="fixed top-0 left-0 right-0 z-40 transition-all duration-300"
       style={{
-        backgroundColor: "var(--marine)",
+        backgroundColor: "var(--marine-header)",
         boxShadow: "none",
       }}
     >

@@ -85,8 +85,8 @@ const Sidebar: React.FC = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: expanded ? "flex-start" : "center",
-              padding: "10px 16px",
-              marginBottom: "5px",
+              padding: " 4px 16px",
+              marginBottom: "1px",
               transition: "all 0.3s",
             }}
             onClick={() => router.push("/")}
