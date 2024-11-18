@@ -1,12 +1,16 @@
 "use client";
 import { useTranslations } from "next-intl";
-import Button from "./components/Button";
 import LogoIcon from "../icons/logo";
 import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
 import { useEffect, useState } from "react";
 import FAQ from "./components/FAQ";
-import { FaInstagram, FaFacebook, FaWhatsapp, FaEnvelope } from "react-icons/fa";
+import {
+  FaInstagram,
+  FaFacebook,
+  FaWhatsapp,
+  FaEnvelope,
+} from "react-icons/fa";
 
 export default function DashboardPage() {
   const [isSmallScreen, setIsSmallScreen] = useState(false);
@@ -71,13 +75,29 @@ export default function DashboardPage() {
               aprovação.
             </p>
             <br />
-            <Button variant="secondary" size="medium" pageLink="/pages/signup">
+            <button
+              className="px-4 py-2 rounded-lg hover:opacity-90 mr-4"
+              style={{
+                backgroundColor: "var(--action)",
+                color: "var(--background)",
+                fontFamily: "var(--font-inter)",
+              }}
+              onClick={() => (window.location.href = "/pages/signup")}
+            >
               Começar
-            </Button>
-            &nbsp; &nbsp;
-            <Button variant="secondary" size="medium" pageLink="/pages/login">
+            </button>
+            <button
+              className="px-4 py-2 rounded-lg hover:opacity-90"
+              style={{
+                backgroundColor: "transparent", 
+                color: "var(--primary)", 
+                border: "2px solid var(--action)", 
+                fontFamily: "var(--font-inter)",
+              }}
+              onClick={() => (window.location.href = "/pages/login")}
+            >
               Entrar
-            </Button>
+            </button>
           </div>
         </div>
         <div
@@ -110,7 +130,6 @@ export default function DashboardPage() {
       <h2 className="text-center">Perguntas Frequentes</h2>
       <FAQ data={faqData} />
 
-      
       <h2 className="text-center">Fale Conosco</h2>
       <br />
       <p className="text-center">
@@ -119,17 +138,45 @@ export default function DashboardPage() {
         Entre em contato conosco nas redes sociais!
       </p>
       <div className="flex justify-center space-x-6 mt-4">
-        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-          <FaInstagram size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FaInstagram
+            size={isMobile ? 30 : 40}
+            className="hover:text-gray-700 transition duration-300"
+          />
         </a>
-        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">
-          <FaFacebook size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        <a
+          href="https://facebook.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FaFacebook
+            size={isMobile ? 30 : 40}
+            className="hover:text-gray-700 transition duration-300"
+          />
         </a>
-        <a href="https://wa.me/5511999999999" target="_blank" rel="noopener noreferrer">
-          <FaWhatsapp size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        <a
+          href="https://wa.me/5511999999999"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FaWhatsapp
+            size={isMobile ? 30 : 40}
+            className="hover:text-gray-700 transition duration-300"
+          />
         </a>
-        <a href="mailto:contato@meguie.com" target="_blank" rel="noopener noreferrer">
-          <FaEnvelope size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
+        <a
+          href="mailto:contato@meguie.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <FaEnvelope
+            size={isMobile ? 30 : 40}
+            className="hover:text-gray-700 transition duration-300"
+          />
         </a>
       </div>
     </div>
