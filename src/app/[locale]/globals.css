@@ -39,6 +39,14 @@
     /* Tamanho base da fonte */
     --base-font-size: 16px;
 
+    /* Fatores de escala para títulos */
+    --h1-scale: 2.5;
+    --h2-scale: 2;
+    --h3-scale: 1.75;
+    --h4-scale: 1.5;
+    --h5-scale: 1.25;
+    --h6-scale: 1.1;
+
     /* Coisas do site do Data (Não mexer) */
     --data-blue: #8cd2f4;
     --data-pink: #ec90c5;
@@ -85,77 +93,63 @@
     font-family: var(--font-inter);
   }
 
-  /* Forçando herança de tamanho da fonte */
-  h1, h2, h3, h4, h5, h6, p, span, li, a, button, input, textarea, select {
-    font-size: inherit !important; /* Força herança do body */
+  /* Forçando herança apenas para elementos gerais */
+  p, span, li, a, button, input, textarea, select {
+    font-size: inherit;
     line-height: 1.5; /* Ajusta o espaçamento */
   }
 
+  /* Títulos dinâmicos baseados no tamanho global */
   h1 {
-    font-size: 2.5rem; /* Baseado no tamanho global */
+    font-size: calc(var(--base-font-size) * var(--h1-scale)); /* Escala dinâmica */
+    font-weight: 700;
+    color: var(--primary);
   }
 
   h2 {
-    font-size: 2rem;
+    font-size: calc(var(--base-font-size) * var(--h2-scale));
+    font-weight: 600;
+    color: var(--secondary);
   }
 
   h3 {
-    font-size: 1.75rem;
+    font-size: calc(var(--base-font-size) * var(--h3-scale));
+    font-weight: 600;
+    color: var(--primary);
   }
 
   h4 {
-    font-size: 1.5rem;
+    font-size: calc(var(--base-font-size) * var(--h4-scale));
+    font-weight: 500;
+    color: var(--primary);
   }
 
   h5 {
-    font-size: 1.25rem;
+    font-size: calc(var(--base-font-size) * var(--h5-scale));
+    font-weight: 500;
+    color: var(--text-secondary);
   }
 
   h6 {
-    font-size: 1rem;
+    font-size: calc(var(--base-font-size) * var(--h6-scale));
+    font-weight: 400;
+    color: var(--text-tertiary);
   }
 
-  p, span, li, a {
-    font-size: 1rem;
+  /* Parágrafos */
+  p {
+    font-size: var(--base-font-size);
+    line-height: 1.8;
+    color: var(--text-secondary);
   }
 
+  /* Inputs e botões */
   button, input, textarea, select {
-    font-size: 1rem;
-    font-family: inherit; /* Garante consistência */
+    font-size: var(--base-font-size);
+    font-family: inherit;
   }
 
-  /* Custom scrollbar for WebKit browsers */
-  .scrollbar-hide::-webkit-scrollbar {
-    width: 6px; /* Adjust the width for the scrollbar */
-    height: 6px; /* Adjust the height for horizontal scrollbar */
-  }
-
-  .scrollbar-hide::-webkit-scrollbar-thumb {
-    background-color: var(--text-secondary); /* Change scrollbar color */
-    border-radius: 10px; /* Make scrollbar edges rounded */
-  }
-
-  .scrollbar-hide::-webkit-scrollbar-track {
-    background: transparent; /* Make scrollbar track transparent */
-  }
-
-  /* Custom scrollbar for Firefox */
-  .scrollbar-hide {
-    scrollbar-width: thin;
-    scrollbar-color: var(--text-secondary) transparent;
-  }
-
-  /* For all browsers (fallback) */
-  .scrollbar-hide {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: thin; /* Firefox */
-  }
-
-  .custom-padding-bottom {
-    padding-bottom: 20px; /* Ajuste este valor conforme necessário */
-  }
-
-  /* Elementos e classes personalizados */
+  /* Outros elementos personalizados */
   .tooltip-balloon {
     position: relative;
     z-index: 50;
@@ -174,55 +168,5 @@
 
   .overflow-x-hidden {
     overflow-x: hidden;
-  }
-
-  .wrapper {
-    width: 100%;
-    padding: 0 2rem;
-    text-align: center;
-  }
-
-  /* Efeito polaroid */
-  .polaroid {
-    background: var(--background-secondary);
-  }
-
-  .polaroid > img {
-    max-width: 100%;
-    height: auto;
-  }
-
-  .caption {
-    font-size: 1.8rem;
-    text-align: center;
-    line-height: 2em;
-  }
-
-  .item {
-    width: 30%;
-    display: inline-block;
-    margin-top: 2rem;
-  }
-
-  .item:hover {
-    filter: none;
-    transform: scale(0.7, 0.7) rotate(0deg) !important;
-    transition: all 0.35s;
-  }
-
-  .cursor-pointer {
-    cursor: pointer;
-  }
-
-  .transition-transform {
-    transition: transform 0.3s ease;
-  }
-
-  .transform {
-    transform: scale(1);
-  }
-
-  .hover\:scale-105:hover {
-    transform: scale(1.05);
   }
 }
