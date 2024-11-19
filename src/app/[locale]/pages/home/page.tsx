@@ -15,10 +15,28 @@ export default function Home() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showLoading, setShowLoading] = useState(false)
-  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(true);
+
+  function toggleFavorite() {
+    setIsFavorite(!isFavorite);
+  }
 
   function handleBack() {
     router.back()
+  }
+
+  const openTopicsModal = () => {
+    setIsTopicsModalOpen(true);
+  };
+
+  const closeTopicsModal = () => {
+    setIsTopicsModalOpen(false);
+  };
+
+  function handleOpenTopics(event: React.MouseEvent) {
+    event.stopPropagation();
+    openTopicsModal();
   }
 
   const mathTopics = [
@@ -27,14 +45,6 @@ export default function Home() {
     "Tópico 3",
     "Tópico 4",
   ]
-
-  const openAccessibilityModal = () => {
-    setIsAccessibilityModalOpen(true);
-  };
-
-  const closeAccessibilityModal = () => {
-    setIsAccessibilityModalOpen(false);
-  };
 
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
@@ -56,18 +66,19 @@ export default function Home() {
           <div className="w-full flex flex-col gap-4">
             <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps</h2>
             <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} topics={mathTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} topics={mathTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} topics={mathTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} topics={mathTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} topics={mathTopics} />
+              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
+              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
+              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
+              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
+              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
             </div>
           </div>
         </div>
       )}
       <TopicsModal
-        isOpen={isAccessibilityModalOpen}
-        onClose={closeAccessibilityModal}
+        topics={mathTopics}
+        isOpen={isTopicsModalOpen}
+        onClose={closeTopicsModal}
       />
     </div>
   );

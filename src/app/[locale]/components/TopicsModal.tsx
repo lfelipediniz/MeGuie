@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FiMinus, FiPlus, FiRefreshCw } from "react-icons/fi"; // Ícones para ajuste de fonte
 import { IoIosContrast } from "react-icons/io"; // Ícone para contraste
 
-const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+const TopicsModal: React.FC<{ topics: string[]; isOpen: boolean; onClose: () => void }> = ({ topics, isOpen, onClose }) => {
   const [fontSizeClicks, setFontSizeClicks] = useState(0);
   const [isHighContrast, setIsHighContrast] = useState(false); // Estado para o modo de alto contraste
   const maxClicks = 5;
@@ -44,7 +44,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center w-full h-full bg-red-400"
       style={{ backgroundColor: "var(--background-opacity)" }}
       onClick={onClose}
     >
@@ -52,7 +52,12 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
         className="bg-white dark:bg-background-secondary rounded-lg shadow-lg p-6 max-w-sm w-full"
         onClick={(e) => e.stopPropagation()}
       >
-        
+        <h2 className="text-[var(--marine)] text-2xl font-bold mb-4">Tópicos abordados:</h2>
+        <div className="w-full h-auto flex flex-col gap-2">
+          {topics.map((topic, index) => (
+            <h3 key={index} className="text-[var(--dark-blue)] text-lg">{topic}</h3>
+          ))}
+        </div>
         <button
           className="mt-6 px-4 py-2 rounded-lg hover:opacity-90"
           style={{
@@ -69,4 +74,4 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
   );
 };
 
-export default AccessibilityModal;
+export default TopicsModal;

@@ -2,12 +2,16 @@ import React from "react";
 import Image from 'next/image';
 import { FaRegHeart } from "react-icons/fa";
 import { IoChevronForward } from "react-icons/io5";
+import { FaHeart } from "react-icons/fa";
 
 interface CardComponentProps {
   image: string;
   title: string;
   progress: number;
+  isFavorite: boolean;
+  toggleFavorite: () => void;
   topics: string[];
+  handleOpenTopics: (event: React.MouseEvent) => void;
 }
 
 const CardComponent: React.FC<CardComponentProps> = (props) => {
@@ -15,14 +19,9 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
     console.log("clique");
   }
 
-  function handleOpenTopics(event: React.MouseEvent) {
-    event.stopPropagation();
-    console.log("topicos");
-  }
-
   function handleFavorite(event: React.MouseEvent) {
     event.stopPropagation();
-    console.log("favoritos");
+    props.toggleFavorite();
   }
 
   return (
@@ -43,11 +42,15 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
           ></div>
         </div>
         <div className="flex justify-between items-center">
-          <button onClick={handleOpenTopics} className="border border-[var(--gray)] rounded-full p-2 pointer-events-auto flex items-center gap-2 text-[var(--gray)]">
+          <button onClick={props.handleOpenTopics} className="border border-[var(--gray)] rounded-full p-2 pointer-events-auto flex items-center gap-2 text-[var(--gray)]">
             Ver tópicos abordados <IoChevronForward size={18} color={"var(--gray)"} />
           </button>
           <button onClick={handleFavorite} className="pointer-events-auto">
+            {props.isFavorite ? 
+              <FaHeart size={24} color={"var(--gray)"} />
+            :
             <FaRegHeart size={24} color={"var(--gray)"} />
+          }
           </button>
         </div>
       </div>
