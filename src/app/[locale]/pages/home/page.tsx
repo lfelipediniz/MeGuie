@@ -9,11 +9,13 @@ import { Footer } from "../../components/Footer";
 import RoadmapCard from "../../components/RoadmapCard";
 import { IoSearch } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa6";
+import TopicsModal from "../../components/TopicsModal";
 
 export default function Home() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showLoading, setShowLoading] = useState(false)
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
 
   function handleBack() {
     router.back()
@@ -25,6 +27,14 @@ export default function Home() {
     "Tópico 3",
     "Tópico 4",
   ]
+
+  const openAccessibilityModal = () => {
+    setIsAccessibilityModalOpen(true);
+  };
+
+  const closeAccessibilityModal = () => {
+    setIsAccessibilityModalOpen(false);
+  };
 
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
@@ -40,7 +50,7 @@ export default function Home() {
             </button>
             <div className="w-full h-full rounded-xl shadow-xl bg-white px-4 flex items-center gap-4">
               <IoSearch size={24} color={"var(--text-tertiary)"} />
-              <input type="text" placeholder="Pesquisar roadmap" className="placeholder-[var(--text-tertiary)] text-[var(--dark-blue)] text-lg outline-none w-full h-full" />
+              <input type="text" placeholder="Pesquisar roadmap" className="placeholder-[var(--text-tertiary)] text-[var(--text-dark-blue)] text-lg outline-none w-full h-full" />
             </div>
           </div>
           <div className="w-full flex flex-col gap-4">
@@ -55,6 +65,10 @@ export default function Home() {
           </div>
         </div>
       )}
+      <TopicsModal
+        isOpen={isAccessibilityModalOpen}
+        onClose={closeAccessibilityModal}
+      />
     </div>
   );
 }
