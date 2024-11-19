@@ -10,5 +10,6 @@
     "/pages/projects": "Projetos",
     "/pages/signup": "Cadastrar",
     "/pages/events/understandingDL": "Understanding DL",
-    "/pages/events/dataDay": "DataDay"
+    "/pages/events/dataDay": "DataDay",
+    "/pages/roadmap": "Roadmap"
 }

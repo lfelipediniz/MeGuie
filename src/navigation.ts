@@ -16,8 +16,7 @@ export const pathnames = {
   '/pages/events/dataDay': '/pages/events/dataDay',
   '/pages/events/understandingDL': '/pages/events/understandingDL',
   '/pages/events/understandingDL/speakers': '/pages/events/understandingDL/speakers',
-  
-  
+  '/pages/roadmap': '/pages/roadmap',
   '/pages/contact': '/pages/contact',
   '/pages/about': '/pages/about',
   '/pages/signup': '/pages/signup',
