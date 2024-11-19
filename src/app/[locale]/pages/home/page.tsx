@@ -27,7 +27,7 @@ export default function Home() {
   ]
 
   return (
-    <div className="mt-24 p-4 md:p-8 bg-[var(--background-secondary)]">
+    <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
       {showLoading ? (
         <div className="transition-opacity duration-500 opacity-100 mx-auto max-w-screen-2xl">
           <LoadingOverlay />

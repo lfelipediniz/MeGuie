@@ -8,6 +8,7 @@
     --secondary: #315D6D;
     --background: #ffffff;
     --background-secondary: #eeeeee;
+    --background-tertiary: #dddddd;
     --background-opacity: rgba(255, 255, 255, 0.4); /* Nova variável com opacidade */
     --button-text: #000000;
     --text-secondary: #444444;
@@ -58,6 +59,7 @@
     --secondary: #f9a1d3;
     --background: #000000;
     --background-secondary: #1b1b1b;
+    --background-tertiary: #dddddd;
     --background-opacity: rgba(18, 18, 18, 0.4); /* Nova variável com opacidade no tema escuro */
     --button-text: #fff;
     --text-secondary: #bbbbbb;

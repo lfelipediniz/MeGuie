@@ -85,7 +85,7 @@ export default function RootLayout({
             <Header locale={languageCode} />
             <div className="flex">
               <Sidebar />
-              <main className="relative z-10 flex-grow md:ml-10">
+              <main className="relative z-10 flex-grow">
                 {children}
               </main>
             </div>
