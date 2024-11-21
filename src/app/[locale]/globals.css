@@ -15,6 +15,7 @@
     --text-tertiary: #666666;
     --dropdown: #e0e0e0;
     --dropdown-hover: #cccccc;
+    --button-primary: #cccccc;
     --button-secondary: #f0f0f0;
     --selected: #d6deff;
     --link: #0318cc;
@@ -67,6 +68,7 @@
     --text-tertiary: #666666;
     --dropdown: #2d2d2d;
     --dropdown-hover: #454545;
+    --button-primary: #cccccc;
     --button-secondary: #1d1d1d;
     --selected: #324e70;
     --link: #9bd7f6;

@@ -10,13 +10,15 @@ import RoadmapCard from "../../components/RoadmapCard";
 import { IoSearch } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa6";
 import TopicsModal from "../../components/TopicsModal";
+import MaterialsModal from "../../components/MaterialsModal";
 
 export default function Home() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [showLoading, setShowLoading] = useState(false)
   const [isFavorite, setIsFavorite] = useState(false);
-  const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(true);
+  const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
+  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(true);
 
   function toggleFavorite() {
     setIsFavorite(!isFavorite);
@@ -34,6 +36,14 @@ export default function Home() {
     setIsTopicsModalOpen(false);
   };
 
+  const openMaterialsModal = () => {
+    setIsMaterialsModalOpen(true);
+  };
+
+  const closeMaterialsModal = () => {
+    setIsMaterialsModalOpen(false);
+  };
+
   function handleOpenTopics(event: React.MouseEvent) {
     event.stopPropagation();
     openTopicsModal();
@@ -44,7 +54,17 @@ export default function Home() {
     "Tópico 2",
     "Tópico 3",
     "Tópico 4",
-  ]
+  ];
+
+  const videosUrls = [
+    "fhihfeihiwowe",
+    "hiifehiehfehfe",
+  ];
+
+  const pdfsUrls = [
+    "hfihefheofhei",
+    "ghihfihifehfefe",
+  ];
 
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
@@ -79,6 +99,13 @@ export default function Home() {
         topics={mathTopics}
         isOpen={isTopicsModalOpen}
         onClose={closeTopicsModal}
+      />
+      <MaterialsModal
+        title={"Gráficos"}
+        videos={videosUrls}
+        pdfs={pdfsUrls}
+        isOpen={isMaterialsModalOpen}
+        onClose={closeMaterialsModal}
       />
     </div>
   );
