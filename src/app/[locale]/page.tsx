@@ -3,7 +3,7 @@ import { useTranslations } from "next-intl";
 import LogoIcon from "../icons/logo";
 import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import FAQ from "./components/FAQ";
 import {
   FaInstagram,
@@ -12,7 +12,10 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 
+import TextReader from "./components/TextReader";
+
 export default function DashboardPage() {
+  const componentRef = useRef<HTMLDivElement>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -112,7 +115,7 @@ export default function DashboardPage() {
       <br />
       <h2 className="text-center">Sobre o Projeto</h2>
       <br />
-      <p className="text-center">
+      <p className="text-center" id="main-content">
         O MeGuie é uma plataforma que oferece Roadmaps completos para estudantes
         do ensino fundamental e médio, criando um caminho claro e eficiente para
         quem deseja se preparar para o vestibular de forma gratuita. Nosso
@@ -124,6 +127,13 @@ export default function DashboardPage() {
         MeGuie resolve esse problema ao indexar e organizar esses conteúdos,
         criando uma jornada de aprendizado com um passo a passo em cada matéria,
         para que você possa estudar com mais foco e direção.
+        <TextReader
+          selector="#main-content"  // Seleciona pela classe/id
+          fallbackText="Sem conteúdo"
+          lang="pt-PT"  // Português de Portugal
+          voiceRate={1.0}  // Velocidade mais lenta
+          voicePitch={1.0}  // Tom ligeiramente mais alto
+        />
       </p>
       <br />
 
