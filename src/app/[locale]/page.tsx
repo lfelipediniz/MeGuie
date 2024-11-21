@@ -13,6 +13,7 @@ import {
 } from "react-icons/fa";
 
 import TextReader from "./components/TextReader";
+import VLibrasWidget from './components/VLibrasWidget';
 
 export default function DashboardPage() {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -134,6 +135,8 @@ export default function DashboardPage() {
           voiceRate={1.0}  // Velocidade mais lenta
           voicePitch={1.0}  // Tom ligeiramente mais alto
         />
+        <VLibrasWidget />
+
       </p>
       <br />
 
