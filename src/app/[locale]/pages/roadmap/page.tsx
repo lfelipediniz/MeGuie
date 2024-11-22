@@ -12,7 +12,8 @@ import {
 } from '@xyflow/react';
 import LoadingOverlay from '../../components/LoadingOverlay';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Select, MenuItem, InputLabel, FormControl, Box } from '@mui/material';
+import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
+import MaterialsModal from '../../components/MaterialsModal';
  
 import '@xyflow/react/dist/style.css';
  
@@ -69,6 +70,16 @@ const mockEdges: Edge[] = [
 ];
 
 const mockTitle = 'Matemática';
+
+const mockVideos = [
+    'aaaa',
+    'bbbb',
+]
+
+const mockPdfs = [
+    'aaaa',
+    'bbbb',
+]
  
 const emptyNode: Node[] = [];
 const emptyEdge: Edge[] = [];
@@ -78,12 +89,12 @@ export default function Roadmap() {
     const [nodes, setNodes, onNodesChange] = useNodesState(emptyNode);
     const [edges, setEdges, onEdgesChange] = useEdgesState(emptyEdge);
     const [selectedNode, setSelectedNode] = React.useState<Node | null>(null);
-    const [title, setTitle] = React.useState<string | null>(null);
+    const [title, setTitle] = React.useState<string>('');
+    const [videosUrls, setVideosUrls] = React.useState<string[]>([]);
+    const [pdfsUrls, setPdfsUrls] = React.useState<string[]>([]);
  
     // todo:
     // render styles conditionally -> will need backend?
-    // menu lateral
-    // improve colors select style / resposive design 
 
     React.useEffect(() => {
         const request = async () => {
@@ -95,7 +106,7 @@ export default function Roadmap() {
                 // setNodes(res.data.nodes);
             } catch (err) {
                 console.error(err);
-                alert('Erro inesperado ao obter roadmap.')
+                alert('Erro inesperado ao obter roadmap.');
             } finally {
                 setLoading(false);
             }
@@ -105,13 +116,15 @@ export default function Roadmap() {
         setNodes(mockNodes);
         setEdges(mockEdges);
         setTitle(mockTitle);
-    }, [])
+        setVideosUrls(mockVideos);
+        setPdfsUrls(mockPdfs);
+    }, []);
 
     const handleNodeClick = (event: React.MouseEvent, node: Node) => {
         setSelectedNode(node);
     }
 
-    const handleMenuClose = (event: React.MouseEvent) => {
+    const handleMenuClose = () => {
         setSelectedNode(null);
     }
 
@@ -124,12 +137,15 @@ export default function Roadmap() {
             ) 
             :
             <div className="flex flex-col gap-7" style={{width: '100%', height: '100%'}}>
-                <div className="flex flex-row justify-between">
-                    <div className="flex items-center">
+                <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
+                    <div className="flex items-center mb-5 xs:mb-0">
                         <ArrowBackIcon />
                         <h2 className="ml-3">{title}</h2>
                     </div>
-                    <FormControl style={{minWidth: '200px'}} size="small">
+                    <FormControl
+                        style={{minWidth: '250px'}} 
+                        size="small"
+                    >
                         <InputLabel id="legenda-de-cores">
                             Legenda de Cores
                         </InputLabel>
@@ -170,8 +186,13 @@ export default function Roadmap() {
                 </ReactFlow>
             </div>
             }
+            <MaterialsModal 
+                isOpen={selectedNode ? true : false}
+                onClose={handleMenuClose}
+                title={selectedNode?.data.label as string ?? ''}
+                videos={videosUrls}
+                pdfs={pdfsUrls}
+            />
         </div>
-        // {selectedNode && menu lateral}
-        // fechou menu? -> handleMenuClose
     );
 };
