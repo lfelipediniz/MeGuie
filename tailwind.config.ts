@@ -19,6 +19,7 @@ const config = {
     },
     extend: {
       screens: {
+        'xs': '520px',
         'md': '950px', 
         'lg': '1166px', 
         'h-md': { raw: '(min-height: 390px)' }, 
