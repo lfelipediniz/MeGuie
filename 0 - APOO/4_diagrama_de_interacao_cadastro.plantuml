@@ -1,0 +1,47 @@
+@startuml
+actor Usuario
+participant "Interface do Sistema (<<boundary>>)" as Interface
+participant "Controlador de Cadastro (<<control>>)" as Controlador
+participant "Serviço de Validação (<<control>>)" as Validacao
+participant "Banco de Dados (<<entity>>)" as Database
+
+
+Usuario -> Interface: Acessa página de cadastro
+Interface -> Usuario: Solicita informações obrigatórias (nome, email, senha)
+Usuario -> Interface: Envia informações (nome, email, senha)
+Interface -> Controlador: Encaminha dados recebidos
+Controlador -> Validacao: Solicita validação das informações
+
+
+alt Email já cadastrado
+   Validacao -> Controlador: Email já está em uso
+   Controlador -> Interface: Notifica erro
+   opt Usuario deseja tentar novamente
+       Usuario -> Interface: Fornece novo email
+       Interface -> Controlador: Reenvia dados corrigidos
+       Controlador -> Validacao: Revalida informações
+   end
+else Senha inválida
+   Validacao -> Controlador: Requisitos de senha não atendidos
+   Controlador -> Interface: Notifica erro
+   opt Usuario deseja corrigir a senha 
+       Usuario -> Interface: Fornece nova senha válida
+       Interface -> Controlador: Reenvia dados corrigidos
+       Controlador -> Validacao: Revalida informações
+   end
+else Dados válidos
+   Validacao -> Controlador: Validação bem-sucedida
+   Controlador -> Database: Salva novo perfil no banco de dados
+   Database -> Controlador: Confirmação de salvamento
+   Controlador -> Interface: Notifica sucesso do cadastro
+   Interface -> Usuario: Exibe mensagem de sucesso
+end
+note right of Validacao
+Serviço de Validação:
+- Verifica se o email é unico
+- Valida complexidade da senha
+- Verifica formato dos dados
+end note
+
+
+@enduml
