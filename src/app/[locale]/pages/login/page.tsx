@@ -56,7 +56,7 @@ export default function Login() {
         // todo: make request and set loading ... 
 
         // ok!
-        router.push('/br'); // todo: change to roadmap page
+        router.push('/br/pages/home');
     }
 
     return (
