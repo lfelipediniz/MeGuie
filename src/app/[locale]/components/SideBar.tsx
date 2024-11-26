@@ -44,18 +44,33 @@ const Sidebar: React.FC = () => {
 
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
-      icon: <FaHome />,
+      icon: <FaHome 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para a tela principal"
+        tabIndex={0}
+      />,
       label: "Tela Principal",
-      path: "/pages/home",
+      path: "/",
     },
     {
-      icon: <FaCalendarAlt />,
+      icon: <FaCalendarAlt 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para o calendário"
+        tabIndex={0}
+      />,
       label: "Calendário",
       path: "/pages/calendar",
     },
     {
-      icon: <FaStar />,
-      label: "Favoritos",
+      icon: <FaStar 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para os roadmaps favoritos"
+        tabIndex={0}
+      />,
+      label: "Roadmaps Favoritos",
       path: "/pages/savedroads",
     },
   ];
@@ -91,6 +106,9 @@ const Sidebar: React.FC = () => {
             }}
             onClick={() => router.push("/")}
             className="cursor-pointer"
+            role="link"
+            aria-label="Ir para a página principal"
+            tabIndex={0}
           >
             <div
               style={{
@@ -145,7 +163,7 @@ const Sidebar: React.FC = () => {
                     style={{
                       color:
                         pathname === path
-                          ? "var(--action)"
+                          ? "var(--action-sidebar)"
                           : "var(--contrast-bt-nav)",
                       fontSize: "1.5rem",
                     }}
@@ -162,7 +180,7 @@ const Sidebar: React.FC = () => {
                       fontSize: "1.1rem",
                       color:
                         pathname === path
-                          ? "var(--action)"
+                          ? "var(--action-sidebar)"
                           : "var(--contrast-bt-nav)",
                     }}
                   >
@@ -187,6 +205,9 @@ const Sidebar: React.FC = () => {
                 cursor: "pointer",
               }}
               onClick={openAccessibilityModal} // Abre o modal
+              role="tab"
+              aria-label="Abrir menu de acessibilidade"
+              tabIndex={0}
             >
               <FaUniversalAccess
                 style={{
@@ -277,7 +298,7 @@ const Sidebar: React.FC = () => {
                 marginRight: "8px",
               }}
             >
-              <FaSignOutAlt color="var(--red)" size={20} />
+              <FaSignOutAlt color="var(--red-sidebar)" size={20} />
             </IconButton>
           </div>
         </Drawer>
