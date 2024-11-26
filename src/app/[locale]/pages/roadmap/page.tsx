@@ -72,14 +72,26 @@ const mockEdges: Edge[] = [
 const mockTitle = 'Matemática';
 
 const mockVideos = [
-    'https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6',
-    "https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6",
+    {
+        name: "Vídeo 1",
+        url: "https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6",
+    },
+    {
+        name: "Vídeo 1",
+        url: "https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6",
+    },
 ]
 
-const mockPdfs = [
-    'aaaa',
-    'bbbb',
-]
+const mockWebsites = [
+    {
+      name: "Conteúdo 1",
+      url: "https://www.todamateria.com.br/elementos-quimicos/",
+    },
+    {
+      name: "Conteúdo 2",
+      url: "https://www.todamateria.com.br/animais-extintos/",
+    }
+  ];
  
 const emptyNode: Node[] = [];
 const emptyEdge: Edge[] = [];
@@ -90,8 +102,8 @@ export default function Roadmap() {
     const [edges, setEdges, onEdgesChange] = useEdgesState(emptyEdge);
     const [selectedNode, setSelectedNode] = React.useState<Node | null>(null);
     const [title, setTitle] = React.useState<string>('');
-    const [videosUrls, setVideosUrls] = React.useState<string[]>([]);
-    const [pdfsUrls, setPdfsUrls] = React.useState<string[]>([]);
+    const [videosUrls, setVideosUrls] = React.useState<{ name: string; url: string }[]>([]);
+    const [websitesUrls, setWebsitesUrls] = React.useState<{ name: string; url: string }[]>([]);
  
     // todo:
     // render styles conditionally -> will need backend?
@@ -117,7 +129,7 @@ export default function Roadmap() {
         setEdges(mockEdges);
         setTitle(mockTitle);
         setVideosUrls(mockVideos);
-        setPdfsUrls(mockPdfs);
+        setWebsitesUrls(mockWebsites);
     }, []);
 
     const handleNodeClick = (event: React.MouseEvent, node: Node) => {
@@ -191,7 +203,7 @@ export default function Roadmap() {
                 onClose={handleMenuClose}
                 title={selectedNode?.data.label as string ?? ''}
                 videos={videosUrls}
-                pdfs={pdfsUrls}
+                websites={websitesUrls}
             />
         </div>
     );

@@ -10,7 +10,6 @@ import RoadmapCard from "../../components/RoadmapCard";
 import { IoSearch } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa6";
 import TopicsModal from "../../components/TopicsModal";
-import MaterialsModal from "../../components/MaterialsModal";
 
 export default function Home() {
   const searchParams = useSearchParams();
@@ -56,16 +55,6 @@ export default function Home() {
     "Tópico 4",
   ];
 
-  const videosUrls = [
-    "https://youtu.be/5Td5M0zyeBE?si=QwLg0lCZkbbRoq2r",
-    "https://youtu.be/5Td5M0zyeBE?si=QwLg0lCZkbbRoq2r"
-  ];
-
-  const pdfsUrls = [
-    "hfihefheofhei",
-    "ghihfihifehfefe",
-  ];
-
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
       {showLoading ? (
@@ -99,13 +88,6 @@ export default function Home() {
         topics={mathTopics}
         isOpen={isTopicsModalOpen}
         onClose={closeTopicsModal}
-      />
-      <MaterialsModal
-        title={"Gráficos"}
-        videos={videosUrls}
-        pdfs={pdfsUrls}
-        isOpen={isMaterialsModalOpen}
-        onClose={closeMaterialsModal}
       />
     </div>
   );
