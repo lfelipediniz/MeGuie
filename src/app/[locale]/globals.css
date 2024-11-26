@@ -20,6 +20,8 @@
     --selected: #d6deff;
     --link: #0318cc;
 
+    --footer-bg: #2b2b2b;
+
     /* Cores do MeGuie */
     --marine: #315D6D;
     --marine-header: #315D6D;
@@ -73,7 +75,7 @@
     --selected: #324e70;
     --link: #9bd7f6;
 
-    --marine: #ffffff;
+    --marine: #000000;
     --marine-header: #ffffff;
 
     --red: #000000;
@@ -84,6 +86,8 @@
     --text-dark-blue: #0D1424;
     --contrast-bt-text: #000000;
     --contrast-bt-nav: #000000;
+    --footer-bg: #ffffff;
+
 
     --action: #0099ff;
 
