@@ -11,11 +11,12 @@ import {
     Edge,
 } from '@xyflow/react';
 import LoadingOverlay from '../../components/LoadingOverlay';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { FaArrowLeft } from "react-icons/fa6";
 import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
 import MaterialsModal from '../../components/MaterialsModal';
  
 import '@xyflow/react/dist/style.css';
+import { useRouter } from 'next/navigation';
  
 const mockNodes: Node[] = [
     {
@@ -92,9 +93,10 @@ export default function Roadmap() {
     const [title, setTitle] = React.useState<string>('');
     const [videosUrls, setVideosUrls] = React.useState<string[]>([]);
     const [pdfsUrls, setPdfsUrls] = React.useState<string[]>([]);
+    const router = useRouter();
  
     // todo:
-    // render styles conditionally -> will need backend?
+    // render styles conditionally -> will need backend.
 
     React.useEffect(() => {
         const request = async () => {
@@ -128,6 +130,10 @@ export default function Roadmap() {
         setSelectedNode(null);
     }
 
+    const handleNavigation = () => {
+        router.push('/br/pages/home');
+    }
+
     return (
         <div className="mt-24 mb-5 mx-auto" style={{width: '90vw', height: '80vh'}}>
             {loading ? (
@@ -139,7 +145,13 @@ export default function Roadmap() {
             <div className="flex flex-col gap-7" style={{width: '100%', height: '100%'}}>
                 <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
                     <div className="flex items-center mb-5 xs:mb-0">
-                        <ArrowBackIcon />
+                        <button 
+                            className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500"
+                            onClick={handleNavigation}
+                            aria-label="Voltar para Roadmaps"
+                        >
+                            <FaArrowLeft size={24} color={"var(--marine)"} />
+                        </button>
                         <h2 className="ml-3">{title}</h2>
                     </div>
                     <FormControl
