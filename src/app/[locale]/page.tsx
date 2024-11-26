@@ -3,6 +3,8 @@ import { useTranslations } from "next-intl";
 import LogoIcon from "../icons/logo";
 import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
+
+
 import { useEffect, useState, useRef } from "react";
 import FAQ from "./components/FAQ";
 import {
@@ -12,8 +14,6 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 
-import TextReader from "./components/TextReader";
-import VLibrasWidget from './components/VLibrasWidget';
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
@@ -43,8 +43,6 @@ export default function DashboardPage() {
     { logoUrl: "/images/centerIA.png" },
   ];
 
-  const t = useTranslations("");
-
   const faqData = [
     {
       question: "Como o MeGuie funciona?",
@@ -64,11 +62,11 @@ export default function DashboardPage() {
 
   const handleSignup = () => {
     router.push('/br/pages/signup');
-  }
+  };
 
   const handleLogin = () => {
     router.push('/br/pages/login');
-  }
+  };
 
   return (
     <div className="mt-32 mx-auto max-w-screen-2xl p-4 md:p-8">
@@ -78,6 +76,7 @@ export default function DashboardPage() {
         <div
           className={`flex flex-col items-center ${isSmallScreen ? "text-center" : "md:flex-row text-left"} space-x-0 md:space-x-4`}
         >
+
           <div>
             <h1 className="">Me Guie</h1>
             <p className="leading-loose text-base md:text-lg">
@@ -104,9 +103,9 @@ export default function DashboardPage() {
             <button
               className="px-4 py-2 rounded-lg hover:opacity-90"
               style={{
-                backgroundColor: "transparent", 
-                color: "var(--primary)", 
-                border: "2px solid var(--action)", 
+                backgroundColor: "transparent",
+                color: "var(--primary)",
+                border: "2px solid var(--action)",
                 fontFamily: "var(--font-inter)",
               }}
               onClick={handleLogin}
@@ -133,22 +132,13 @@ export default function DashboardPage() {
         do ensino fundamental e médio, criando um caminho claro e eficiente para
         quem deseja se preparar para o vestibular de forma gratuita. Nosso
         objetivo é democratizar o acesso ao conhecimento de qualidade disponível
-        na internet e ajudar cada aluno a alcançar seu potencial máximo.Sabemos
+        na internet e ajudar cada aluno a alcançar seu potencial máximo. Sabemos
         que há uma infinidade de conteúdos educativos gratuitos e de alta
         qualidade online, mas a falta de uma organização estruturada muitas
         vezes impede os estudantes de aproveitarem esses recursos ao máximo. O
         MeGuie resolve esse problema ao indexar e organizar esses conteúdos,
         criando uma jornada de aprendizado com um passo a passo em cada matéria,
         para que você possa estudar com mais foco e direção.
-        <TextReader
-          selector="#main-content"  // Seleciona pela classe/id
-          fallbackText="Sem conteúdo"
-          lang="pt-PT"  // Português de Portugal
-          voiceRate={1.0}  // Velocidade mais lenta
-          voicePitch={1.0}  // Tom ligeiramente mais alto
-        />
-        <VLibrasWidget />
-
       </p>
       <br />
 

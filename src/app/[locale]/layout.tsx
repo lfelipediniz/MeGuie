@@ -1,3 +1,4 @@
+// layout.tsx
 import { ThemeProvider } from "./components/ThemeProvider";
 import type { Metadata } from "next";
 import {
@@ -5,15 +6,14 @@ import {
   NextIntlClientProvider,
   useMessages,
 } from "next-intl";
-import { Inter, Montserrat, Orbitron } from "next/font/google"; // Importando a fonte Orbitron
+import { Inter, Montserrat, Orbitron } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import { Header } from "./components/Header";
-import Particle from "./components/Particle";
 import "./globals.css";
 import { Footer } from "../[locale]/components/Footer";
-import { cookies } from "next/headers"; // para ler cookies no lado do servidor
-import Sponsors from "./components/Sponsors";
+import { cookies } from "next/headers";
 import Sidebar from "./components/SideBar";
+import VLibrasClient from "./components/VLibrasClient"; // Importando o componente client
 
 const inter = Inter({
   subsets: ["latin"],
@@ -45,16 +45,8 @@ export default function RootLayout({
 }) {
   const messages = useMessages();
 
-  // ler o cookie para determinar o idioma
   const userLocaleCookie = cookies().get("preferredLocale")?.value;
-  const languageCode = userLocaleCookie || "br"; // se o cookie não existir, use "br"
-
-  const sponsorsData = [
-    { logoUrl: "/images/icmc-logo.png" },
-    { logoUrl: "/images/brains.png" },
-    { logoUrl: "/images/centerIA.png" },
-    // adicione mais patrocinadores conforme necessário
-  ];
+  const languageCode = userLocaleCookie || "br";
 
   return (
     <html
@@ -62,11 +54,12 @@ export default function RootLayout({
       className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}
     >
       <body className="relative min-h-screen flex flex-col">
+        <VLibrasClient /> {/* Componente cliente para VLibras */}
         <ThemeProvider
           enableSystem
           attribute="class"
-          defaultTheme="root" // Definindo o tema padrão como root
-          themes={["root", "light", "dark"]} // Incluindo root como uma opção de tema
+          defaultTheme="root"
+          themes={["root", "light", "dark"]}
         >
           <NextIntlClientProvider
             locale={locale}
@@ -85,9 +78,7 @@ export default function RootLayout({
             <Header locale={languageCode} />
             <div className="flex">
               <Sidebar />
-              <main className="relative z-10 flex-grow">
-                {children}
-              </main>
+              <main className="relative z-10 flex-grow">{children}</main>
             </div>
             <Footer locale={locale} />
           </NextIntlClientProvider>
