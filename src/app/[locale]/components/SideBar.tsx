@@ -163,7 +163,7 @@ const Sidebar: React.FC = () => {
                     style={{
                       color:
                         pathname === path
-                          ? "var(--action)"
+                          ? "var(--action-sidebar)"
                           : "var(--contrast-bt-nav)",
                       fontSize: "1.5rem",
                     }}
@@ -180,7 +180,7 @@ const Sidebar: React.FC = () => {
                       fontSize: "1.1rem",
                       color:
                         pathname === path
-                          ? "var(--action)"
+                          ? "var(--action-sidebar)"
                           : "var(--contrast-bt-nav)",
                     }}
                   >
@@ -298,7 +298,7 @@ const Sidebar: React.FC = () => {
                 marginRight: "8px",
               }}
             >
-              <FaSignOutAlt color="var(--red)" size={20} />
+              <FaSignOutAlt color="var(--red-sidebar)" size={20} />
             </IconButton>
           </div>
         </Drawer>

@@ -37,6 +37,11 @@
     --contrast-bt-nav: #2b2b2b;
 
     --action: #860B8E;
+    --action-sidebar: #860B8E;
+    --red-sidebar: #AD0123;
+
+    
+
 
     --font-inter: "Inter", sans-serif;
     --font-montserrat: "Montserrat", sans-serif;
@@ -90,6 +95,10 @@
 
 
     --action: #ffd900;
+    --action-sidebar: #2700b4;
+    --red-sidebar: #AD0123;
+
+
 
     --data-blue: #9bd7f6;
     --data-pink: #f9a1d3;
