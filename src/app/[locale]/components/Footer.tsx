@@ -24,7 +24,7 @@ export const Footer: FC<Props> = ({ locale }) => {
   }, [resolvedTheme]);
 
   return (
-    <footer className="bg-[var(--footer-bg)] text-[var(--background)] relative z-20 mt-auto w-full p-4 py-6 lg:py-8">
+    <footer className="bg-[var(--footer-bg)] text-[var(--background)] relative  mt-auto w-full p-4 py-6 lg:py-8">
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">
