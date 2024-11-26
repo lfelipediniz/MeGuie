@@ -47,8 +47,8 @@ export const Footer: FC<Props> = ({ locale }) => {
                   </a>
                 </li>
                 <li className="mb-4">
-                  <a href={`/${locale}/pages/fronts`} aria-label={t("Footer.Fronts")}>
-                    {t("Footer.Fronts")}
+                  <a href={`/${locale}/pages/fronts`} aria-label={"Fale Conosco"}>
+                    {"Fale Cosnosco"}
                   </a>
                 </li>
               </ul>
