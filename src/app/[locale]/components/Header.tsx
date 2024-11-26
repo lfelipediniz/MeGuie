@@ -46,17 +46,32 @@ export const Header: FC<Props> = ({ locale }) => {
 
   const navItems = [
     {
-      icon: <FaHome />,
+      icon: <FaHome 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para a tela principal"
+        tabIndex={0}
+      />,
       label: "Tela Principal",
       path: "/",
     },
     {
-      icon: <FaCalendarAlt />,
+      icon: <FaCalendarAlt 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para o calendário"
+        tabIndex={0}
+      />,
       label: "Calendário",
       path: "/pages/calendar",
     },
     {
-      icon: <FaStar />,
+      icon: <FaStar 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para os roadmaps favoritos"
+        tabIndex={0}
+      />,
       label: "Roadmaps Favoritos",
       path: "/pages/savedroads",
     },

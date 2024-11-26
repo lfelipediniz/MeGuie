@@ -44,18 +44,33 @@ const Sidebar: React.FC = () => {
 
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
-      icon: <FaHome />,
+      icon: <FaHome 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para a tela principal"
+        tabIndex={0}
+      />,
       label: "Tela Principal",
-      path: "/pages/home",
+      path: "/",
     },
     {
-      icon: <FaCalendarAlt />,
+      icon: <FaCalendarAlt 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para o calendário"
+        tabIndex={0}
+      />,
       label: "Calendário",
       path: "/pages/calendar",
     },
     {
-      icon: <FaStar />,
-      label: "Favoritos",
+      icon: <FaStar 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para os roadmaps favoritos"
+        tabIndex={0}
+      />,
+      label: "Roadmaps Favoritos",
       path: "/pages/savedroads",
     },
   ];
@@ -91,6 +106,9 @@ const Sidebar: React.FC = () => {
             }}
             onClick={() => router.push("/")}
             className="cursor-pointer"
+            role="link"
+            aria-label="Ir para a página principal"
+            tabIndex={0}
           >
             <div
               style={{
@@ -187,6 +205,9 @@ const Sidebar: React.FC = () => {
                 cursor: "pointer",
               }}
               onClick={openAccessibilityModal} // Abre o modal
+              role="tab"
+              aria-label="Abrir menu de acessibilidade"
+              tabIndex={0}
             >
               <FaUniversalAccess
                 style={{
