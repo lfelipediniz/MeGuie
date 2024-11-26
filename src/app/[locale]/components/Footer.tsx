@@ -117,7 +117,7 @@ export const Footer: FC<Props> = ({ locale }) => {
               href="https://www.instagram.com/data.icmc/"
               aria-label="Instagram"
               className="me-5"
-              title="Facebook
+              title="Facebook"
             >
               <FaFacebook className="w-4 h-4" />
             </a>
