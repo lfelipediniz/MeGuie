@@ -57,8 +57,8 @@ export default function Home() {
   ];
 
   const videosUrls = [
-    "fhihfeihiwowe",
-    "hiifehiehfehfe",
+    "https://youtu.be/5Td5M0zyeBE?si=QwLg0lCZkbbRoq2r",
+    "https://youtu.be/5Td5M0zyeBE?si=QwLg0lCZkbbRoq2r"
   ];
 
   const pdfsUrls = [

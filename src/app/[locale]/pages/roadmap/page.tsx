@@ -72,8 +72,8 @@ const mockEdges: Edge[] = [
 const mockTitle = 'Matemática';
 
 const mockVideos = [
-    'aaaa',
-    'bbbb',
+    'https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6',
+    "https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6",
 ]
 
 const mockPdfs = [
