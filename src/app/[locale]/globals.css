@@ -60,7 +60,7 @@
 
   .dark {
     --primary: #f0f2fc;
-    --secondary: #f9a1d3;
+    --secondary: #ffd900;
     --background: #000000;
     --background-secondary: #1b1b1b;
     --background-tertiary: #dddddd;
@@ -89,7 +89,7 @@
     --footer-bg: #ffffff;
 
 
-    --action: #0099ff;
+    --action: #ffd900;
 
     --data-blue: #9bd7f6;
     --data-pink: #f9a1d3;
