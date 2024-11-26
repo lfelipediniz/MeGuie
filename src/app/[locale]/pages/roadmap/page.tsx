@@ -105,6 +105,7 @@ export default function Roadmap() {
     const [title, setTitle] = React.useState<string>('');
     const [videosUrls, setVideosUrls] = React.useState<{ name: string; url: string }[]>([]);
     const [websitesUrls, setWebsitesUrls] = React.useState<{ name: string; url: string }[]>([]);
+    const router = useRouter();
  
     // todo:
     // render styles conditionally -> will need backend.
