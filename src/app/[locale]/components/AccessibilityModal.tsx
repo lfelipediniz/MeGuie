@@ -45,7 +45,10 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: "var(--background-opacity)" }}
+      style={{
+        backgroundColor: "rgba(0, 0, 0, 0.5)", // Fundo semitransparente
+        backdropFilter: "blur(10px)", // Desfoque no fundo
+      }}
       onClick={onClose}
     >
       <div
@@ -107,7 +110,6 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
             </div>
           </div>
 
-          {/* Alternar modo de contraste */}
           <div className="flex items-center justify-between">
             <span className="text-secondary" style={{ color: "var(--text-secondary)" }}>
               {isHighContrast ? "Tirar Alto Contraste" : "Ativar Alto Contraste"}
@@ -124,14 +126,12 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
             </button>
           </div>
         </div>
-
-        {/* Botão para fechar o modal */}
+        
         <button
           className="mt-6 px-4 py-2 rounded-lg hover:opacity-90"
           style={{
             backgroundColor: "var(--action)",
             color: "var(--contrast-bt-text)",
-            fontFamily: "var(--font-inter)",
           }}
           onClick={onClose}
         >

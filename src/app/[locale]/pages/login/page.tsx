@@ -56,11 +56,11 @@ export default function Login() {
         // todo: make request and set loading ... 
 
         // ok!
-        router.push('/br'); // todo: change to roadmap page
+        router.push('/br/pages/home');
     }
 
     return (
-        <div className="mt-28 mb-5 w-[250px] md:w-[350px]">
+        <div className="mt-28 mb-10 mx-auto w-[250px] md:w-[350px]">
             {loading ? (
                 <div className="transition-opacity duration-500 opacity-100">
                     <LoadingOverlay />
@@ -115,13 +115,18 @@ export default function Login() {
                     </p>
                 }
 
-                <Button variant="secondary" size="medium" 
-                    onClick={handleFormSubmit} type="submit"
-                    className="mt-5"
+                <button
+                    onClick={handleFormSubmit}
+                    className="px-4 py-2 mt-5 rounded-lg hover:opacity-90"
+                    style={{
+                      backgroundColor: "var(--action)",
+                      color: "var(--background)",
+                      fontFamily: "var(--font-inter)",
+                    }}
                     aria-label="Entrar na conta"
                 >
                     Entrar
-                </Button>
+                </button>
             </div>
             }
         </div>
