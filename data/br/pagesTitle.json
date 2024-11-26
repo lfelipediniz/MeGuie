@@ -11,5 +11,6 @@
     "/pages/signup": "Cadastrar",
     "/pages/events/understandingDL": "Understanding DL",
     "/pages/events/dataDay": "DataDay",
-    "/pages/roadmap": "Roadmap"
+    "/pages/roadmap": "Roadmap",
+    "/pages/home": "Roadmaps"
 }

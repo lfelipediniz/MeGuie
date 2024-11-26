@@ -14,11 +14,13 @@ import {
 
 import TextReader from "./components/TextReader";
 import VLibrasWidget from './components/VLibrasWidget';
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const componentRef = useRef<HTMLDivElement>(null);
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const handleResize = () => {
@@ -60,6 +62,14 @@ export default function DashboardPage() {
     },
   ];
 
+  const handleSignup = () => {
+    router.push('/br/pages/signup');
+  }
+
+  const handleLogin = () => {
+    router.push('/br/pages/login');
+  }
+
   return (
     <div className="mt-32 mx-auto max-w-screen-2xl p-4 md:p-8">
       <section
@@ -86,7 +96,8 @@ export default function DashboardPage() {
                 color: "var(--background)",
                 fontFamily: "var(--font-inter)",
               }}
-              onClick={() => (window.location.href = "/pages/signup")}
+              onClick={handleSignup}
+              aria-label="Começar"
             >
               Começar
             </button>
@@ -98,7 +109,8 @@ export default function DashboardPage() {
                 border: "2px solid var(--action)", 
                 fontFamily: "var(--font-inter)",
               }}
-              onClick={() => (window.location.href = "/pages/login")}
+              onClick={handleLogin}
+              aria-label="Entrar"
             >
               Entrar
             </button>

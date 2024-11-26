@@ -73,7 +73,7 @@ export default function SignUp() {
     }
 
     return (
-        <div className="mt-28 mb-5 w-[250px] md:w-[350px]">
+        <div className="mt-28 mb-10 mx-auto w-[250px] md:w-[350px]">
             {loading ? (
                 <div className="transition-opacity duration-500 opacity-100">
                     <LoadingOverlay />
@@ -169,17 +169,23 @@ export default function SignUp() {
                     </p>
                 }
 
-                <Button variant="secondary" size="medium" 
-                    onClick={handleFormSubmit} type="submit"
-                    className="mt-5"
+                <button 
+                    className="px-4 py-2 mt-5 rounded-lg hover:opacity-90"
+                    style={{
+                      backgroundColor: "var(--action)",
+                      color: "var(--background)",
+                      fontFamily: "var(--font-inter)",
+                    }}
+                    onClick={handleFormSubmit}
                     aria-label="Cadastrar nova conta"
                 >
                     Cadastrar
-                </Button>
+                </button>
 
                 <p className="mt-5 text-sm text-center">
                     <span>Já tem uma conta? </span>
-                    <a className="text-data-purple cursor-pointer underline"
+                    <a className="cursor-pointer underline"
+                        style={{color: "var(--action)"}}
                         onClick={handleNavigation} role="link"
                         aria-label="Ir para a página de login"
                         tabIndex={0} // for a11y
