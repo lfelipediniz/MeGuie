@@ -59,12 +59,12 @@ export const Footer: FC<Props> = ({ locale }) => {
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
-                  <a href="https://www.linkedin.com/school/meguie/" aria-label="LinkedIn">
+                  <a href="https://www.linkedin.com/school/meguie/" aria-label="LinkedIn" title="LinkedIn">
                     LinkedIn
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.instagram.com/data.icmc/" aria-label="Instagram">
+                  <a href="https://www.instagram.com/data.icmc/" aria-label="Instagram" title="Instagram">
                     Instagram
                   </a>
                 </li>
@@ -109,6 +109,7 @@ export const Footer: FC<Props> = ({ locale }) => {
               href="https://www.youtube.com/c/DataICMC"
               aria-label="YouTube"
               className="me-5"
+              title="Instagram"
             >
               <FaInstagram className="w-4 h-4" />
             </a>
@@ -116,13 +117,15 @@ export const Footer: FC<Props> = ({ locale }) => {
               href="https://www.instagram.com/data.icmc/"
               aria-label="Instagram"
               className="me-5"
+              title="Facebook
             >
               <FaFacebook className="w-4 h-4" />
             </a>
             <a
-              href="https://www.linkedin.com/school/meguie/"
-              aria-label="LinkedIn"
+              href="https://wa.me/1234567890"
+              aria-label="WhatsApp"
               className="me-5"
+              title="WhatsApp"
             >
               <FaWhatsapp className="w-4 h-4" />
             </a>
