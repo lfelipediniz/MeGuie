@@ -55,24 +55,24 @@ export const Footer: FC<Props> = ({ locale }) => {
             </div>
             <div>
               <h2 className="mb-6 text-sm font-semibold uppercase text-[var(--background)]">
-                {t("Footer.FollowUs")}
+                {"GUIA DO MEGUIE"}
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
                   <a href="https://www.linkedin.com/school/meguie/" aria-label="LinkedIn" title="LinkedIn">
-                    LinkedIn
+                    Como usar a plataforma
                   </a>
                 </li>
                 <li>
                   <a href="https://www.instagram.com/data.icmc/" aria-label="Instagram" title="Instagram">
-                    Instagram
+                    Tutorial em vídeo
                   </a>
                 </li>
               </ul>
             </div>
             <div>
               <h2 className="mb-6 text-sm font-semibold uppercase text-[var(--background)]">
-                {t("Footer.Legal")}
+                {"DICAS DE ESTUDOS"}
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
@@ -80,7 +80,7 @@ export const Footer: FC<Props> = ({ locale }) => {
                     href={`/${locale}/pages/events/understandingDL`}
                     aria-label={t("Footer.Events")}
                   >
-                    {t("Footer.Events")}
+                    {"Como organizar os estudos"}
                   </a>
                 </li>
                 <li>
@@ -88,7 +88,7 @@ export const Footer: FC<Props> = ({ locale }) => {
                     href="https://www.youtube.com/watch?v=LxP-r00E2fo&list=PLFE-LjWAAP9Skog9YhRvuNBjWD724c32m"
                     aria-label={t("Footer.Courses")}
                   >
-                    {t("Footer.Courses")}
+                    {"Guia de como resolver questões do ENEM"}
                   </a>
                 </li>
               </ul>
