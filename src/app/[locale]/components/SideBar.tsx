@@ -29,6 +29,17 @@ const Sidebar: React.FC = () => {
     setExpanded(false);
   };
 
+  const handleFocus = () => {
+    setExpanded(true); // Expande a sidebar quando qualquer elemento recebe foco
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    // Recolhe a sidebar apenas se o foco sair completamente dela
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setExpanded(false);
+    }
+  };
+
   const handleLogout = () => {
     router.push("/"); // Redireciona para a página principal
   };
@@ -43,38 +54,17 @@ const Sidebar: React.FC = () => {
 
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
-      icon: (
-        <FaHome
-          className="cursor-pointer"
-          role="link"
-          aria-label="Ir para a tela principal"
-          tabIndex={0}
-        />
-      ),
+      icon: <FaHome aria-hidden="true" />,
       label: "Tela Principal",
       path: "/",
     },
     {
-      icon: (
-        <FaCalendarAlt
-          className="cursor-pointer"
-          role="link"
-          aria-label="Ir para o calendário"
-          tabIndex={0}
-        />
-      ),
+      icon: <FaCalendarAlt aria-hidden="true" />,
       label: "Calendário",
       path: "/pages/calendar",
     },
     {
-      icon: (
-        <FaStar
-          className="cursor-pointer"
-          role="link"
-          aria-label="Ir para os roadmaps favoritos"
-          tabIndex={0}
-        />
-      ),
+      icon: <FaStar aria-hidden="true" />,
       label: "Roadmaps Favoritos",
       path: "/pages/savedroads",
     },
@@ -82,12 +72,17 @@ const Sidebar: React.FC = () => {
 
   return (
     <div className="h-md:block hidden">
-      <div className="z-50 md:block hidden">
+      <div
+        className="z-50 md:block hidden"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onFocus={handleFocus} // Expande ao receber foco
+        onBlur={handleBlur} // Recolhe ao perder foco
+        tabIndex={0} // Permite que a sidebar também receba foco diretamente
+      >
         <Drawer
           variant="permanent"
           open={expanded}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
           sx={{
             width: expanded ? 240 : 60,
             flexShrink: 0,
@@ -114,8 +109,8 @@ const Sidebar: React.FC = () => {
             onClick={() => router.push("/")}
             className="cursor-pointer"
             role="link"
-            aria-label="Ir para a página principal"
             tabIndex={0}
+            aria-label="Ir para a página principal"
           >
             <div
               style={{
@@ -165,6 +160,9 @@ const Sidebar: React.FC = () => {
                     cursor: "pointer",
                   }}
                   onClick={() => router.push(path as any)}
+                  role="link"
+                  tabIndex={0}
+                  aria-label={label}
                 >
                   <div
                     style={{
@@ -212,9 +210,9 @@ const Sidebar: React.FC = () => {
                 cursor: "pointer",
               }}
               onClick={openAccessibilityModal}
-              role="tab"
-              aria-label="Abrir menu de acessibilidade"
+              role="button"
               tabIndex={0}
+              aria-label="Abrir menu de acessibilidade"
             >
               <FaUniversalAccess
                 style={{
@@ -240,23 +238,6 @@ const Sidebar: React.FC = () => {
             </div>
           </Tooltip>
 
-          <div
-            style={{
-              position: "absolute",
-              bottom: "30px",
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-            }}
-          >
-            <IconButton
-              size="medium"
-              style={{ color: "var(--contrast-bt-nav)" }}
-            >
-              {expanded ? <FaAngleLeft /> : <FaAngleRight />}
-            </IconButton>
-          </div>
-
           {/* Seção de Perfil */}
           <div
             style={{
@@ -266,6 +247,9 @@ const Sidebar: React.FC = () => {
               display: "flex",
               alignItems: "center",
             }}
+            role="button"
+            tabIndex={0}
+            aria-label="Seção de Perfil"
           >
             <img
               src="https://thispersondoesnotexist.com/"
@@ -298,6 +282,8 @@ const Sidebar: React.FC = () => {
             <IconButton
               onClick={handleLogout}
               size="small"
+              tabIndex={0}
+              aria-label="Sair"
               style={{
                 color: "var(--contrast-bt-nav)",
                 marginLeft: "8px",
