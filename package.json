@@ -37,9 +37,11 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "cmdk": "^0.2.1",
+    "cookies-next": "^5.0.2",
     "framer-motion": "^10.16.4",
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
+    "js-cookie": "^3.0.5",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.460.0",
     "markdown-it": "^14.1.0",
@@ -68,6 +70,7 @@
     "vlibras-nextjs": "^1.1.2"
   },
   "devDependencies": {
+    "@types/js-cookie": "^3.0.6",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",

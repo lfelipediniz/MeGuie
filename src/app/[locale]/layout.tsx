@@ -54,13 +54,8 @@ export default function RootLayout({
       className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}
     >
       <body className="relative min-h-screen flex flex-col">
-        <VLibrasClient /> 
-        <ThemeProvider
-          enableSystem
-          attribute="class"
-          defaultTheme="root"
-          themes={["root", "light", "dark"]}
-        >
+        <VLibrasClient />
+        <ThemeProvider>
           <NextIntlClientProvider
             locale={locale}
             messages={messages as AbstractIntlMessages}
