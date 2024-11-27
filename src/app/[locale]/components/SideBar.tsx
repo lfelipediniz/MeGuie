@@ -1,11 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  Drawer,
-  IconButton,
-  Tooltip,
-  Divider,
-} from "@mui/material";
+import { Drawer, IconButton, Tooltip, Divider } from "@mui/material";
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -17,7 +12,7 @@ import {
 } from "react-icons/fa";
 import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
-import AccessibilityModal from "./AccessibilityModal"; // Importe o modal
+import AccessibilityModal from "./AccessibilityModal";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -26,8 +21,12 @@ const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const router = useRouter();
 
-  const toggleSidebar = () => {
-    setExpanded(!expanded);
+  const handleMouseEnter = () => {
+    setExpanded(true);
+  };
+
+  const handleMouseLeave = () => {
+    setExpanded(false);
   };
 
   const handleLogout = () => {
@@ -44,32 +43,38 @@ const Sidebar: React.FC = () => {
 
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
-      icon: <FaHome 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para a tela principal"
-        tabIndex={0}
-      />,
+      icon: (
+        <FaHome
+          className="cursor-pointer"
+          role="link"
+          aria-label="Ir para a tela principal"
+          tabIndex={0}
+        />
+      ),
       label: "Tela Principal",
       path: "/",
     },
     {
-      icon: <FaCalendarAlt 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para o calendário"
-        tabIndex={0}
-      />,
+      icon: (
+        <FaCalendarAlt
+          className="cursor-pointer"
+          role="link"
+          aria-label="Ir para o calendário"
+          tabIndex={0}
+        />
+      ),
       label: "Calendário",
       path: "/pages/calendar",
     },
     {
-      icon: <FaStar 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para os roadmaps favoritos"
-        tabIndex={0}
-      />,
+      icon: (
+        <FaStar
+          className="cursor-pointer"
+          role="link"
+          aria-label="Ir para os roadmaps favoritos"
+          tabIndex={0}
+        />
+      ),
       label: "Roadmaps Favoritos",
       path: "/pages/savedroads",
     },
@@ -81,6 +86,8 @@ const Sidebar: React.FC = () => {
         <Drawer
           variant="permanent"
           open={expanded}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
           sx={{
             width: expanded ? 240 : 60,
             flexShrink: 0,
@@ -100,7 +107,7 @@ const Sidebar: React.FC = () => {
               display: "flex",
               alignItems: "center",
               justifyContent: expanded ? "flex-start" : "center",
-              padding: " 4px 16px",
+              padding: "4px 16px",
               marginBottom: "1px",
               transition: "all 0.3s",
             }}
@@ -204,7 +211,7 @@ const Sidebar: React.FC = () => {
                 transition: "all 0.3s",
                 cursor: "pointer",
               }}
-              onClick={openAccessibilityModal} // Abre o modal
+              onClick={openAccessibilityModal}
               role="tab"
               aria-label="Abrir menu de acessibilidade"
               tabIndex={0}
@@ -243,7 +250,6 @@ const Sidebar: React.FC = () => {
             }}
           >
             <IconButton
-              onClick={toggleSidebar}
               size="medium"
               style={{ color: "var(--contrast-bt-nav)" }}
             >

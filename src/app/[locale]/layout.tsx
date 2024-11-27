@@ -54,7 +54,7 @@ export default function RootLayout({
       className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}
     >
       <body className="relative min-h-screen flex flex-col">
-        <VLibrasClient /> {/* Componente cliente para VLibras */}
+        <VLibrasClient /> 
         <ThemeProvider
           enableSystem
           attribute="class"
