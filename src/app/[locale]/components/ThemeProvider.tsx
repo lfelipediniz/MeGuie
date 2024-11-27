@@ -10,13 +10,13 @@ interface ThemeProviderProps {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState('light') // Define o tema padrão como 'light'
+  const [theme, setTheme] = useState('light') //  tema padrão como 'light'
 
   return (
     <NextThemesProvider
-      defaultTheme={theme}    // Usa 'light' como tema inicial
+      defaultTheme={theme}    
       themes={["light", "dark"]}
-      enableSystem={false}     // Não permitir que o sistema escolha o tema
+      enableSystem={false}     // não permite que o sistema escolha o tema
     >
       {children}
     </NextThemesProvider>
