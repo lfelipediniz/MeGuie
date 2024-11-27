@@ -225,7 +225,7 @@ const RegisterUDL = () => {
 
         {/* Número USP */}
         <div className="mb-5">
-          <label htmlFor="uspNumber" className="block mb-2 text-sm font-medium flex items-center" style={{ color: "var(--primary)" }}>
+          <label htmlFor="uspNumber" className="block mb-2 text-sm font-medium  items-center" style={{ color: "var(--primary)" }}>
             {t('USPNumber')} ({t('Optional')})
             <span className="ml-2 relative group">
               <FiInfo className="cursor-pointer" />

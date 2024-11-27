@@ -85,7 +85,7 @@ export default function Home() {
         </div>
       )}
       <TopicsModal
-        topics={mathTopics}
+        // topics={mathTopics}
         isOpen={isTopicsModalOpen}
         onClose={closeTopicsModal}
       />

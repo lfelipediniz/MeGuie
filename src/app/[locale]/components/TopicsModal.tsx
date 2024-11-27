@@ -1,7 +1,22 @@
 import React from "react";
 
-const TopicsModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
+interface TopicsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  topics?: { title: string; description: string }[]; // Propriedade opcional para os tópicos
+}
+
+const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics }) => {
   if (!isOpen) return null;
+
+  // Tópicos padrão, caso o usuário não forneça nenhum
+  const defaultTopics = [
+    { title: "Tópico 1", description: "Descrição do tópico 1..." },
+    { title: "Tópico 2", description: "Descrição do tópico 2..." },
+    { title: "Tópico 3", description: "Descrição do tópico 3..." },
+  ];
+
+  const topicsToDisplay = topics || defaultTopics;
 
   return (
     <div
@@ -26,18 +41,12 @@ const TopicsModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpe
           Tópicos Abordados
         </h2>
         <div className="space-y-4">
-          <div>
-            <h3>Topico 1</h3>
-            <p>Descrição do tópico 1...</p>
-          </div>
-          <div>
-            <h3>Topico 2</h3>
-            <p>Descrição do tópico 2...</p>
-          </div>
-          <div>
-            <h3>Topico 3</h3>
-            <p>Descrição do tópico 3...</p>
-          </div>
+          {topicsToDisplay.map((topic, index) => (
+            <div key={index}>
+              <h3>{topic.title}</h3>
+              <p>{topic.description}</p>
+            </div>
+          ))}
         </div>
         {/* Botão de fechar */}
         <button
