@@ -1,13 +1,15 @@
 'use client'
 import {
-  createLocalizedPathnamesNavigation,
-  Pathnames
+  createLocalizedPathnamesNavigation
 } from 'next-intl/navigation'
 import { locales } from './i18n'
 
+// Tipo para as rotas
+type LocalizedPathnames = Record<string, string>;
+
 export const localePrefix = 'always'
 
-export const pathnames = {
+export const pathnames: LocalizedPathnames = {
   '/': '/',
   '/pages/fronts': '/pages/fronts',
   '/pages/competitions': '/pages/competitions',
@@ -20,11 +22,11 @@ export const pathnames = {
   '/pages/contact': '/pages/contact',
   '/pages/about': '/pages/about',
   '/pages/signup': '/pages/signup',
-  '/pages/login': '/pages/login', 
+  '/pages/login': '/pages/login',
   '/pages/home': '/pages/home',
   '/pages/calendar': '/pages/calendar',
   'pages/savedroads': '/pages/savedroads',
-} as const satisfies Pathnames<typeof locales>
+}
 
 export const { Link, redirect, usePathname, useRouter } =
   createLocalizedPathnamesNavigation({ locales, localePrefix, pathnames })
