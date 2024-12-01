@@ -51,12 +51,12 @@ export default function DashboardPage() {
     },
     {
       question: "Preciso pagar para usar o MeGuie?",
-      answer: "Não sei",
+      answer: "Não, o MeGuie é totalmente gratuito.",
     },
     {
       question:
         "Qual é a diferença entre o MeGuie e outros métodos de estudo online?",
-      answer: "Não sei",
+      answer: "Diferentemente de outros métodos de estudos em que o conteúdo é dividido em dias ou semanas, o MeGuie possui um cronograma de estudos mais flexível, permitindo que você estude no seu próprio ritmo.",
     },
   ];
 
