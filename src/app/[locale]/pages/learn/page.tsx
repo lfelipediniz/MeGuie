@@ -57,7 +57,7 @@ export default function Learn() {
   }, [locale]);
 
   useEffect(() => {
-    const post = searchParams.get("post");
+    const post = searchParams ? searchParams.get("post") : null;
 
     if (post && markdownFiles.length > 0) {
       const postNumber = parseInt(post, 10);
