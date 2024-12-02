@@ -7,20 +7,20 @@ import Photo from "../../components/Photo";
 import peopleBR from "../../../../../data/br/people.json";
 import peopleEN from "../../../../../data/en/people.json";
 import FAQ from "../../components/FAQ";
-import { FaArrowLeft } from "react-icons/fa6";
 import { useRouter } from "@/src/navigation";
+import { FaArrowLeft } from "react-icons/fa6";
 
-export default function About() {
+export default function HowToUse() {
   const t = useTranslations("");
   const locale = t("DONT_DELETE"); // determina o idioma atual da página
 
   // seleciona o arquivo JSON correto com base no idioma
   const people = locale === "br" ? peopleBR : peopleEN;
 
-  const router = useRouter();
+  const router = useRouter()
 
   function handleBack() {
-    router.back();
+    router.back()
   }
 
   const faqData = [

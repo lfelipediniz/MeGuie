@@ -8,12 +8,20 @@ import {
   faLinkedin,
 } from "@fortawesome/free-brands-svg-icons";
 import { Footer } from "../../components/Footer";
+import { FaArrowLeft } from "react-icons/fa6";
+import { useRouter } from "@/src/navigation";
 
 export default function Contact() {
   const t = useTranslations("");
 
+  const router = useRouter();
+
+  function handleBack() {
+    router.back();
+  }
+
   const handleEmailClick = () => {
-    navigator.clipboard.writeText("data.icmc@usp.com");
+    navigator.clipboard.writeText("pedrohfsilva@usp.br");
     alert("Email copiado para sua área de transferência :)");
   };
 
@@ -31,55 +39,50 @@ export default function Contact() {
   };
 
   return (
-    <div className="px-4 py-20 md:px-32 md:py-40 text-center mt-24">
-      <p className="text-2xl md:text-3xl mb-10 md:mb-16">
-        {t("Contact_Description")}
-      </p>
-      <div
-        className="flex flex-col md:flex-row justify-center space-y-6 md:space-y-0 md:space-x-10"
-        style={{ marginBottom: "50px" }} // Adiciona espaço inferior antes do footer
-      >
-        <button
-          onClick={handleEmailClick}
-          className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
-          style={buttonStyle}
+    <div className="p-8 text-center mt-16 relative">
+      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4">
+        <FaArrowLeft size={24} color={"var(--marine)"} />
+      </button>
+      <div className="w-full max-w-screen-md mx-auto mt-8">
+        <p className="text-2xl md:text-3xl mb-10 md:mb-16">
+          {"Entre em contato conosco para saber mais sobre o MeGuie. Estamos sempre abertos a novas ideias, parcerias e colaborações."}
+        </p>
+        <div
+          className="flex flex-col md:flex-row justify-center space-y-6 md:space-y-0 md:space-x-10"
+          style={{ marginBottom: "50px" }} // Adiciona espaço inferior antes do footer
         >
-          <FontAwesomeIcon icon={faEnvelope} style={iconStyle} />
-          E-mail
-        </button>
-        <button
-          onClick={() =>
-            window.open("https://www.youtube.com/c/DataICMC", "_blank")
-          }
-          className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
-          style={buttonStyle}
-        >
-          <FontAwesomeIcon icon={faYoutube} style={iconStyle} />
-          YouTube
-        </button>
-        <button
-          onClick={() =>
-            window.open("https://instagram.com/data.icmc/", "_blank")
-          }
-          className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
-          style={buttonStyle}
-        >
-          <FontAwesomeIcon icon={faInstagram} style={iconStyle} />
-          Instagram
-        </button>
-        <button
-          onClick={() =>
-            window.open(
-              "https://www.linkedin.com/school/meguie/mycompany/",
-              "_blank"
-            )
-          }
-          className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
-          style={buttonStyle}
-        >
-          <FontAwesomeIcon icon={faLinkedin} style={iconStyle} />
-          LinkedIn
-        </button>
+          <button
+            onClick={handleEmailClick}
+            className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
+            style={buttonStyle}
+          >
+            <FontAwesomeIcon icon={faEnvelope} style={iconStyle} />
+            E-mail
+          </button>
+          <button
+            onClick={() =>
+              window.open("https://instagram.com/", "_blank")
+            }
+            className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
+            style={buttonStyle}
+          >
+            <FontAwesomeIcon icon={faInstagram} style={iconStyle} />
+            Instagram
+          </button>
+          <button
+            onClick={() =>
+              window.open(
+                "https://www.linkedin.com/school/",
+                "_blank"
+              )
+            }
+            className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
+            style={buttonStyle}
+          >
+            <FontAwesomeIcon icon={faLinkedin} style={iconStyle} />
+            LinkedIn
+          </button>
+        </div>
       </div>
     </div>
   );

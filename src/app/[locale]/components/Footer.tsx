@@ -42,12 +42,12 @@ export const Footer: FC<Props> = ({ locale }) => {
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
-                  <a href={`/${locale}/pages/about`} aria-label={t("Footer.AboutUs")}>
-                    {t("Footer.AboutUs")}
+                  <a href={`/${locale}/pages/about`} aria-label={"Sobre nós"}>
+                    {"Sobre nós"}
                   </a>
                 </li>
                 <li className="mb-4">
-                  <a href={`/${locale}/pages/fronts`} aria-label={"Fale Conosco"}>
+                  <a href={`/${locale}/pages/contact`} aria-label={"Fale Conosco"}>
                     {"Fale Cosnosco"}
                   </a>
                 </li>
@@ -59,12 +59,14 @@ export const Footer: FC<Props> = ({ locale }) => {
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
-                  <a href="https://www.linkedin.com/school/meguie/" aria-label="LinkedIn" title="LinkedIn">
+                  <a href={`/${locale}/pages/howtouse`} aria-label="Como usar a plataforma" title="como usar a plataforma">
                     Como usar a plataforma
                   </a>
                 </li>
                 <li>
-                  <a href="https://www.instagram.com/data.icmc/" aria-label="Instagram" title="Instagram">
+                  <a 
+                    href={`/${locale}/pages/youtubevideo`}
+                    aria-label="Vídeo de tutorial no YouTube" title="Vídeo de tutorial no YouTube">
                     Tutorial em vídeo
                   </a>
                 </li>
@@ -77,16 +79,16 @@ export const Footer: FC<Props> = ({ locale }) => {
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
                   <a
-                    href={`/${locale}/pages/events/understandingDL`}
-                    aria-label={t("Footer.Events")}
+                     href={`/${locale}/pages/youtubevideo?videoId=QTlIH-LTydM?si=MKSvgcaLv2tO-94p&section=Como+organizar+os+estudos`}
+                    aria-label={"Vídeo no YouTube de como organizar os estudos"}
                   >
                     {"Como organizar os estudos"}
                   </a>
                 </li>
                 <li>
                   <a
-                    href="https://www.youtube.com/watch?v=LxP-r00E2fo&list=PLFE-LjWAAP9Skog9YhRvuNBjWD724c32m"
-                    aria-label={t("Footer.Courses")}
+                    href={`/${locale}/pages/youtubevideo?videoId=BF-6ofd0DNg?si=LmP2F7wqVBhf4BD6&section=Como+resolver+questões+do+ENEM`}
+                    aria-label={"Vídeo no YouTube de como resolver questões do ENEM"}
                   >
                     {"Guia de como resolver questões do ENEM"}
                   </a>

@@ -1,8 +1,8 @@
 {
     "/": "Início",
-    "/pages/about": "Sobre",
+    "/pages/about": "Sobre nós",
     "/pages/competitions": "Competições",
-    "/pages/contact": "Contato",
+    "/pages/contact": "Fale conosco",
     "/pages/events": "Eventos",
     "/pages/fronts": "Frentes",
     "/pages/learn": "Aprender",
@@ -12,5 +12,8 @@
     "/pages/events/understandingDL": "Understanding DL",
     "/pages/events/dataDay": "DataDay",
     "/pages/roadmap": "Roadmap",
-    "/pages/home": "Roadmaps"
+    "/pages/home": "Roadmaps",
+    "/pages/howtouse": "Como usar a plataforma",
+    "/pages/youtubevideo": "Conteúdo em vídeo",
+    "/pages/savedroads": "Roadmaps favoritos"
 }

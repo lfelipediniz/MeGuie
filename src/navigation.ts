@@ -26,6 +26,8 @@ export const pathnames: LocalizedPathnames = {
   '/pages/home': '/pages/home',
   '/pages/calendar': '/pages/calendar',
   'pages/savedroads': '/pages/savedroads',
+  'pages/howtouse': 'pages/howtouse',
+  'pages/youtubevideo': 'pages/youtubevideo',
 }
 
 export const { Link, redirect, usePathname, useRouter } =
