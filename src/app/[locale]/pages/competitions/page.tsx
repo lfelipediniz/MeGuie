@@ -8,7 +8,7 @@ export default function Competitions() {
       <section className="flex relative py-0">
         <div className="flex items-center">
           <div>
-            <h1>{t("Header.Competitions")}</h1>
+            <h1 aria-label={t("Header.Competitions")}>{t("Header.Competitions")}</h1>
             <br />
             <br />
           </div>

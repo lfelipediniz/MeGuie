@@ -40,6 +40,7 @@ export default function DataDay() {
           onClick={handleEmailClick}
           className="px-12 py-8 bg-white text-black rounded-3xl shadow-lg flex items-center justify-center"
           style={buttonStyle}
+          aria-label="Copiar email"
         >
           <FontAwesomeIcon icon={faEnvelope} style={iconStyle} />
           E-mail
@@ -50,6 +51,7 @@ export default function DataDay() {
           }
           className="px-12 py-8 bg-white text-black rounded-3xl shadow-lg flex items-center justify-center"
           style={buttonStyle}
+          aria-label="Abrir YouTube"
         >
           <FontAwesomeIcon icon={faYoutube} style={iconStyle} />
           YouTube
@@ -60,6 +62,7 @@ export default function DataDay() {
           }
           className="px-12 py-8 bg-white text-black rounded-3xl shadow-lg flex items-center justify-center"
           style={buttonStyle}
+          aria-label="Abrir Instagram"
         >
           <FontAwesomeIcon icon={faInstagram} style={iconStyle} />
           Instagram
@@ -73,6 +76,7 @@ export default function DataDay() {
           }
           className="px-12 py-8 bg-white text-black rounded-3xl shadow-lg flex items-center justify-center"
           style={buttonStyle}
+          aria-label="Abrir LinkedIn"
         >
           <FontAwesomeIcon icon={faLinkedin} style={iconStyle} />
           LinkedIn

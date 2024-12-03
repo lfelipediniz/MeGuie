@@ -15,7 +15,7 @@ export default function YouTubeVideo() {
 
   return (
     <div className="text-xl md:text-2xl mt-[4.5rem] md:mt-16 px-4 md:px-8 py-8 flex flex-col items-center relative">
-      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4">
+      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4" aria-label="Voltar">
         <FaArrowLeft size={24} color={"var(--marine)"} />
       </button>
       {(videoId && section) ? (
@@ -29,6 +29,7 @@ export default function YouTubeVideo() {
           title="YouTube video player"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           className="w-full max-w-screen-md aspect-video"
+          aria-label="Player de vídeo do YouTube"
         ></iframe>
         </>
       ) : (

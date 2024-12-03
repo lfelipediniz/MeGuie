@@ -188,6 +188,7 @@ export default function Roadmap() {
                             label="Legenda de Cores"
                             id="lista-cores"
                             value=""
+                            aria-label="Legenda de Cores"
                         >
                             <MenuItem value="green">
                                 <span style={{color: '#42b48c'}}>Verde</span>&nbsp;

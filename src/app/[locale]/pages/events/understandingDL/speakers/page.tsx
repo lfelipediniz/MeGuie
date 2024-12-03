@@ -56,7 +56,7 @@ const Speakers: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 py-8 mt-32">
-      <h1 className="text-primary dark:text-primary font-montserrat font-bold leading-tight text-3xl sm:text-5xl mb-8">
+      <h1 className="text-primary dark:text-primary font-montserrat font-bold leading-tight text-3xl sm:text-5xl mb-8" aria-label={t("Speakers_UDL")}>
         {t("Speakers_UDL")}
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -78,6 +78,7 @@ const Speakers: React.FC = () => {
               onClick={() => handleExpandToggle(index)}
               onMouseEnter={() => handleMouseEnter(index)}
               onMouseLeave={handleMouseLeave}
+              aria-label={`Expandir descrição de ${speaker.name}`}
             >
               <Image
                 src={speaker.photo || "/path/to/default/image.jpg"}

@@ -113,6 +113,7 @@ export default function Learn() {
                 size="medium"
                 iconName="FaArrowLeft"
                 onClick={handleBackClick}
+                aria-label="Voltar para a lista de posts"
               >
                 {t("Posts.Back_Button")}
               </Button>

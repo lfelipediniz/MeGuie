@@ -42,21 +42,21 @@ export default function About() {
 
   return (
     <div className="text-xl md:text-2xl mt-16 p-8 relative">
-      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4">
+      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4" aria-label="Voltar">
         <FaArrowLeft size={24} color={"var(--marine)"} />
       </button>
       <div className="w-full max-w-screen-md mx-auto flex flex-col gap-4">
 
         <section className="flex flex-col gap-4">
           <div>
-            <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4">{"Sobre o MeGuie"}</h2>
+            <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4" aria-label="Sobre o MeGuie">{"Sobre o MeGuie"}</h2>
             <p className="leading-relaxed px-4 md:px-0 text-justify">
               {"O MeGuie é uma solução inovadora que organiza e estrutura o seu estudo com base em roadmaps pensados para as matérias do ensino médio e fundamental. Com uma seleção cuidadosa de conteúdos de qualidade, oferecemos um guia claro e prático para você seguir, economizando tempo e potencializando os seus resultados no caminho da aprovação."}
             </p>
           </div>
 
           <div>
-            <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4">
+            <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4" aria-label="Sobre o projeto">
               {"Sobre o projeto"}
             </h2>
             <p className="leading-relaxed px-4 md:px-0 mt-2 md:mt-4 text-justify">
@@ -66,10 +66,10 @@ export default function About() {
         </section>
 
         <section className="">
-          <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4">{"Perguntas frequentes"}</h2>
+          <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4" aria-label="Perguntas frequentes">{"Perguntas frequentes"}</h2>
           <FAQ data={faqData} />
         </section>
       </div> 
     </div>
   );
-} 
+}

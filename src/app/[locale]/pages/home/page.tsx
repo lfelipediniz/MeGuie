@@ -130,7 +130,7 @@ export default function Home() {
       ) : (
         <div className="transition-opacity duration-500 opacity-100 mx-auto max-w-screen-2xl">
           <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
-            <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500">
+            <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500" aria-label="Voltar">
               <FaArrowLeft size={24} color={"var(--marine)"} />
             </button>
             <div className="w-full h-full rounded-xl shadow-xl bg-white px-4 flex items-center gap-4">
@@ -140,6 +140,7 @@ export default function Home() {
                 placeholder="Pesquisar roadmap" 
                 className="placeholder-[var(--text-tertiary)] text-[var(--text-dark-blue)] text-lg outline-none w-full h-full" 
                 value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Pesquisar roadmap"
               />
             </div>
           </div>
@@ -154,6 +155,7 @@ export default function Home() {
                   isFavorite={m.isFavorite}
                   toggleFavorite={() => toggleFavorite(index)}
                   handleOpenTopics={() => handleOpenTopics(m.topics)}
+                  aria-label={`Abrir tópicos de ${m.title}`}
                 />
               ))}
             </div>

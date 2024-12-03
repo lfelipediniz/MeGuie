@@ -40,7 +40,7 @@ export default function Contact() {
 
   return (
     <div className="p-8 text-center mt-16 relative">
-      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4">
+      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4" aria-label="Voltar">
         <FaArrowLeft size={24} color={"var(--marine)"} />
       </button>
       <div className="w-full max-w-screen-md mx-auto mt-8">
@@ -55,6 +55,7 @@ export default function Contact() {
             onClick={handleEmailClick}
             className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
             style={buttonStyle}
+            aria-label="Copiar email"
           >
             <FontAwesomeIcon icon={faEnvelope} style={iconStyle} />
             E-mail
@@ -65,6 +66,7 @@ export default function Contact() {
             }
             className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
             style={buttonStyle}
+            aria-label="Abrir Instagram"
           >
             <FontAwesomeIcon icon={faInstagram} style={iconStyle} />
             Instagram
@@ -78,6 +80,7 @@ export default function Contact() {
             }
             className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
             style={buttonStyle}
+            aria-label="Abrir LinkedIn"
           >
             <FontAwesomeIcon icon={faLinkedin} style={iconStyle} />
             LinkedIn

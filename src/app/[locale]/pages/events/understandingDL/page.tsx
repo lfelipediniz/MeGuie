@@ -55,15 +55,16 @@ export default function UnderstandingDL() {
         speakersLink={`/${locale}/pages/events/understandingDL/speakers`}
         dateButtonText={t("UDLHero.dateButtonText")}
         eventButtonText={t("UDLHero.speakersButtonText")}
+        aria-label={t("UDLHero.title")}
       />
       <br />
       <br />
 
-      <h2 className="text-3xl font-bold text-[var(--primary)] mb-6">
+      <h2 className="text-3xl font-bold text-[var(--primary)] mb-6" aria-label={t("AboutEvent.Parte_1")}>
         {t("AboutEvent.Parte_1")}
       </h2>
       <div className="about-event  mx-auto px-2 md:px-4 lg:px-8">
-        <p className="text-lg text-[var(--text-secondary)] mb-6 leading-relaxed">
+        <p className="text-lg text-[var(--text-secondary)] mb-6 leading-relaxed" aria-label={t("AboutEvent.Parte_2")}>
           <span className="font-bold">{t("AboutEvent.Parte_2")}</span>{" "}
           {t("AboutEvent.Parte_3")}
           <span className="font-bold"> {t("AboutEvent.Parte_4")}</span>{" "}
@@ -74,6 +75,7 @@ export default function UnderstandingDL() {
           <span
             className="font-bold underline cursor-pointer text-[var(--primary)] hover:text-[var(--secondary)] transition-colors duration-300"
             onClick={() => (window.location.href = `/${locale}/`)}
+            aria-label={t("AboutEvent.Parte_7")}
           >
             {" "}
             {t("AboutEvent.Parte_7")}

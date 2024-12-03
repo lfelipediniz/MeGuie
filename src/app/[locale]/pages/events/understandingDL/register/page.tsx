@@ -159,7 +159,9 @@ const RegisterUDL = () => {
 
   return (
     <div className="max-w-md mx-auto mt-32">
-      <h1 className="text-2xl font-bold mb-6 text-center" style={{ color: "var(--primary)" }}>{t('RegisterForEvent')}</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center" style={{ color: "var(--primary)" }} aria-label={t('RegisterForEvent')}>
+        {t('RegisterForEvent')}
+      </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Nome Completo */}
         <div className="mb-5">
@@ -173,6 +175,7 @@ const RegisterUDL = () => {
             value={formData.fullName}
             className="shadow-sm bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5"
             style={{ borderColor: errors.fullName ? 'red' : "var(--secondary)", backgroundColor: "var(--background-secondary)", color: "var(--primary)" }}
+            aria-label={t('FullName')}
           />
         </div>
 
@@ -188,6 +191,7 @@ const RegisterUDL = () => {
             value={formData.email}
             className="shadow-sm bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5"
             style={{ borderColor: errors.email ? 'red' : "var(--secondary)", backgroundColor: "var(--background-secondary)", color: "var(--primary)" }}
+            aria-label={t('Email')}
           />
           {errors.email && <p style={{ color: 'red', fontSize: '12px' }}>{errors.email}</p>}
         </div>
@@ -205,6 +209,7 @@ const RegisterUDL = () => {
             maxLength={15}
             className="shadow-sm bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5"
             style={{ borderColor: errors.mobileNumber ? 'red' : "var(--secondary)", backgroundColor: "var(--background-secondary)", color: "var(--primary)" }}
+            aria-label={t('MobileNumber')}
           />
           {errors.mobileNumber && <p style={{ color: 'red', fontSize: '12px' }}>{errors.mobileNumber}</p>}
         </div>
@@ -220,6 +225,7 @@ const RegisterUDL = () => {
             value={formData.telegramHandle}
             className="shadow-sm bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5"
             style={{ borderColor: "var(--secondary)", backgroundColor: "var(--background-secondary)", color: "var(--primary)" }}
+            aria-label={t('TelegramHandle')}
           />
         </div>
 
@@ -242,19 +248,20 @@ const RegisterUDL = () => {
             value={formData.uspNumber}
             className="shadow-sm bg-gray-50 border text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5"
             style={{ borderColor: "var(--secondary)", backgroundColor: "var(--background-secondary)", color: "var(--primary)" }}
+            aria-label={t('USPNumber')}
           />
         </div>
 
         {/* Termos e Condições */}
         <div className="flex items-center mb-5">
-          <input id="terms" type="checkbox" className="w-4 h-4 rounded focus:ring-3" required style={{ backgroundColor: "var(--background-secondary)", borderColor: "var(--secondary)" }} />
+          <input id="terms" type="checkbox" className="w-4 h-4 rounded focus:ring-3" required style={{ backgroundColor: "var(--background-secondary)", borderColor: "var(--secondary)" }} aria-label={t('AgreeTerms')} />
           <label htmlFor="terms" className="ml-2 text-sm font-medium" style={{ color: "var(--primary)" }}>
             {t('AgreeTerms')} <a href="#" style={{ color: "var(--link)" }} onClick={toggleTermsModal}>{t('TermsAndConditions')}</a>
           </label>
         </div>
 
         {/* Botão de Registro */}
-        <Button variant="primary" size="medium" type="submit">
+        <Button variant="primary" size="medium" type="submit" aria-label={t('RegisterButton')}>
           {t('RegisterButton')}
         </Button>
       </form>
@@ -269,12 +276,12 @@ const RegisterUDL = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium" style={{ color: "var(--primary)" }}>{modalMessage}</h3>
-                <button onClick={toggleModal} className="text-[var(--primary)] hover:text-[var(--secondary)] transition duration-300 ease-in-out">
+                <button onClick={toggleModal} className="text-[var(--primary)] hover:text-[var(--secondary)] transition duration-300 ease-in-out" aria-label="Fechar modal">
                   X
                 </button>
               </div>
               <div ref={bottomRef} className="flex justify-center px-4 py-3">
-                <Button variant="primary" onClick={toggleModal}>
+                <Button variant="primary" onClick={toggleModal} aria-label={t('AgreeAndClose')}>
                   {t('AgreeAndClose')}
                 </Button>
               </div>
@@ -293,7 +300,7 @@ const RegisterUDL = () => {
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-medium" style={{ color: "var(--primary)" }}>{t('TermsTitle')}</h3>
-                <button onClick={scrollToBottom} className="text-[var(--primary)] hover:text-[var(--secondary)] transition duration-300 ease-in-out">
+                <button onClick={scrollToBottom} className="text-[var(--primary)] hover:text-[var(--secondary)] transition duration-300 ease-in-out" aria-label="Scroll para baixo">
                   <FaChevronDown className="w-6 h-6 animate-bounce" />
                 </button>
               </div>
@@ -301,7 +308,7 @@ const RegisterUDL = () => {
                 <p className="text-sm" style={{ color: "var(--text-secondary)" }}>{t('TermsContent')}</p>
               </div>
               <div ref={bottomRef} className="flex justify-center px-4 py-3">
-                <Button variant="primary" onClick={toggleTermsModal}>
+                <Button variant="primary" onClick={toggleTermsModal} aria-label={t('AgreeAndClose')}>
                   {t('AgreeAndClose')}
                 </Button>
               </div>

@@ -37,6 +37,7 @@ export default function About() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-link"
+            aria-label="Link para o ICMC"
           >
             {t("AboutSection.ICMC")}
           </a>
@@ -46,6 +47,7 @@ export default function About() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-link"
+            aria-label="Link para a USP"
           >
             {t("AboutSection.USP")}
           </a>

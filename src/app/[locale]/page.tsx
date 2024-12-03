@@ -157,6 +157,7 @@ export default function DashboardPage() {
           href="https://instagram.com"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Abrir Instagram"
         >
           <FaInstagram
             size={isMobile ? 30 : 40}
@@ -167,6 +168,7 @@ export default function DashboardPage() {
           href="https://facebook.com"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Abrir Facebook"
         >
           <FaFacebook
             size={isMobile ? 30 : 40}
@@ -177,6 +179,7 @@ export default function DashboardPage() {
           href="https://wa.me/5511999999999"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Abrir WhatsApp"
         >
           <FaWhatsapp
             size={isMobile ? 30 : 40}
@@ -187,6 +190,7 @@ export default function DashboardPage() {
           href="mailto:contato@meguie.com"
           target="_blank"
           rel="noopener noreferrer"
+          aria-label="Enviar email"
         >
           <FaEnvelope
             size={isMobile ? 30 : 40}

@@ -28,6 +28,7 @@ export default function HowToUse() {
       <button 
         onClick={handleBack} 
         className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4"
+        aria-label="Voltar"
       >
         <FaArrowLeft size={24} color={"var(--marine)"} />
       </button>
