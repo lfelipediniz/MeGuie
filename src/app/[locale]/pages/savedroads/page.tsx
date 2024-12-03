@@ -17,6 +17,7 @@ export default function SavedRoads() {
   const [showLoading, setShowLoading] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
+  const [localTopics, setLocalTopics] = useState<Topic[]>([]);
   const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(true);
 
   function toggleFavorite() {
@@ -43,12 +44,22 @@ export default function SavedRoads() {
     setIsMaterialsModalOpen(false);
   };
 
-  function handleOpenTopics(event: React.MouseEvent) {
+  type Topic = {
+    title: string;
+    description: string;
+  };
+
+  const mathTopics = [
+    { title: 'Álgebra', description: 'Equações, variáveis e expressões matemáticas.' },
+    { title: 'Geometria', description: 'Estudo das formas, ângulos e espaço.' },
+    { title: 'Cálculo', description: 'Derivadas, integrais e suas aplicações.' },
+  ]
+
+  function handleOpenTopics(topics: Topic[], event: React.MouseEvent) {
     event.stopPropagation();
+    setLocalTopics(topics);
     openTopicsModal();
   }
-
-  const mathTopics = ["Tópico 1", "Tópico 2", "Tópico 3", "Tópico 4"];
 
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
@@ -76,7 +87,7 @@ export default function SavedRoads() {
                 progress={40}
                 isFavorite={isFavorite}
                 toggleFavorite={toggleFavorite}
-                // topics={mathTopics}
+                topics={mathTopics}
                 handleOpenTopics={handleOpenTopics}
               />
               <RoadmapCard
@@ -85,7 +96,7 @@ export default function SavedRoads() {
                 progress={40}
                 isFavorite={isFavorite}
                 toggleFavorite={toggleFavorite}
-                // topics={mathTopics}
+                topics={mathTopics}
                 handleOpenTopics={handleOpenTopics}
               />
               <RoadmapCard
@@ -94,7 +105,7 @@ export default function SavedRoads() {
                 progress={40}
                 isFavorite={isFavorite}
                 toggleFavorite={toggleFavorite}
-                // topics={mathTopics}
+                topics={mathTopics}
                 handleOpenTopics={handleOpenTopics}
               />
               <RoadmapCard
@@ -103,7 +114,7 @@ export default function SavedRoads() {
                 progress={40}
                 isFavorite={isFavorite}
                 toggleFavorite={toggleFavorite}
-                // topics={mathTopics}
+                topics={mathTopics}
                 handleOpenTopics={handleOpenTopics}
               />
               <RoadmapCard
@@ -112,7 +123,7 @@ export default function SavedRoads() {
                 progress={40}
                 isFavorite={isFavorite}
                 toggleFavorite={toggleFavorite}
-                // topics={mathTopics}
+                topics={mathTopics}
                 handleOpenTopics={handleOpenTopics}
               />
             </div>
@@ -120,7 +131,7 @@ export default function SavedRoads() {
         </div>
       )}
       <TopicsModal
-        // topics={mathTopics}
+        topics={mathTopics}
         isOpen={isTopicsModalOpen}
         onClose={closeTopicsModal}
       />

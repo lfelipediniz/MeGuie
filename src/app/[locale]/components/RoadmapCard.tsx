@@ -5,13 +5,19 @@ import { IoChevronForward } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
 import { useRouter } from "@/src/navigation";
 
+type Topic = {
+  title: string;
+  description: string;
+};
+
 interface CardComponentProps {
   image: string;
   title: string;
   progress: number;
   isFavorite: boolean;
   toggleFavorite: () => void;
-  handleOpenTopics: (event: React.MouseEvent) => void;
+  topics: Topic[];
+  handleOpenTopics: (topics: Topic[] , event: React.MouseEvent) => void;
 }
 
 const CardComponent: React.FC<CardComponentProps> = (props) => {
@@ -48,10 +54,10 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
           ></div>
         </div>
         <div className="flex justify-between items-center">
-          <button onClick={props.handleOpenTopics} className="border border-[var(--gray)] rounded-full p-2 pointer-events-auto flex items-center gap-2 text-[var(--gray)]" aria-label="Ver tópicos abordados">
+          <button onClick={(event) => props.handleOpenTopics(props.topics, event)} className="border border-[var(--gray)] rounded-full p-2 pointer-events-auto flex items-center gap-2 text-[var(--gray)]" aria-label="Ver tópicos abordados">
             Ver tópicos abordados <IoChevronForward size={18} color={"var(--gray)"} />
           </button>
-          <button onClick={handleFavorite} className="pointer-events-auto" aria-label={props.isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
+          <button onClick={(event) => handleFavorite(event)} className="pointer-events-auto" aria-label={props.isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
             {props.isFavorite ? 
               <FaHeart size={24} color={"var(--gray)"} />
             :

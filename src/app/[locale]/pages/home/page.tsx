@@ -111,7 +111,8 @@ export default function Home() {
     setIsTopicsModalOpen(false);
   };
 
-  function handleOpenTopics(topics: Topic[]) {
+  function handleOpenTopics(topics: Topic[], event: React.MouseEvent) {
+    event.stopPropagation();
     setLocalTopics(topics);
     openTopicsModal();
   }
@@ -145,7 +146,8 @@ export default function Home() {
                   progress={m.progress}
                   isFavorite={m.isFavorite}
                   toggleFavorite={() => toggleFavorite(index)}
-                  handleOpenTopics={() => handleOpenTopics(m.topics)} />
+                  topics={m.topics}
+                  handleOpenTopics={handleOpenTopics} />
               ))}
             </div>
           </div>
