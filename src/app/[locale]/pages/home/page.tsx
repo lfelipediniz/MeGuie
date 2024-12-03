@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/src/navigation";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import RoadmapCard from "../../components/RoadmapCard";
@@ -84,6 +84,7 @@ export default function Home() {
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
   const [localTopics, setLocalTopics] = useState<Topic[]>([]);
   const [roadmaps, setRoadmaps] = useState<Roadmap[]>(mockRoadmaps);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   const toggleFavorite = (index: number) => {
     setRoadmaps((prevRoadmaps) => {
@@ -114,6 +115,12 @@ export default function Home() {
     openTopicsModal();
   }
 
+  const filteredRoadmaps = useMemo(() => {
+    return roadmaps.filter(
+      f => f.title.includes(searchQuery)
+    )
+  }, [roadmaps, searchQuery])
+
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
       {showLoading ? (
@@ -128,13 +135,18 @@ export default function Home() {
             </button>
             <div className="w-full h-full rounded-xl shadow-xl bg-white px-4 flex items-center gap-4">
               <IoSearch size={24} color={"var(--text-tertiary)"} />
-              <input type="text" placeholder="Pesquisar roadmap" className="placeholder-[var(--text-tertiary)] text-[var(--text-dark-blue)] text-lg outline-none w-full h-full" />
+              <input 
+                type="text" 
+                placeholder="Pesquisar roadmap" 
+                className="placeholder-[var(--text-tertiary)] text-[var(--text-dark-blue)] text-lg outline-none w-full h-full" 
+                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
           </div>
           <div className="w-full flex flex-col gap-4">
             <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps</h2>
             <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-              {roadmaps.map((m, index) => (
+              {filteredRoadmaps.map((m, index) => (
                 <RoadmapCard 
                   image={m.image}
                   title={m.title}
