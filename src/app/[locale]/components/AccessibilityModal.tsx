@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FiMinus, FiPlus, FiRefreshCw } from "react-icons/fi"; // Ícones para ajuste de fonte
 import { IoIosContrast } from "react-icons/io"; // Ícone para contraste
 
@@ -31,14 +31,32 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
   const toggleContrastTheme = () => {
     const root = document.documentElement;
     const isDark = root.classList.contains("dark");
+
     if (isDark) {
       root.classList.remove("dark");
       setIsHighContrast(false);
+      localStorage.setItem("isHighContrast", "false");
     } else {
       root.classList.add("dark");
       setIsHighContrast(true);
+      localStorage.setItem("isHighContrast", "true");
     }
   };
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedPreference = localStorage.getItem("isHighContrast");
+      const root = document.documentElement;
+
+      if (savedPreference === "true") {
+        root.classList.add("dark");
+        setIsHighContrast(true);
+      } else {
+        root.classList.remove("dark");
+        setIsHighContrast(false);
+      }
+    }
+  }, []);
 
   if (!isOpen) return null;
 
