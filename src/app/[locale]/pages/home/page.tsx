@@ -6,6 +6,7 @@ import RoadmapCard from "../../components/RoadmapCard";
 import { IoSearch } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa6";
 import TopicsModal from "../../components/TopicsModal";
+import SearchBar from "../../components/SearchBar"; 
 
 type Topic = {
   title: string;
@@ -130,19 +131,9 @@ export default function Home() {
       ) : (
         <div className="transition-opacity duration-500 opacity-100 mx-auto max-w-screen-2xl">
           <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
-            <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500" aria-label="Voltar">
-              <FaArrowLeft size={24} color={"var(--marine)"} />
-            </button>
-            <div className="w-full h-full rounded-xl shadow-xl bg-white px-4 flex items-center gap-4">
-              <IoSearch size={24} color={"var(--text-tertiary)"} />
-              <input 
-                type="text" 
-                placeholder="Pesquisar roadmap" 
-                className="placeholder-[var(--text-tertiary)] text-[var(--text-dark-blue)] text-lg outline-none w-full h-full" 
-                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                aria-label="Pesquisar roadmap"
-              />
-            </div>
+
+            <SearchBar onSearch={() => {}} onBack={handleBack} />
+
           </div>
           <div className="w-full flex flex-col gap-4">
             <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps</h2>
@@ -154,9 +145,7 @@ export default function Home() {
                   progress={m.progress}
                   isFavorite={m.isFavorite}
                   toggleFavorite={() => toggleFavorite(index)}
-                  handleOpenTopics={() => handleOpenTopics(m.topics)}
-                  aria-label={`Abrir tópicos de ${m.title}`}
-                />
+                  handleOpenTopics={() => handleOpenTopics(m.topics)} />
               ))}
             </div>
           </div>
