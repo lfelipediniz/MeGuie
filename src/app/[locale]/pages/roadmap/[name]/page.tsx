@@ -23,41 +23,43 @@ const mockNodes: Node[] = [
         id: '1',
         data: { label: 'Números' },
         position: { x: 250, y: 5 },
-        style: {border: '1px solid #42b48c'}
+        style: {border: '1px solid #42b48c', color: 'black'}
     },
     { 
         id: '2',
         data: { label: 'Álgebra' },
         position: { x: 100, y: 100 },
-        style: {border: '1px solid #42b48c'}
+        style: {border: '1px solid #42b48c', color: 'black'}
     },
     { 
         id: '3', 
         data: { label: 'Geometria' }, 
         position: { x: 400, y: 100 },
-        style: {border: '1px solid #FA8F32'}
+        style: {border: '1px solid #FA8F32', color: 'black'}
     },
     { 
         id: '4',
         data: { label: 'Trigonometria' },
-        position: { x: 400, y: 200 }
+        position: { x: 400, y: 200 },
+        style: {color: 'black'}
     },
     { 
         id: '5',
         data: { label: 'Probabilidade' },
         position: { x: 100, y: 200 },
-        style: {border: '1px solid #42b48c'}
+        style: {border: '1px solid #42b48c', color: 'black'}
     },
     {
         id: '6',
         data: { label: 'Gráficos' },
         position: { x: 100, y: 300 },
-        style: {border: '1px solid #42b48c'}
+        style: {border: '1px solid #42b48c', color: 'black'}
     },
     { 
         id: '7',
         data: { label: 'Funções' },
-        position: { x: 400, y: 300 }
+        position: { x: 400, y: 300 },
+        style: {color: 'black'}
     },
 ];
  
@@ -170,7 +172,7 @@ export default function Roadmap() {
                             onClick={handleNavigation}
                             aria-label="Voltar para Roadmaps"
                         >
-                            <FaArrowLeft size={24} color={"var(--marine)"} />
+                            <FaArrowLeft size={24} color={"var(--action)"} />
                         </button>
                         <h2 className="ml-3">
                             {mapNames[title]}
