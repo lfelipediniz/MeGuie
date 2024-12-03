@@ -13,13 +13,13 @@ import {
   FaEnvelope,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-<<<<<<< HEAD
+
 import Home from "./pages/home/page";
 import LoadingOverlay from "../[locale]/components/LoadingOverlay"; // Supondo que você tenha um componente de carregamento
-=======
+
 import { MdOutlineEmail } from "react-icons/md";
 import { RiFacebookCircleLine } from "react-icons/ri";
->>>>>>> refs/remotes/origin/main
+
 
 export default function DashboardPage() {
   const componentRef = useRef<HTMLDivElement>(null);
