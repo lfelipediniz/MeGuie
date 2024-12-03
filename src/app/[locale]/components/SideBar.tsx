@@ -92,6 +92,11 @@ const Sidebar: React.FC = () => {
       path: "/",
     },
     {
+      icon: <RiRoadMapFill aria-hidden="true" />,
+      label: "Roadmaps",
+      path: "/pages/home",
+    },
+    {
       icon: <FaCalendarAlt aria-hidden="true" />,
       label: "Calendário",
       path: "/pages/calendar",
