@@ -133,7 +133,7 @@ export default function Home() {
         <div className="transition-opacity duration-500 opacity-100 mx-auto max-w-screen-2xl">
           <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
 
-            <SearchBar onSearch={() => {}} onBack={handleBack} />
+            <SearchBar onSearch={(query) => {setSearchQuery(query)}} onBack={handleBack} />
 
           </div>
           <div className="w-full flex flex-col gap-4">
