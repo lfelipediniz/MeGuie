@@ -13,6 +13,8 @@ import {
 import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
 import AccessibilityModal from "./AccessibilityModal";
+import { RiRoadMapFill } from "react-icons/ri";
+
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -57,6 +59,11 @@ const Sidebar: React.FC = () => {
       icon: <FaHome aria-hidden="true" />,
       label: "Tela Principal",
       path: "/",
+    },
+    {
+      icon: <RiRoadMapFill aria-hidden="true" />,
+      label: "Roadmaps",
+      path: "/pages/home",
     },
     {
       icon: <FaCalendarAlt aria-hidden="true" />,
