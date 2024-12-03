@@ -25,7 +25,30 @@ export const Header: FC<Props> = ({ locale }) => {
   const pathname = usePathname();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
   const [isModalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    // Verifica o localStorage ao montar o componente
+    const loggedInStatus = localStorage.getItem('isLoggedIn');
+    if (loggedInStatus === 'true') {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+
+    // Opcional: Sincroniza o estado de login entre múltiplas abas
+    const handleStorageChange = () => {
+      const updatedStatus = localStorage.getItem('isLoggedIn');
+      setIsLoggedIn(updatedStatus === 'true');
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const [expanded, setExpanded] = useState(false);
   const [accessibilityMenuAnchor, setAccessibilityMenuAnchor] =
@@ -71,7 +94,17 @@ export const Header: FC<Props> = ({ locale }) => {
   ];
 
   const handleLogout = () => {
-    router.push("/");
+    // Atualiza o estado
+    setIsLoggedIn(false);
+    // Atualiza o localStorage
+    localStorage.setItem('isLoggedIn', 'false');
+
+    // Extrai o locale atual da URL
+    const pathSegments = window.location.pathname.split('/');
+    const locale = pathSegments[1] || 'br'; // Define 'br' como padrão se nenhum locale for encontrado
+
+    // Redireciona para a página principal com o locale e recarrega a página
+    window.location.href = `/${locale}/`; // Ajuste o caminho conforme a estrutura da sua aplicação
   };
 
   const openModal = () => setModalOpen(true);
