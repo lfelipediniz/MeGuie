@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl";
 import { useTheme } from "next-themes";
 import { useEffect, useState, FC } from "react";
 import BinaryLogo from "@/src/app/icons/binaryLogo";
+import { AiOutlineLinkedin } from "react-icons/ai";
+import { RiFacebookCircleLine } from "react-icons/ri";
 
 interface Props {
   locale: string;
@@ -108,28 +110,36 @@ export const Footer: FC<Props> = ({ locale }) => {
           </span>
           <div className="flex mt-4 sm:justify-center sm:mt-0">
             <a
-              href="https://www.youtube.com/c/DataICMC"
-              aria-label="YouTube"
-              className="me-5"
-              title="YouTube"
-            >
-              <FaInstagram className="w-4 h-4" />
-            </a>
-            <a
-              href="https://www.instagram.com/data.icmc/"
+              href="https://www.instagram.com/"
               aria-label="Instagram"
               className="me-5"
               title="Instagram"
             >
-              <FaFacebook className="w-4 h-4" />
+              <FaInstagram className="w-4 h-4" />
             </a>
             <a
-              href="https://wa.me/1234567890"
+              href="https://www.facebook.com/"
+              aria-label="Facebook"
+              className="me-5"
+              title="Facebook"
+            >
+              <RiFacebookCircleLine className="w-4 h-4" />
+            </a>
+            <a
+              href="https://wa.me/35988550516"
               aria-label="WhatsApp"
               className="me-5"
               title="WhatsApp"
             >
               <FaWhatsapp className="w-4 h-4" />
+            </a>
+            <a
+              href="https://www.linkedin.com/"
+              aria-label="LinkedIn"
+              className="me-5"
+              title="LinkedIn"
+            >
+              <AiOutlineLinkedin className="w-4 h-4" />
             </a>
           </div>
         </div>

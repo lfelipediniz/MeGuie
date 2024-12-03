@@ -10,6 +10,9 @@ import {
 import { Footer } from "../../components/Footer";
 import { FaArrowLeft } from "react-icons/fa6";
 import { useRouter } from "@/src/navigation";
+import { RiFacebookCircleLine } from "react-icons/ri";
+import { AiOutlineLinkedin } from "react-icons/ai";
+import { MdOutlineEmail } from "react-icons/md";
 
 export default function Contact() {
   const t = useTranslations("");
@@ -57,7 +60,7 @@ export default function Contact() {
             style={buttonStyle}
             aria-label="Copiar email"
           >
-            <FontAwesomeIcon icon={faEnvelope} style={iconStyle} />
+            <MdOutlineEmail style={iconStyle} />
             E-mail
           </button>
           <button
@@ -82,8 +85,22 @@ export default function Contact() {
             style={buttonStyle}
             aria-label="Abrir LinkedIn"
           >
-            <FontAwesomeIcon icon={faLinkedin} style={iconStyle} />
+            <AiOutlineLinkedin style={iconStyle} />
             LinkedIn
+          </button>
+          <button
+            onClick={() =>
+              window.open(
+                "https://www.facebook.com",
+                "_blank"
+              )
+            }
+            className="w-full md:w-auto px-6 py-4 md:px-8 md:py-6 rounded-3xl shadow-lg flex items-center justify-center whitespace-nowrap"
+            style={buttonStyle}
+            aria-label="Abrir LinkedIn"
+          >
+            <RiFacebookCircleLine style={iconStyle} />
+            Facebook
           </button>
         </div>
       </div>
