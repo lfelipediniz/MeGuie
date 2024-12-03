@@ -179,10 +179,17 @@ export default function Roadmap() {
                         </h2>
                     </div>
                     <FormControl
-                        style={{minWidth: '250px'}} 
+                        sx={{
+                            minWidth: '250px',
+                        }} 
                         size="small"
                     >
-                        <InputLabel id="legenda-de-cores">
+                        <InputLabel 
+                            id="legenda-de-cores"
+                            sx={{
+                                color: 'var(--primary)',
+                            }} 
+                        >
                             Legenda de Cores
                         </InputLabel>
                         <Select
@@ -191,6 +198,16 @@ export default function Roadmap() {
                             id="lista-cores"
                             value=""
                             aria-label="Legenda de Cores"
+                            sx={{
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'var(--primary) !important', // Cor da borda
+                                },
+                                backgroundColor: 'var(--background) !important', // Fundo
+                                color: 'var(--primary)', // Texto interno
+                                '& .MuiSvgIcon-root': {
+                                    color: 'var(--primary)', // Cor do ícone de dropdown
+                                },
+                            }}
                         >
                             <MenuItem value="green">
                                 <span style={{color: '#42b48c'}}>Verde</span>&nbsp;
