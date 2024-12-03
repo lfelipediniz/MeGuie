@@ -1,11 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
-import Button from "../../components/Button";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/src/navigation";
-import PostSearch from "../../components/PostSearch";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import { Footer } from "../../components/Footer";
 import RoadmapCard from "../../components/RoadmapCard";
 import { IoSearch } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa6";
@@ -22,7 +18,6 @@ type Roadmap = {
   progress: number;
   topics: Topic[];
   isFavorite: boolean;
-  toggleFavorite: () => void;
 };
 
 const mockRoadmaps: Roadmap[] = [
@@ -36,9 +31,6 @@ const mockRoadmaps: Roadmap[] = [
       { title: 'Evolução', description: 'Mudanças nas espécies ao longo do tempo.' },
     ],
     isFavorite: false,
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
-    }
   },
   {
     image: 'image_fisica.png',
@@ -50,9 +42,6 @@ const mockRoadmaps: Roadmap[] = [
       { title: 'Cálculo', description: 'Derivadas, integrais e suas aplicações.' },
     ],
     isFavorite: false,
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
-    }
   },
   {
     image: 'image_portugues.png',
@@ -64,9 +53,6 @@ const mockRoadmaps: Roadmap[] = [
       { title: 'Redação', description: 'Técnicas para escrita de textos.' },
     ],
     isFavorite: false,
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
-    }
   },
   {
     image: 'image_quimica.png',
@@ -78,9 +64,6 @@ const mockRoadmaps: Roadmap[] = [
       { title: 'Química Orgânica', description: 'Estudo dos compostos baseados em carbono.' },
     ],
     isFavorite: false,
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
-    }
   },
   {
     image: 'image_sociologia.png',
@@ -92,18 +75,27 @@ const mockRoadmaps: Roadmap[] = [
       { title: 'Globalização', description: 'Globalização e seus impactos.' },
     ],
     isFavorite: false,
-    toggleFavorite() {
-      this.isFavorite = !this.isFavorite;
-    }
   }
 ];
 
 export default function Home() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [showLoading, setShowLoading] = useState(false);
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
   const [localTopics, setLocalTopics] = useState<Topic[]>([]);
+  const [roadmaps, setRoadmaps] = useState<Roadmap[]>(mockRoadmaps);
+
+  const toggleFavorite = (index: number) => {
+    setRoadmaps((prevRoadmaps) => {
+      const newRoadmaps = prevRoadmaps.map((roadmap, i) => {
+        if (i === index) {
+          return { ...roadmap, isFavorite: !roadmap.isFavorite };
+        }
+        return roadmap;
+      });
+      return newRoadmaps; 
+    });
+  };
 
   function handleBack() {
     router.back()
@@ -142,13 +134,13 @@ export default function Home() {
           <div className="w-full flex flex-col gap-4">
             <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps</h2>
             <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-              {mockRoadmaps.map(m => (
+              {roadmaps.map((m, index) => (
                 <RoadmapCard 
                   image={m.image}
                   title={m.title}
                   progress={m.progress}
                   isFavorite={m.isFavorite}
-                  toggleFavorite={m.toggleFavorite}
+                  toggleFavorite={() => toggleFavorite(index)}
                   handleOpenTopics={() => handleOpenTopics(m.topics)}
                 />
               ))}
