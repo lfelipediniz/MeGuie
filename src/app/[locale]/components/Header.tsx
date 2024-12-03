@@ -15,6 +15,7 @@ import {
 import { BsPersonArmsUp } from "react-icons/bs";
 import AccessibilityModal from "./AccessibilityModal"; // Import do modal
 import pageNamesData from "@/data/br/pagesTitle.json";
+import { RiRoadMapFill } from "react-icons/ri";
 
 interface Props {
   locale: string;
@@ -56,6 +57,16 @@ export const Header: FC<Props> = ({ locale }) => {
       />,
       label: "Tela Principal",
       path: "/",
+    },
+    {
+      icon: <RiRoadMapFill 
+        className="cursor-pointer"
+        role="link"
+        aria-label="Ir para a página de roadmaps"
+        tabIndex={0}
+      />,
+      label: "Roadmaps",
+      path: "/pages/home",
     },
     {
       icon: <FaCalendarAlt 
