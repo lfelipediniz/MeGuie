@@ -15,7 +15,7 @@ import {
 import { useRouter } from "next/navigation";
 
 import Home from "./pages/home/page";
-import LoadingOverlay from "../[locale]/components/LoadingOverlay"; // Supondo que você tenha um componente de carregamento
+import LoadingOverlay from "../[locale]/components/LoadingOverlay"; 
 
 import { MdOutlineEmail } from "react-icons/md";
 import { RiFacebookCircleLine } from "react-icons/ri";
@@ -28,11 +28,10 @@ export default function DashboardPage() {
   const router = useRouter();
 
   // Estado para rastrear se o usuário está logado
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null indica que ainda está verificando
-  const [loading, setLoading] = useState<boolean>(true); // Estado de carregamento inicial
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
+  const [loading, setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
-    // Função para lidar com redimensionamento da janela
     const handleResize = () => {
       const width = window.innerWidth;
       setIsSmallScreen(width <= 1200);
@@ -42,7 +41,6 @@ export default function DashboardPage() {
     handleResize();
     window.addEventListener("resize", handleResize);
 
-    // Verificar o status de login ao montar o componente
     const checkLoginStatus = () => {
       const isLoggedInStorage = localStorage.getItem("isLoggedIn");
       setIsLoggedIn(isLoggedInStorage === "true");
@@ -88,7 +86,6 @@ export default function DashboardPage() {
     router.push("/br/pages/login");
   };
 
-  // Se ainda estiver verificando o status de login, exibir um indicador de carregamento
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen">
@@ -97,12 +94,11 @@ export default function DashboardPage() {
     );
   }
 
-  // Renderização Condicional
+
   if (isLoggedIn) {
     return <Home />;
   }
 
-  // Conteúdo da Dashboard para usuários não logados
   return (
     <div className="mt-32 mx-auto max-w-screen-2xl p-4 md:p-8">
       <section
