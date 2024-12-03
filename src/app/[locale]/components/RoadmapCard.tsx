@@ -10,7 +10,6 @@ interface CardComponentProps {
   progress: number;
   isFavorite: boolean;
   toggleFavorite: () => void;
-  topics: string[];
   handleOpenTopics: (event: React.MouseEvent) => void;
 }
 

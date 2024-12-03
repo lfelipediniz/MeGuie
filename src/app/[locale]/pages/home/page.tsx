@@ -11,17 +11,99 @@ import { IoSearch } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa6";
 import TopicsModal from "../../components/TopicsModal";
 
+type Topic = {
+  title: string;
+  description: string;
+};
+
+type Roadmap = {
+  image: string;
+  title: string;
+  progress: number;
+  topics: Topic[];
+  isFavorite: boolean;
+  toggleFavorite: () => void;
+};
+
+const mockRoadmaps: Roadmap[] = [
+  {
+    image: 'image_biologia.png',
+    title: 'Biologia',
+    progress: 40,
+    topics: [
+      { title: 'Ecossistemas', description: 'Biodiversidade e interações entre espécies.' },
+      { title: 'Genética', description: 'Estudo da hereditariedade e variação dos seres vivos.' },
+      { title: 'Evolução', description: 'Mudanças nas espécies ao longo do tempo.' },
+    ],
+    isFavorite: false,
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite;
+    }
+  },
+  {
+    image: 'image_fisica.png',
+    title: 'Matemática',
+    progress: 50,
+    topics: [
+      { title: 'Álgebra', description: 'Equações, variáveis e expressões matemáticas.' },
+      { title: 'Geometria', description: 'Estudo das formas, ângulos e espaço.' },
+      { title: 'Cálculo', description: 'Derivadas, integrais e suas aplicações.' },
+    ],
+    isFavorite: false,
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite;
+    }
+  },
+  {
+    image: 'image_portugues.png',
+    title: 'Português',
+    progress: 30,
+    topics: [
+      { title: 'Gramática', description: 'Regras e estruturas da língua portuguesa.' },
+      { title: 'Literatura', description: 'Análise de obras e autores brasileiros.' },
+      { title: 'Redação', description: 'Técnicas para escrita de textos.' },
+    ],
+    isFavorite: false,
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite;
+    }
+  },
+  {
+    image: 'image_quimica.png',
+    title: 'Química',
+    progress: 0,
+    topics: [
+      { title: 'Tabela Periódica', description: 'Organização dos elementos químicos.' },
+      { title: 'Reações Químicas', description: 'Transformações e interações entre substâncias.' },
+      { title: 'Química Orgânica', description: 'Estudo dos compostos baseados em carbono.' },
+    ],
+    isFavorite: false,
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite;
+    }
+  },
+  {
+    image: 'image_sociologia.png',
+    title: 'Sociologia',
+    progress: 100,
+    topics: [
+      { title: 'Cultura', description: 'Valores, costumes e práticas sociais.' },
+      { title: 'Estratificação Social', description: 'Classes sociais e desigualdades.' },
+      { title: 'Globalização', description: 'Globalização e seus impactos.' },
+    ],
+    isFavorite: false,
+    toggleFavorite() {
+      this.isFavorite = !this.isFavorite;
+    }
+  }
+];
+
 export default function Home() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const [showLoading, setShowLoading] = useState(false)
-  const [isFavorite, setIsFavorite] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
-  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(true);
-
-  function toggleFavorite() {
-    setIsFavorite(!isFavorite);
-  }
+  const [localTopics, setLocalTopics] = useState<Topic[]>([]);
 
   function handleBack() {
     router.back()
@@ -35,25 +117,10 @@ export default function Home() {
     setIsTopicsModalOpen(false);
   };
 
-  const openMaterialsModal = () => {
-    setIsMaterialsModalOpen(true);
-  };
-
-  const closeMaterialsModal = () => {
-    setIsMaterialsModalOpen(false);
-  };
-
-  function handleOpenTopics(event: React.MouseEvent) {
-    event.stopPropagation();
+  function handleOpenTopics(topics: Topic[]) {
+    setLocalTopics(topics);
     openTopicsModal();
   }
-
-  const mathTopics = [
-    "Tópico 1",
-    "Tópico 2",
-    "Tópico 3",
-    "Tópico 4",
-  ];
 
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
@@ -75,17 +142,22 @@ export default function Home() {
           <div className="w-full flex flex-col gap-4">
             <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps</h2>
             <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
-              <RoadmapCard image={"image_fisica.png"} title="Matemática" progress={40} isFavorite={isFavorite} toggleFavorite={toggleFavorite} topics={mathTopics} handleOpenTopics={handleOpenTopics} />
+              {mockRoadmaps.map(m => (
+                <RoadmapCard 
+                  image={m.image}
+                  title={m.title}
+                  progress={m.progress}
+                  isFavorite={m.isFavorite}
+                  toggleFavorite={m.toggleFavorite}
+                  handleOpenTopics={() => handleOpenTopics(m.topics)}
+                />
+              ))}
             </div>
           </div>
         </div>
       )}
       <TopicsModal
-        // topics={mathTopics}
+        topics={localTopics}
         isOpen={isTopicsModalOpen}
         onClose={closeTopicsModal}
       />
