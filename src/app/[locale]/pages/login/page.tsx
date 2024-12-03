@@ -48,14 +48,43 @@ export default function Login() {
         return Object.values(newErrors).every((error) => error === '');
     }
 
-    const handleFormSubmit = (e: React.FormEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateFormData()) return;
 
-        // todo: make request and set loading ... 
+        setLoading(true);
 
-        // ok!
-        router.push('/pages/home');
+        try {
+            // TODO: Realizar a requisição de login aqui.
+            // Por exemplo:
+            // const response = await api.post('/login', formData);
+            // if (response.ok) { ... }
+
+            // Simulação de requisição assíncrona com timeout
+            await new Promise((resolve) => setTimeout(resolve, 2000));
+
+            // Atualizar o localStorage
+            localStorage.setItem('isLoggedIn', 'true');
+
+            // Extrair o locale atual da URL
+            const pathSegments = window.location.pathname.split('/');
+            const locale = pathSegments[1] || 'br'; // 'br' como padrão se nenhum locale for encontrado
+
+            // Construir a nova URL com o locale
+            const newUrl = `/${locale}/pages/home`;
+
+            // Redirecionar para a página inicial com o locale e recarregar
+            window.location.href = newUrl;
+            // Alternativamente, se preferir recarregar a página atual:
+            // window.location.reload();
+
+        } catch (error) {
+            // Tratar erros de login aqui
+            console.error("Erro ao fazer login:", error);
+            // Opcional: Exibir uma mensagem de erro para o usuário
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (

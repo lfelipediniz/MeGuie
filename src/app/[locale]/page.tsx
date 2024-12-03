@@ -1,11 +1,10 @@
 "use client";
+
+import React, { useEffect, useState, useRef } from "react";
 import { useTranslations } from "next-intl";
 import LogoIcon from "../icons/logo";
 import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
-
-
-import { useEffect, useState, useRef } from "react";
 import FAQ from "./components/FAQ";
 import {
   FaInstagram,
@@ -13,8 +12,9 @@ import {
   FaWhatsapp,
   FaEnvelope,
 } from "react-icons/fa";
-
 import { useRouter } from "next/navigation";
+import Home from "./pages/home/page";
+import LoadingOverlay from "../[locale]/components/LoadingOverlay"; // Supondo que você tenha um componente de carregamento
 
 export default function DashboardPage() {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -22,7 +22,12 @@ export default function DashboardPage() {
   const [isMobile, setIsMobile] = useState(false);
   const router = useRouter();
 
+  // Estado para rastrear se o usuário está logado
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // null indica que ainda está verificando
+  const [loading, setLoading] = useState<boolean>(true); // Estado de carregamento inicial
+
   useEffect(() => {
+    // Função para lidar com redimensionamento da janela
     const handleResize = () => {
       const width = window.innerWidth;
       setIsSmallScreen(width <= 1200);
@@ -31,6 +36,15 @@ export default function DashboardPage() {
 
     handleResize();
     window.addEventListener("resize", handleResize);
+
+    // Verificar o status de login ao montar o componente
+    const checkLoginStatus = () => {
+      const isLoggedInStorage = localStorage.getItem("isLoggedIn");
+      setIsLoggedIn(isLoggedInStorage === "true");
+      setLoading(false);
+    };
+
+    checkLoginStatus();
 
     return () => {
       window.removeEventListener("resize", handleResize);
@@ -56,27 +70,46 @@ export default function DashboardPage() {
     {
       question:
         "Qual é a diferença entre o MeGuie e outros métodos de estudo online?",
-      answer: "Diferentemente de outros métodos de estudos em que o conteúdo é dividido em dias ou semanas, o MeGuie possui um cronograma de estudos mais flexível, permitindo que você estude no seu próprio ritmo.",
+      answer:
+        "Diferentemente de outros métodos de estudos em que o conteúdo é dividido em dias ou semanas, o MeGuie possui um cronograma de estudos mais flexível, permitindo que você estude no seu próprio ritmo.",
     },
   ];
 
   const handleSignup = () => {
-    router.push('/br/pages/signup');
+    router.push("/br/pages/signup");
   };
 
   const handleLogin = () => {
-    router.push('/br/pages/login');
+    router.push("/br/pages/login");
   };
 
+  // Se ainda estiver verificando o status de login, exibir um indicador de carregamento
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <LoadingOverlay />
+      </div>
+    );
+  }
+
+  // Renderização Condicional
+  if (isLoggedIn) {
+    return <Home />;
+  }
+
+  // Conteúdo da Dashboard para usuários não logados
   return (
     <div className="mt-32 mx-auto max-w-screen-2xl p-4 md:p-8">
       <section
-        className={`flex ${isSmallScreen ? "flex-col-reverse" : "flex-row"} relative py-0`}
+        className={`flex ${
+          isSmallScreen ? "flex-col-reverse" : "flex-row"
+        } relative py-0`}
       >
         <div
-          className={`flex flex-col items-center ${isSmallScreen ? "text-center" : "md:flex-row text-left"} space-x-0 md:space-x-4`}
+          className={`flex flex-col items-center ${
+            isSmallScreen ? "text-center" : "md:flex-row text-left"
+          } space-x-0 md:space-x-4`}
         >
-
           <div>
             <h1 className="">Me Guie</h1>
             <p className="leading-loose text-base md:text-lg">
@@ -116,7 +149,9 @@ export default function DashboardPage() {
           </div>
         </div>
         <div
-          className={`flex justify-center -mt-[100px] -mb-[50px] ${isSmallScreen ? "" : "md:-mt-30 ml-44"} float-animation`}
+          className={`flex justify-center -mt-[100px] -mb-[50px] ${
+            isSmallScreen ? "" : "md:-mt-30 ml-44"
+          } float-animation`}
         >
           <LottieStudy
             height={isSmallScreen ? 250 : 500}

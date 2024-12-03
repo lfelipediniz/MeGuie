@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Drawer, IconButton, Tooltip, Divider } from "@mui/material";
 import {
   FaAngleLeft,
@@ -15,13 +15,34 @@ import { usePathname, useRouter } from "@/src/navigation";
 import AccessibilityModal from "./AccessibilityModal";
 import { RiRoadMapFill } from "react-icons/ri";
 
-
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
-  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] =
-    useState(false);
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
   const pathname = usePathname();
   const router = useRouter();
+
+  useEffect(() => {
+    // Verifica o localStorage ao montar o componente
+    const loggedInStatus = localStorage.getItem('isLoggedIn');
+    if (loggedInStatus === 'true') {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+
+    // Opcional: Sincroniza o estado de login entre múltiplas abas
+    const handleStorageChange = () => {
+      const updatedStatus = localStorage.getItem('isLoggedIn');
+      setIsLoggedIn(updatedStatus === 'true');
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   const handleMouseEnter = () => {
     setExpanded(true);
@@ -43,7 +64,17 @@ const Sidebar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    router.push("/"); // Redireciona para a página principal
+    // Atualiza o estado
+    setIsLoggedIn(false);
+    // Atualiza o localStorage
+    localStorage.setItem('isLoggedIn', 'false');
+
+    // Extrai o locale atual da URL
+    const pathSegments = window.location.pathname.split('/');
+    const locale = pathSegments[1] || 'br'; // Define 'br' como padrão se nenhum locale for encontrado
+
+    // Redireciona para a página principal com o locale e recarrega a página
+    window.location.href = `/${locale}/`; // Ajuste o caminho conforme a estrutura da sua aplicação
   };
 
   const openAccessibilityModal = () => {
@@ -59,11 +90,6 @@ const Sidebar: React.FC = () => {
       icon: <FaHome aria-hidden="true" />,
       label: "Tela Principal",
       path: "/",
-    },
-    {
-      icon: <RiRoadMapFill aria-hidden="true" />,
-      label: "Roadmaps",
-      path: "/pages/home",
     },
     {
       icon: <FaCalendarAlt aria-hidden="true" />,
@@ -245,61 +271,63 @@ const Sidebar: React.FC = () => {
             </div>
           </Tooltip>
 
-          {/* Seção de Perfil */}
-          <div
-            style={{
-              position: "absolute",
-              bottom: "80px",
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-            }}
-            role="button"
-            tabIndex={0}
-            aria-label="Seção de Perfil"
-          >
-            <img
-              src="https://thispersondoesnotexist.com/"
-              alt="Foto de Fulano de Tal"
+          {/* Seção de Perfil (renderizada condicionalmente) */}
+          {isLoggedIn && (
+            <div
               style={{
-                width: "45px",
-                height: "45px",
-                borderRadius: "10px",
-                marginLeft: "6px",
-                objectFit: "cover",
-                marginRight: expanded ? "10px" : "0",
-                transition: "margin-right 0.3s",
+                position: "absolute",
+                bottom: "80px",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
               }}
-            />
-            <span
-              style={{
-                flexGrow: 1,
-                opacity: expanded ? 1 : 0,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                transition: "opacity 0.3s",
-                fontSize: "1rem",
-                color: "var(--contrast-bt-nav)",
-                fontWeight: "bold",
-              }}
-            >
-              Fulano de Tal
-            </span>
-            <IconButton
-              onClick={handleLogout}
-              size="small"
+              role="button"
               tabIndex={0}
-              aria-label="Sair"
-              style={{
-                color: "var(--contrast-bt-nav)",
-                marginLeft: "8px",
-                marginRight: "8px",
-              }}
+              aria-label="Seção de Perfil"
             >
-              <FaSignOutAlt color="var(--red-sidebar)" size={20} />
-            </IconButton>
-          </div>
+              <img
+                src="https://thispersondoesnotexist.com/"
+                alt="Foto de Fulano de Tal"
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  borderRadius: "10px",
+                  marginLeft: "6px",
+                  objectFit: "cover",
+                  marginRight: expanded ? "10px" : "0",
+                  transition: "margin-right 0.3s",
+                }}
+              />
+              <span
+                style={{
+                  flexGrow: 1,
+                  opacity: expanded ? 1 : 0,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  transition: "opacity 0.3s",
+                  fontSize: "1rem",
+                  color: "var(--contrast-bt-nav)",
+                  fontWeight: "bold",
+                }}
+              >
+                Fulano de Tal
+              </span>
+              <IconButton
+                onClick={handleLogout}
+                size="small"
+                tabIndex={0}
+                aria-label="Sair"
+                style={{
+                  color: "var(--contrast-bt-nav)",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+                <FaSignOutAlt color="var(--red-sidebar)" size={20} />
+              </IconButton>
+            </div>
+          )}
         </Drawer>
       </div>
 
