@@ -232,15 +232,17 @@ export const Header: FC<Props> = ({ locale }) => {
                 </div>
 
                 <div className="border-t border-gray-300 my-4"></div>
-                <button
-                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
-                  style={{ color: "var(--primary)" }}
-                  onClick={handleLogout}
-                  aria-label="Sair"
-                >
-                  <FaSignOutAlt style={{ color: "var(--red)" }} />
-                  <span style={{ color: "var(--red)" }}>Sair</span>
-                </button>
+                {isLoggedIn && (
+                  <button
+                    className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
+                    style={{ color: "var(--primary)" }}
+                    onClick={handleLogout}
+                    aria-label="Sair"
+                  >
+                    <FaSignOutAlt style={{ color: "var(--red2)" }} />
+                    <span style={{ color: "var(--red2)" }}>Sair</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
