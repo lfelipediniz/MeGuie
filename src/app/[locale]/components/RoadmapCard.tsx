@@ -25,7 +25,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
 
   function handleClick() {
     router.push(
-      `roadmap/${
+      `/pages/roadmap/${
         props.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
       }`
     );
