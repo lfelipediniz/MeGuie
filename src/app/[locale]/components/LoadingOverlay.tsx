@@ -9,7 +9,7 @@ interface LoadingOverlayProps {
 
 const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ height = 500, width = 550 }) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-background bg-opacity-75 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-background bg-opacity-75 z-50" aria-label="Tela de carregamento">
       <LottieLoading height={height} width={width} />
     </div>
   );

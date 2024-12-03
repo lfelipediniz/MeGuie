@@ -87,6 +87,7 @@ const OrganizingCommittee: React.FC<OrganizingCommitteeProps> = ({ members }) =>
               id="menu-button"
               aria-expanded={isDropdownOpen}
               aria-haspopup="true"
+              aria-label="Selecionar categoria"
               onClick={() => setIsDropdownOpen((prev) => !prev)}
             >
               {t(selectedCategory)}
@@ -122,6 +123,7 @@ const OrganizingCommittee: React.FC<OrganizingCommitteeProps> = ({ members }) =>
                       }`}
                       role="menuitem"
                       tabIndex={-1}
+                      aria-label={`Selecionar categoria ${category}`}
                       onClick={(e) => {
                         e.preventDefault();
                         setSelectedCategory(category);
@@ -147,6 +149,7 @@ const OrganizingCommittee: React.FC<OrganizingCommitteeProps> = ({ members }) =>
                     ? "bg-data-purple text-white"
                     : "bg-[var(--background-secondary)] text-[var(--primary)] hover:bg-[var(--dropdown-hover)]"
                 }`}
+                aria-label={`Selecionar categoria ${category}`}
               >
                 <span className="flex items-center space-x-2">
                   {categoryIcons[category]}

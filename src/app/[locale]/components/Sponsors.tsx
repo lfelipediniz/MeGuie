@@ -40,8 +40,9 @@ const Sponsors: React.FC<SponsorsProps> = ({ sponsors = [] }) => {
           <div key={index} className="flex justify-center w-full md:w-auto m-4"> 
             <img
               src={sponsor.logoUrl}
-              alt={`Sponsor ${index + 1}`}
+              alt={`Logo do patrocinador ${index + 1}`}
               className="w-full max-w-[170px] md:max-w-[180px] lg:max-w-[240px] h-auto"
+              aria-label={`Logo do patrocinador ${index + 1}`}
             />
           </div>
         ))}

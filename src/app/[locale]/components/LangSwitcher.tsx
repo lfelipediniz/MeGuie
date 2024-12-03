@@ -31,7 +31,7 @@ const LangSwitcher: React.FC<Props> = ({ locale }) => {
           onClick={() => setIsOptionsExpanded(!isOptionsExpanded)}
           onBlur={() => setIsOptionsExpanded(false)}
           style={{ backgroundColor: 'transparent' }}
-          aria-label='Language Switcher'
+          aria-label='Alternar opções de idioma'
         >
           <FiGlobe size={24} color='var(--primary)' />
         </button>
@@ -54,6 +54,7 @@ const LangSwitcher: React.FC<Props> = ({ locale }) => {
                       e.preventDefault()
                     }}
                     className="block w-full px-2 py-1 text-center text-sm rounded-md text-secondary hover:bg-hover"
+                    aria-label={`Mudar idioma para ${lang.code}`}
                   >
                     {lang.country}
                   </button>

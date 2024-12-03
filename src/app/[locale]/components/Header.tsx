@@ -130,7 +130,7 @@ export const Header: FC<Props> = ({ locale }) => {
 
         <div>
           <div className="h-md:hidden flex">
-            <button onClick={() => setMenuOpen(!menuOpen)}>
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
               <FaBars
                 className="h-8 w-8"
                 style={{ color: "var(--background)" }}
@@ -138,7 +138,7 @@ export const Header: FC<Props> = ({ locale }) => {
             </button>
           </div>
           <div className="flex md:hidden h-sm:hidden">
-            <button onClick={() => setMenuOpen(!menuOpen)}>
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
               <FaBars
                 className="h-8 w-8"
                 style={{ color: "var(--background)" }}
@@ -166,6 +166,7 @@ export const Header: FC<Props> = ({ locale }) => {
               className="absolute top-5 right-5 text-3xl"
               style={{ color: "var(--action)" }}
               onClick={() => setMenuOpen(false)}
+              aria-label="Fechar menu"
             >
               <FaTimes />
             </button>
@@ -198,7 +199,7 @@ export const Header: FC<Props> = ({ locale }) => {
 
                 {/* Accessibility Button */}
                 <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center cursor-pointer" >
-                  <button onClick={openModal} className="flex items-center">
+                  <button onClick={openModal} className="flex items-center" aria-label="Abrir opções de acessibilidade">
                     <BsPersonArmsUp style={{ color: "var(--primary)" }} />
                     <span style={{ color: "var(--primary)" }}>
                       Acessibilidade
@@ -211,6 +212,7 @@ export const Header: FC<Props> = ({ locale }) => {
                   className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
                   style={{ color: "var(--primary)" }}
                   onClick={handleLogout}
+                  aria-label="Sair"
                 >
                   <FaSignOutAlt style={{ color: "var(--red)" }} />
                   <span style={{ color: "var(--red)" }}>Sair</span>

@@ -112,6 +112,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 }}
                 onClick={() => changeFontSize(-2)}
                 disabled={fontSizeClicks <= 0}
+                aria-label="Diminuir tamanho da fonte"
               >
                 <FiMinus />
               </button>
@@ -125,6 +126,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 }}
                 onClick={() => changeFontSize(2)}
                 disabled={fontSizeClicks >= maxClicks}
+                aria-label="Aumentar tamanho da fonte"
               >
                 <FiPlus />
               </button>
@@ -135,6 +137,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                   color: "var(--contrast-bt-text)",
                 }}
                 onClick={resetFontSize}
+                aria-label="Redefinir tamanho da fonte"
               >
                 <FiRefreshCw />
               </button>
@@ -152,6 +155,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 color: "var(--contrast-bt-text)",
               }}
               onClick={toggleContrastTheme}
+              aria-label={isHighContrast ? "Desativar alto contraste" : "Ativar alto contraste"}
             >
               <IoIosContrast />
             </button>
@@ -168,6 +172,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
                 color: "var(--contrast-bt-text)",
               }}
               onClick={toggleVLibras}
+              aria-label={isVLibrasEnabled ? "Desativar VLibras" : "Ativar VLibras"}
             >
               {isVLibrasEnabled ? <FiMinus /> : <FiPlus />}
             </button>
@@ -181,6 +186,7 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
             color: "var(--contrast-bt-text)",
           }}
           onClick={onClose}
+          aria-label="Fechar modal de acessibilidade"
         >
           Fechar
         </button>

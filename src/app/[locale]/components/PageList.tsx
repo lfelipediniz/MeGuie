@@ -35,12 +35,13 @@ const PageList: React.FC<PageListProps> = ({ pages, pageListName, locale, classN
       <button
         onClick={() => setDropdownOpen(!dropdownOpen)}
         className={`text-center w-full ${active ? 'text-data-purple' : 'text-primary'}`}
+        aria-label={`Abrir lista de páginas ${pageListName}`}
       >
         {pageListName}
       </button>
 
       {dropdownOpen && (
-        <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 w-auto bg-dropdown shadow-md rounded-md z-50">
+        <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 w-auto bg-dropdown shadow-md rounded-md z-50" aria-label="Lista de páginas">
           <div className="py-1 flex flex-col items-center">
             {pages.map((page, index) => (
               <Link
@@ -49,6 +50,7 @@ const PageList: React.FC<PageListProps> = ({ pages, pageListName, locale, classN
                 href={page.path as "/pages/about" | "/pages/fronts" | "/pages/competitions" | "/pages/learn" | "/pages/projects" | "/pages/contact" | "/pages/events/dataDay"}
                 className="block px-4 py-2 text-primary hover:bg-dropdown-hover text-center whitespace-nowrap"
                 onClick={() => setDropdownOpen(false)} // close dropdown on link click
+                aria-label={`Ir para página ${page.name}`}
               >
                 {page.name}
               </Link>

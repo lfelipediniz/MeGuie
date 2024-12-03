@@ -38,9 +38,10 @@ const MemberCard: React.FC<Member> = ({ name, photo, description, categories, sp
           <div 
             className="m-4 text-center cursor-pointer transition-transform duration-200 ease-in-out transform hover:scale-105 w-72 max-w-full sm:w-60"
             onClick={handleToggleTooltip}
+            aria-label={`Informações sobre ${name}`}
           >
             <div className="flex justify-center mb-4">
-              <img src={photo} alt={name} className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover" />
+              <img src={photo} alt={name} className="w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover" aria-label={`Foto de ${name}`} />
             </div>
             <h3 className="text-center mt-4 text-primary font-inter text-sm sm:text-base">{name}</h3>
             {categories.includes("Coordinators") && special_role && (

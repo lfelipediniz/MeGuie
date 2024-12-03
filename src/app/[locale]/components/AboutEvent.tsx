@@ -25,11 +25,12 @@ const AboutEvent: React.FC<AboutEventProps> = ({ locale }) => {
   }
 
   return (
-    <div className="about-event">
-      <h2>{aboutData.title}</h2>
+    <div className="about-event" aria-label="Sobre o evento">
+      <h2 aria-label={`Título: ${aboutData.title}`}>{aboutData.title}</h2>
       <div
         style={{ paddingTop: "20px" }}
         dangerouslySetInnerHTML={{ __html: aboutData.content }}
+        aria-label="Conteúdo do evento"
       />
     </div>
   );

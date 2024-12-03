@@ -24,7 +24,7 @@ export default function ThemeSwitch() {
     <button
       type='button'
       className='p-2 focus:outline-none'
-      aria-label='Toggle Theme'
+      aria-label={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
       onClick={toggleTheme}
       style={{ backgroundColor: 'transparent' }}
     >

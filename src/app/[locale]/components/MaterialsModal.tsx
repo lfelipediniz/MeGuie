@@ -65,7 +65,7 @@ const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: st
       >
         <div className="flex justify-between items-center p-4 border border-[var(--light-gray)]">
           <h2 className="text-[var(--dark-blue)] text-lg font-bold">Conteúdos sobre {title}</h2>
-          <button onClick={onClose} className="bg-[var(--button-primary)] hover:opacity-90 rounded-full w-8 h-8 flex justify-center items-center"> 
+          <button onClick={onClose} className="bg-[var(--button-primary)] hover:opacity-90 rounded-full w-8 h-8 flex justify-center items-center" aria-label="Fechar modal"> 
             <IoClose color={"#ffffff"} size={24} />
           </button>
         </div>
@@ -92,6 +92,7 @@ const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: st
                       className="w-6 h-6" 
                       checked={!!checkedItems[index]} // Verifica se o item está marcado
                       onChange={() => handleCheckboxChange(index)}
+                      aria-label={`Marcar vídeo ${video.name} como assistido`}
                     />
                   </div> 
               </div>
@@ -100,9 +101,9 @@ const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: st
             <div className="mt-4">
               <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Sites para estudo</h3>
               {websites ? websites.map((website, index) => (
-                <a href={website.url} target="_blank" className="p-4 flex justify-between items-center w-full border-2 border-[var(--light-gray)] mb-4">
+                <a href={website.url} target="_blank" className="p-4 flex justify-between items-center w-full border-2 border-[var(--light-gray)] mb-4" aria-label={`Visitar site ${website.name}`}>
                   <h3 key={index} className="text-[var(--dark-blue)] text-lg">{website.name}</h3>
-                  <input type="checkbox" className="w-6 h-6" />
+                  <input type="checkbox" className="w-6 h-6" aria-label={`Marcar site ${website.name} como visitado`} />
                 </a>
               )) : <p className="text-base font-[var(--dark-blue)]">Não encontramos sites para essa matéria</p> }
             </div>

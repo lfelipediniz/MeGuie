@@ -38,6 +38,7 @@ const PostList: React.FC<PostListProps> = ({ markdownFiles, onPostClick, locale,
           onClick={() => {
             window.location.href = `/${locale}/pages/${page}?post=${post.index}`;
           }}
+          aria-label={`Post ${post.name}`}
         >
           {post.photo && (
             <img
@@ -58,6 +59,7 @@ const PostList: React.FC<PostListProps> = ({ markdownFiles, onPostClick, locale,
                 <span
                   key={tagIndex}
                   className="text-sm bg-data-purple text-background rounded-full px-3 py-1 mr-2 mb-2"
+                  aria-label={`Tag ${tag}`}
                 >
                   {tag}
                 </span>

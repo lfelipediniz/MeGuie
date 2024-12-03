@@ -25,7 +25,7 @@ const LottieStudy: React.FC<LottieStudyProps> = ({ height, width }) => {
   const calculatedWidth = width || (height ? height * aspectRatio : undefined);
 
   return (
-    <div style={{ height: calculatedHeight, width: calculatedWidth, margin: "30px"}}>
+    <div style={{ height: calculatedHeight, width: calculatedWidth, margin: "30px"}} aria-label="Animação de estudo">
       <Lottie animationData={animationData} style={{ height: '100%', width: '100%' }} loop={true} />
     </div>
   );

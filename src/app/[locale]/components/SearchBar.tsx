@@ -51,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, onBack }) => {
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={handleSearch}>
+              <IconButton onClick={handleSearch} aria-label="Pesquisar">
                 <SearchIcon />
               </IconButton>
             </InputAdornment>

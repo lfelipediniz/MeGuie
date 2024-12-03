@@ -43,7 +43,7 @@ const PostLoader: React.FC<PostLoaderProps> = ({ locale, onPostsLoaded }) => {
   }, [locale]);
 
   return (
-    <div>
+    <div aria-label="Carregando posts">
       {showLoading && (
         <LoadingOverlay />
       )}

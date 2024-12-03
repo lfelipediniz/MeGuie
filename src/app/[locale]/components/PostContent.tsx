@@ -20,7 +20,8 @@ const PostContent: React.FC<PostContentProps> = ({ selectedPost, onBackClick, on
         size="medium"
         iconName="FaArrowLeft"
         onClick={onBackClick}
-        className="rounded-md" // Adicionei a classe CSS para bordas arredondadas, caso necessário
+        className="rounded-md"
+        aria-label="Voltar"
       >
         Voltar
       </Button>
@@ -35,6 +36,7 @@ const PostContent: React.FC<PostContentProps> = ({ selectedPost, onBackClick, on
               onPostClick={onPostClick}
               locale={locale}
               hideSearchBar={true}
+              aria-label="Pesquisar posts relacionados"
             />
           </>
         ) : (

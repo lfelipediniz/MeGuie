@@ -12,6 +12,7 @@ const IframeComponent: React.FC<{ src: string }> = ({ src }) => {
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
       referrerPolicy="strict-origin-when-cross-origin"
       allowFullScreen
+      aria-label="Player de vídeo do YouTube"
     ></iframe>
   );
 };

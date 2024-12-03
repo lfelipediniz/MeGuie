@@ -130,6 +130,7 @@ const Schedule: React.FC<ScheduleProps> = ({ eventData }) => {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center text-[var(--data-purple)] font-bold hover:text-[var(--primary)]"
+          aria-label={`Assistir palestra ${item.title}`}
         >
           <FiYoutube className="mr-2 text-lg" />
           {t("Watch_Lecture")}
@@ -210,6 +211,7 @@ const Schedule: React.FC<ScheduleProps> = ({ eventData }) => {
                     ? "bg-data-purple text-white"
                     : "bg-[var(--background-secondary)] text-[var(--primary)] hover:bg-[var(--dropdown-hover)]"
                 }`}
+                aria-label={`Selecionar ${getDayOfWeek(day.date)}`}
               >
                 {getDayOfWeek(day.date)}
               </button>
@@ -268,6 +270,7 @@ const Schedule: React.FC<ScheduleProps> = ({ eventData }) => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center text-[var(--data-purple)] font-bold hover:text-[var(--primary)]"
+                    aria-label={`Assistir palestra ${event.title}`}
                   >
                     <FiYoutube className="mr-2 text-lg" />
                     {t("Watch_Lecture")}

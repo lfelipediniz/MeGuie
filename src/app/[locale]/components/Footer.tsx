@@ -28,7 +28,7 @@ export const Footer: FC<Props> = ({ locale }) => {
       <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">
-            <a href={`/${locale}/`} className="flex items-center">
+            <a href={`/${locale}/`} className="flex items-center" aria-label="Página inicial">
               <BinaryLogo width={35} height={35} /> &nbsp;
               <span className="self-center text-2xl font-semibold whitespace-nowrap">
                 MeGuie
@@ -42,13 +42,13 @@ export const Footer: FC<Props> = ({ locale }) => {
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
-                  <a href={`/${locale}/pages/about`} aria-label={"Sobre nós"}>
+                  <a href={`/${locale}/pages/about`} aria-label="Sobre nós">
                     {"Sobre nós"}
                   </a>
                 </li>
                 <li className="mb-4">
-                  <a href={`/${locale}/pages/contact`} aria-label={"Fale Conosco"}>
-                    {"Fale Cosnosco"}
+                  <a href={`/${locale}/pages/contact`} aria-label="Fale Conosco">
+                    {"Fale Conosco"}
                   </a>
                 </li>
               </ul>
@@ -59,7 +59,7 @@ export const Footer: FC<Props> = ({ locale }) => {
               </h2>
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
-                  <a href={`/${locale}/pages/howtouse`} aria-label="Como usar a plataforma" title="como usar a plataforma">
+                  <a href={`/${locale}/pages/howtouse`} aria-label="Como usar a plataforma" title="Como usar a plataforma">
                     Como usar a plataforma
                   </a>
                 </li>
@@ -80,7 +80,7 @@ export const Footer: FC<Props> = ({ locale }) => {
                 <li className="mb-4">
                   <a
                      href={`/${locale}/pages/youtubevideo?videoId=QTlIH-LTydM?si=MKSvgcaLv2tO-94p&section=Como+organizar+os+estudos`}
-                    aria-label={"Vídeo no YouTube de como organizar os estudos"}
+                    aria-label="Vídeo no YouTube de como organizar os estudos"
                   >
                     {"Como organizar os estudos"}
                   </a>
@@ -88,7 +88,7 @@ export const Footer: FC<Props> = ({ locale }) => {
                 <li>
                   <a
                     href={`/${locale}/pages/youtubevideo?videoId=BF-6ofd0DNg?si=LmP2F7wqVBhf4BD6&section=Como+resolver+questões+do+ENEM`}
-                    aria-label={"Vídeo no YouTube de como resolver questões do ENEM"}
+                    aria-label="Vídeo no YouTube de como resolver questões do ENEM"
                   >
                     {"Guia de como resolver questões do ENEM"}
                   </a>
@@ -111,7 +111,7 @@ export const Footer: FC<Props> = ({ locale }) => {
               href="https://www.youtube.com/c/DataICMC"
               aria-label="YouTube"
               className="me-5"
-              title="Instagram"
+              title="YouTube"
             >
               <FaInstagram className="w-4 h-4" />
             </a>
@@ -119,7 +119,7 @@ export const Footer: FC<Props> = ({ locale }) => {
               href="https://www.instagram.com/data.icmc/"
               aria-label="Instagram"
               className="me-5"
-              title="Facebook"
+              title="Instagram"
             >
               <FaFacebook className="w-4 h-4" />
             </a>

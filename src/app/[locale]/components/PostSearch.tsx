@@ -78,6 +78,7 @@ export default function PostSearch({
               onChange={handleSearchChange}
               placeholder={" " + placeholderText} 
               className="w-full p-2 pl-10 border rounded border-data-purple text-primary bg-background-secondary"
+              aria-label="Pesquisar posts"
             />
           </div>
         </div>

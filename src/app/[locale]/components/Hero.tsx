@@ -43,7 +43,7 @@ export default function Hero({
         <br />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative">
           <div className="flex flex-col items-center lg:items-start">
-            <FaCalendarAlt className="w-10 h-10 text-primary dark:text-primary mb-4" />
+            <FaCalendarAlt className="w-10 h-10 text-primary dark:text-primary mb-4" aria-label="Ícone de calendário" />
             <div>
               <h3 className="text-primary dark:text-primary text-xl font-bold mb-2">
                 {eventDateTitle}
@@ -55,7 +55,7 @@ export default function Hero({
           </div>
 
           <div className="flex flex-col items-center lg:items-start">
-            <FaUserFriends className="w-10 h-10 text-primary dark:text-primary mb-4" />
+            <FaUserFriends className="w-10 h-10 text-primary dark:text-primary mb-4" aria-label="Ícone de palestrantes" />
             <div>
               <h3 className="text-primary dark:text-primary text-xl font-bold mb-2">
                 {speakersTitle}
@@ -69,13 +69,13 @@ export default function Hero({
 
         <div className="relative mt-8 flex flex-col space-y-4 lg:flex-row lg:space-y-0 lg:justify-between lg:items-center">
           <Link href={dateLink} passHref>
-            <Button variant="primary" size="medium">
+            <Button variant="primary" size="medium" aria-label="Botão para ver a data do evento">
               {dateButtonText}
             </Button>
           </Link>
 
           <Link href={speakersLink} passHref>
-            <Button variant="secondary" size="medium" className="lg:ml-auto mt-4 lg:mt-0">
+            <Button variant="secondary" size="medium" className="lg:ml-auto mt-4 lg:mt-0" aria-label="Botão para ver os palestrantes">
               {eventButtonText}
             </Button>
           </Link>

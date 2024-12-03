@@ -40,12 +40,14 @@ const FAQ: React.FC<FAQProps> = ({ data }) => {
               <div
                 className="faq-question flex justify-between items-center cursor-pointer text-primary font-inter"
                 onClick={() => toggleAnswer(index)}
+                aria-label={`Pergunta: ${faq.question}`}
               >
                 <strong className="text-lg">{faq.question}</strong>
                 <FaChevronDown
                   className={`faq-icon transform transition-transform duration-300 ${
                     openIndex === index ? "rotate-180" : ""
                   }`}
+                  aria-label="Ícone de seta para baixo"
                 />
               </div>
               <div

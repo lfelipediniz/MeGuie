@@ -106,6 +106,7 @@ const Particle = () => {
         },
         detectRetina: true,
       }}
+      aria-label="Partículas animadas"
     />
   );
 };

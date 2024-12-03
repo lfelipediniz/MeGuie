@@ -4,7 +4,7 @@
 import VLibras from "vlibras-nextjs";
 
 const VLibrasClient = () => {
-  return <VLibras forceOnload />;
+  return <VLibras forceOnload aria-label="VLibras Widget" />;
 };
 
 export default VLibrasClient;

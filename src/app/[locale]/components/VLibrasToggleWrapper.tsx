@@ -11,7 +11,7 @@ const VLibrasToggleWrapper = () => {
     setIsVLibrasEnabled(vlibrasState);
   }, []);
 
-  return isVLibrasEnabled ? <VLibrasClient /> : null;
+  return isVLibrasEnabled ? <VLibrasClient aria-label="VLibras Client" /> : null;
 };
 
 export default VLibrasToggleWrapper;

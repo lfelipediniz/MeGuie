@@ -26,10 +26,12 @@ const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics }) =>
         backdropFilter: "blur(10px)", // Desfoque no fundo
       }}
       onClick={onClose}
+      aria-label="Topics Modal Background"
     >
       <div
         className="bg-white dark:bg-background-secondary rounded-lg shadow-lg p-6 max-w-sm w-full"
         onClick={(e) => e.stopPropagation()}
+        aria-label="Topics Modal Content"
       >
         <h2
           className="text-xl font-bold mb-4"
@@ -37,14 +39,15 @@ const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics }) =>
             color: "var(--primary)",
             fontFamily: "var(--font-montserrat)",
           }}
+          aria-label="Topics Modal Title"
         >
           Tópicos Abordados
         </h2>
-        <div className="space-y-4">
+        <div className="space-y-4" aria-label="Topics List">
           {topicsToDisplay.map((topic, index) => (
-            <div key={index}>
-              <h3>{topic.title}</h3>
-              <p>{topic.description}</p>
+            <div key={index} aria-label={`Topic ${index + 1}`}>
+              <h3 aria-label={`Topic Title ${index + 1}`}>{topic.title}</h3>
+              <p aria-label={`Topic Description ${index + 1}`}>{topic.description}</p>
             </div>
           ))}
         </div>
@@ -56,6 +59,7 @@ const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics }) =>
             color: "var(--contrast-bt-text)",
           }}
           onClick={onClose}
+          aria-label="Close Topics Modal"
         >
           Fechar
         </button>

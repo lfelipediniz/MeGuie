@@ -34,6 +34,7 @@ const Photo: React.FC<PhotoProps> = ({
         transform: `scale(${size}) rotate(${rotation}deg)`,
         width: `${size * 100}%`, // Tamanho ajustado
       }}
+      aria-label={`Foto ${description || defaultDescription}`}
     >
       <div className="polaroid">
         <img src={imgSrc} alt={description || defaultDescription} />

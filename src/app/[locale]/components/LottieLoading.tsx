@@ -25,7 +25,7 @@ const LottieLoading: React.FC<LottieLoadingProps> = ({ height, width }) => {
   const calculatedWidth = width || (height ? height * aspectRatio : undefined);
 
   return (
-    <div style={{ height: calculatedHeight, width: calculatedWidth }}>
+    <div style={{ height: calculatedHeight, width: calculatedWidth }} aria-label="Animação de carregamento">
       <Lottie animationData={animationData} style={{ height: '100%', width: '100%' }} loop={true} />
     </div>
   );
