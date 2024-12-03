@@ -1,75 +1,66 @@
 "use client";
 import { useTranslations } from "next-intl";
-import OrganizingCommittee from "../../components/OrganizingCommittee";
-import Photo from "../../components/Photo";
-
-// Import dos arquivos JSON
-import peopleBR from "../../../../../data/br/people.json";
-import peopleEN from "../../../../../data/en/people.json";
-import FAQ from "../../components/FAQ";
 import { useRouter } from "@/src/navigation";
 import { FaArrowLeft } from "react-icons/fa6";
 
 export default function HowToUse() {
   const t = useTranslations("");
   const locale = t("DONT_DELETE"); // determina o idioma atual da página
-
-  // seleciona o arquivo JSON correto com base no idioma
-  const people = locale === "br" ? peopleBR : peopleEN;
-
-  const router = useRouter()
+  const router = useRouter();
 
   function handleBack() {
-    router.back()
+    router.back();
   }
 
-  const faqData = [
-    {
-      question: "Como o MeGuie funciona?",
-      answer:
-        "O MeGuie organiza conteúdos gratuitos e de qualidade encontrados na internet em um formato de roadmap.",
-    },
-    {
-      question: "Preciso pagar para usar o MeGuie?",
-      answer: "Não, o MeGuie é totalmente gratuito.",
-    },
-    {
-      question:
-        "Qual é a diferença entre o MeGuie e outros métodos de estudo online?",
-      answer: "Diferentemente de outros métodos de estudos em que o conteúdo é dividido em dias ou semanas, o MeGuie possui um cronograma de estudos mais flexível, permitindo que você estude no seu próprio ritmo.",
-    },
+  const steps = [
+    { title: 'Passo 1', description: 'Faça login ou cadastro na plataforma' },
+    { title: 'Passo 2', description: 'Escolha uma matéria para estudar e clique nela' },
+    { title: 'Passo 3', description: 'Veja o roadmap de conteúdos' },
+    { title: 'Passo 4', description: 'Clique em um contaúdo da matéria' },
+    { title: 'Passo 5', description: 'Visualize vídeos no youtube e sites sobre o conteúdo' },
+    { title: 'Passo 6', description: 'Marque o checkbox dos conteúdos que já foram vistos' },
+    { title: 'Passo 7', description: 'Acompanhe seu progresso na tela de roadmaps' },
+    { title: 'Passo 8', description: 'Continue estudando, um dia você desiste' },
   ];
 
   return (
-    <div className="text-xl md:text-2xl mt-16 p-8 relative">
-      <button onClick={handleBack} className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4">
+    <div className="relative text-xl md:text-2xl mt-16 p-8">
+      <button 
+        onClick={handleBack} 
+        className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500 absolute left-4 md:left-8 top-4"
+      >
         <FaArrowLeft size={24} color={"var(--marine)"} />
       </button>
-      <div className="w-full max-w-screen-md mx-auto flex flex-col gap-4">
+      <div className="container mx-auto flex flex-col items-center space-y-12">
+        <h2 className="text-3xl font-bold text-center mb-8">Roadmap da plataforma</h2>
 
-        <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4">{"Sobre o MeGuie"}</h2>
-            <p className="leading-relaxed px-4 md:px-0 text-justify">
-              {"O MeGuie é uma solução inovadora que organiza e estrutura o seu estudo com base em roadmaps pensados para as matérias do ensino médio e fundamental. Com uma seleção cuidadosa de conteúdos de qualidade, oferecemos um guia claro e prático para você seguir, economizando tempo e potencializando os seus resultados no caminho da aprovação."}
-            </p>
+        {/* Container principal do roadmap */}
+        <div className="relative flex items-center justify-center w-full max-w-screen-md">
+          {/* Traço vertical no meio */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 bg-[var(--secondary)] w-1 h-full z-0 rounded-full"></div>
+          
+          {/* Etapas do roadmap */}
+          <div className="w-full flex flex-col space-y-12 z-10">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className={`flex ${index % 2 === 0 ? "flex-row" : "flex-row-reverse"} items-center w-full`}
+              >
+                {/* Caixa do passo */}
+                <div className="w-full max-w-md flex items-center p-6 bg-white rounded-lg border-2 border-[var(--light-gray)] shadow-lg">
+                  <div className="flex-shrink-0 h-10 w-10 bg-[var(--secondary)] text-white rounded-full flex items-center justify-center mr-4">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold">{step.title}</h3>
+                    <p className="text-gray-600">{step.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-
-          <div>
-            <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4">
-              {"Sobre o projeto"}
-            </h2>
-            <p className="leading-relaxed px-4 md:px-0 mt-2 md:mt-4 text-justify">
-              {"O MeGuie é uma plataforma que oferece Roadmaps completos para estudantes do ensino fundamental e médio, criando um caminho claro e eficiente para quem deseja se preparar para o vestibular de forma gratuita. Nosso objetivo é democratizar o acesso ao conhecimento de qualidade disponível na internet e ajudar cada aluno a alcançar seu potencial máximo. Sabemos que há uma infinidade de conteúdos educativos gratuitos e de alta qualidade online, mas a falta de uma organização estruturada muitas vezes impede os estudantes de aproveitarem esses recursos ao máximo. O MeGuie resolve esse problema ao indexar e organizar esses conteúdos, criando uma jornada de aprendizado com um passo a passo em cada matéria, para que você possa estudar com mais foco e direção."}
-            </p>
-          </div>
-        </section>
-
-        <section className="">
-          <h2 className="text-center md:text-left mt-8 md:mt-16 mb-4">{"Perguntas frequentes"}</h2>
-          <FAQ data={faqData} />
-        </section>
-      </div> 
+        </div>
+      </div>
     </div>
   );
-} 
+}
