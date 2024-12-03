@@ -5,8 +5,8 @@ import { FaArrowLeft } from "react-icons/fa6";
 
 export default function YouTubeVideo() {
   const searchParams = useSearchParams(); // Obtém os parâmetros de consulta
-  const videoId = searchParams ? searchParams.get('videoId') : null; // Acessa o parâmetro 'videoId'
-  const section = searchParams ? searchParams.get('section') : null; // Acessa o parâmetro 'section'
+  const videoId = searchParams.get('videoId'); // Acessa o parâmetro 'videoId'
+  const section = searchParams.get('section'); // Acessa o parâmetro 'section'
   const router = useRouter()
 
   function handleBack() {
