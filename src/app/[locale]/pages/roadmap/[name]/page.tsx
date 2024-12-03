@@ -72,22 +72,22 @@ const mockEdges: Edge[] = [
 
 const mockVideos = [
     {
-        name: "Vídeo 1",
-        url: "https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6",
+        name: "Expressões albébricas",
+        url: "https://www.youtube.com/embed/8NNA-8rimNs?si=YQbZAqUFA3SehgEo",
     },
     {
-        name: "Vídeo 1",
-        url: "https://www.youtube.com/embed/McYeq8uRtRQ?si=NVEP1cCTnL152-b6",
+        name: "Área de figuras planas",
+        url: "https://www.youtube.com/embed/th5k6bzSDTA?si=zWEtDT9wAqadCbFc",
     },
 ]
 
 const mockWebsites = [
     {
-      name: "Conteúdo 1",
+      name: "Elementos químicos",
       url: "https://www.todamateria.com.br/elementos-quimicos/",
     },
     {
-      name: "Conteúdo 2",
+      name: "Animais extintos",
       url: "https://www.todamateria.com.br/animais-extintos/",
     }
   ];

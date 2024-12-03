@@ -20,7 +20,7 @@ export default function HowToUse() {
     { title: 'Passo 5', description: 'Visualize vídeos no youtube e sites sobre o conteúdo' },
     { title: 'Passo 6', description: 'Marque o checkbox dos conteúdos que já foram vistos' },
     { title: 'Passo 7', description: 'Acompanhe seu progresso na tela de roadmaps' },
-    { title: 'Passo 8', description: 'Continue estudando, um dia você desiste' },
+    { title: 'Passo 8', description: 'Continue estudando!' },
   ];
 
   return (
@@ -53,7 +53,7 @@ export default function HowToUse() {
                     {index + 1}
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold">{step.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-800">{step.title}</h3>
                     <p className="text-gray-600">{step.description}</p>
                   </div>
                 </div>

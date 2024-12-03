@@ -60,7 +60,7 @@ const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: st
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-background-secondary rounded-lg shadow-lg pt-[4.5rem] md:pt-16 w-full h-full md:w-96 absolute right-0"
+        className="bg-white dark:bg-background-secondary shadow-lg pt-[4.5rem] md:pt-16 w-full h-full min-h-fit md:w-96 absolute right-0"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-4 border border-[var(--light-gray)]">
@@ -98,10 +98,10 @@ const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: st
               </div>
               )) : <p className="text-base font-[var(--dark-blue)]">Não encontramos vídeos para essa matéria</p> }
             </div>
-            <div className="mt-4">
+            <div className="mt-4 mb-10">
               <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Sites para estudo</h3>
               {websites ? websites.map((website, index) => (
-                <a href={website.url} target="_blank" className="p-4 flex justify-between items-center w-full border-2 border-[var(--light-gray)] mb-4" aria-label={`Visitar site ${website.name}`}>
+                <a href={website.url} target="_blank" className="p-4 flex justify-between items-center w-full border-2 border-[var(--light-gray)] mb-4 hover:bg-[var(--dropdown)] transition" aria-label={`Visitar site ${website.name}`}>
                   <h3 key={index} className="text-[var(--dark-blue)] text-lg">{website.name}</h3>
                   <input type="checkbox" className="w-6 h-6" aria-label={`Marcar site ${website.name} como visitado`} />
                 </a>
