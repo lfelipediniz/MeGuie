@@ -15,6 +15,8 @@ import {
 } from "react-icons/fa";
 
 import { useRouter } from "next/navigation";
+import { MdOutlineEmail } from "react-icons/md";
+import { RiFacebookCircleLine } from "react-icons/ri";
 
 export default function DashboardPage() {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -170,13 +172,13 @@ export default function DashboardPage() {
           rel="noopener noreferrer"
           aria-label="Abrir Facebook"
         >
-          <FaFacebook
+          <RiFacebookCircleLine
             size={isMobile ? 30 : 40}
             className="hover:text-gray-700 transition duration-300"
           />
         </a>
         <a
-          href="https://wa.me/5511999999999"
+          href="https://wa.me/35988550516"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Abrir WhatsApp"
@@ -192,7 +194,7 @@ export default function DashboardPage() {
           rel="noopener noreferrer"
           aria-label="Enviar email"
         >
-          <FaEnvelope
+          <MdOutlineEmail
             size={isMobile ? 30 : 40}
             className="hover:text-gray-700 transition duration-300"
           />
