@@ -13,7 +13,7 @@ import "./globals.css";
 import { Footer } from "../[locale]/components/Footer";
 import { cookies } from "next/headers";
 import Sidebar from "./components/SideBar";
-import VLibrasClient from "./components/VLibrasClient"; // Importando o componente client
+import VLibrasToggleWrapper from "./components/VLibrasToggleWrapper";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -54,7 +54,7 @@ export default function RootLayout({
       className={`${inter.variable} ${montserrat.variable} ${orbitron.variable}`}
     >
       <body className="relative min-h-screen flex flex-col">
-        <VLibrasClient />
+        <VLibrasToggleWrapper />
         <ThemeProvider>
           <NextIntlClientProvider
             locale={locale}

@@ -5,6 +5,7 @@ import { IoIosContrast } from "react-icons/io"; // Ícone para contraste
 const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = ({ isOpen, onClose }) => {
   const [fontSizeClicks, setFontSizeClicks] = useState(0);
   const [isHighContrast, setIsHighContrast] = useState(false); // Estado para o modo de alto contraste
+  const [isVLibrasEnabled, setIsVLibrasEnabled] = useState(false);
   const maxClicks = 5;
   const originalFontSize = 16;
 
@@ -57,6 +58,18 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
       }
     }
   }, []);
+
+  useEffect(() => {
+    const savedState = localStorage.getItem("isVLibrasEnabled") === "true";
+    setIsVLibrasEnabled(savedState);
+  }, []);
+
+  const toggleVLibras = () => {
+    const newState = !isVLibrasEnabled;
+    setIsVLibrasEnabled(newState);
+    localStorage.setItem("isVLibrasEnabled", String(newState));
+    location.reload(); // Reload to apply the change immediately
+  };
 
   if (!isOpen) return null;
 
@@ -141,6 +154,22 @@ const AccessibilityModal: React.FC<{ isOpen: boolean; onClose: () => void }> = (
               onClick={toggleContrastTheme}
             >
               <IoIosContrast />
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <span className="text-secondary" style={{ color: "var(--text-secondary)" }}>
+              {isVLibrasEnabled ? "Desativar VLibras" : "Ativar VLibras"}
+            </span>
+            <button
+              className="px-3 py-1 rounded hover:opacity-90"
+              style={{
+                backgroundColor: "var(--action)",
+                color: "var(--contrast-bt-text)",
+              }}
+              onClick={toggleVLibras}
+            >
+              {isVLibrasEnabled ? <FiMinus /> : <FiPlus />}
             </button>
           </div>
         </div>
