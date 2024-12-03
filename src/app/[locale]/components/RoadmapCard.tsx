@@ -47,9 +47,9 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
       />
       <div className="p-4 md:p-6 flex flex-col gap-4">
         <p className="text-[var(--text-dark-blue)] font-inter text-lg md:text-2xl font-bold text-left">{props.title}</p>
-        <div className="h-2 w-full bg-[var(--light-gray)] rounded-full" aria-label={`Progresso de ${props.progress}%`}>
+        <div className="h-2 w-full bg-gray-300 rounded-full" aria-label={`Progresso de ${props.progress}%`}>
           <div
-            className="h-full rounded-full bg-[var(--gray)]"
+            className="h-full rounded-full bg-green-500"
             style={{ width: `${props.progress}%` }}
           ></div>
         </div>
