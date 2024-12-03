@@ -1,64 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import Button from "../../components/Button";
-import { useSearchParams } from "next/navigation";
 import { useRouter } from "@/src/navigation";
-import PostSearch from "../../components/PostSearch";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import { Footer } from "../../components/Footer";
-import RoadmapCard from "../../components/RoadmapCard";
-import { IoSearch } from "react-icons/io5";
-import TopicsModal from "../../components/TopicsModal";
 import SearchBar from "../../components/SearchBar";
 
 export default function SavedRoads() {
-  const searchParams = useSearchParams();
   const router = useRouter();
   const [showLoading, setShowLoading] = useState(false);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
-  const [localTopics, setLocalTopics] = useState<Topic[]>([]);
-  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState(true);
-
-  function toggleFavorite() {
-    setIsFavorite(!isFavorite);
-  }
 
   function handleBack() {
     router.back();
-  }
-
-  const openTopicsModal = () => {
-    setIsTopicsModalOpen(true);
-  };
-
-  const closeTopicsModal = () => {
-    setIsTopicsModalOpen(false);
-  };
-
-  const openMaterialsModal = () => {
-    setIsMaterialsModalOpen(true);
-  };
-
-  const closeMaterialsModal = () => {
-    setIsMaterialsModalOpen(false);
-  };
-
-  type Topic = {
-    title: string;
-    description: string;
-  };
-
-  const mathTopics = [
-    { title: 'Álgebra', description: 'Equações, variáveis e expressões matemáticas.' },
-    { title: 'Geometria', description: 'Estudo das formas, ângulos e espaço.' },
-    { title: 'Cálculo', description: 'Derivadas, integrais e suas aplicações.' },
-  ]
-
-  function handleOpenTopics(topics: Topic[], event: React.MouseEvent) {
-    event.stopPropagation();
-    setLocalTopics(topics);
-    openTopicsModal();
   }
 
   return (
@@ -73,68 +24,16 @@ export default function SavedRoads() {
 
           <SearchBar onSearch={(query) => console.log(query)} onBack={handleBack} />
          
-          
           </div>
           <br />
           <div className="w-full flex flex-col gap-4">
-            <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">
-              Roadmaps
-            </h2>
-            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-              <RoadmapCard
-                image={"image_fisica.png"}
-                title="Matemática"
-                progress={40}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-                topics={mathTopics}
-                handleOpenTopics={handleOpenTopics}
-              />
-              <RoadmapCard
-                image={"image_fisica.png"}
-                title="Matemática"
-                progress={40}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-                topics={mathTopics}
-                handleOpenTopics={handleOpenTopics}
-              />
-              <RoadmapCard
-                image={"image_fisica.png"}
-                title="Matemática"
-                progress={40}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-                topics={mathTopics}
-                handleOpenTopics={handleOpenTopics}
-              />
-              <RoadmapCard
-                image={"image_fisica.png"}
-                title="Matemática"
-                progress={40}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-                topics={mathTopics}
-                handleOpenTopics={handleOpenTopics}
-              />
-              <RoadmapCard
-                image={"image_fisica.png"}
-                title="Matemática"
-                progress={40}
-                isFavorite={isFavorite}
-                toggleFavorite={toggleFavorite}
-                topics={mathTopics}
-                handleOpenTopics={handleOpenTopics}
-              />
+            <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps</h2>
+            <div style={{ height: '150px' }}>
+              <span>Em produção...</span>
             </div>
           </div>
         </div>
       )}
-      <TopicsModal
-        topics={mathTopics}
-        isOpen={isTopicsModalOpen}
-        onClose={closeTopicsModal}
-      />
     </div>
   );
 }
