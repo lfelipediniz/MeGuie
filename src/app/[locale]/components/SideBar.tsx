@@ -92,16 +92,6 @@ const Sidebar: React.FC = () => {
       path: "/",
     },
     {
-      icon: <RiRoadMapFill aria-hidden="true" />,
-      label: "Roadmaps",
-      path: "/pages/home",
-    },
-    {
-      icon: <FaCalendarAlt aria-hidden="true" />,
-      label: "Calendário",
-      path: "/pages/calendar",
-    },
-    {
       icon: <FaStar aria-hidden="true" />,
       label: "Roadmaps Favoritos",
       path: "/pages/savedroads",

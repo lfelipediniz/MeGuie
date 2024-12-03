@@ -59,26 +59,6 @@ export const Header: FC<Props> = ({ locale }) => {
       path: "/",
     },
     {
-      icon: <RiRoadMapFill 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para a página de roadmaps"
-        tabIndex={0}
-      />,
-      label: "Roadmaps",
-      path: "/pages/home",
-    },
-    {
-      icon: <FaCalendarAlt 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para o calendário"
-        tabIndex={0}
-      />,
-      label: "Calendário",
-      path: "/pages/calendar",
-    },
-    {
       icon: <FaStar 
         className="cursor-pointer"
         role="link"
