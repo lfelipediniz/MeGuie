@@ -41,6 +41,8 @@ export const Header: FC<Props> = ({ locale }) => {
   };
 
   const atualPageName =
+    pathname.includes('/roadmap/') ? 
+    'Roadmap' :
     pageNamesData[pathname as keyof typeof pageNamesData] ||
     "Página Não Encontrada";
 

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { FaRegHeart } from "react-icons/fa";
 import { IoChevronForward } from "react-icons/io5";
 import { FaHeart } from "react-icons/fa";
+import { useRouter } from "@/src/navigation";
 
 interface CardComponentProps {
   image: string;
@@ -14,8 +15,14 @@ interface CardComponentProps {
 }
 
 const CardComponent: React.FC<CardComponentProps> = (props) => {
+  const router = useRouter();
+
   function handleClick() {
-    console.log("clique");
+    router.push(
+      `roadmap/${
+        props.title.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+      }`
+    );
   }
 
   function handleFavorite(event: React.MouseEvent) {

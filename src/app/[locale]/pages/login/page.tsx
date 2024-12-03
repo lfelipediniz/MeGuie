@@ -2,8 +2,7 @@
 
 import React from "react";
 import LoadingOverlay from "../../components/LoadingOverlay";
-import Button from "../../components/Button";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/src/navigation";
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
@@ -56,7 +55,7 @@ export default function Login() {
         // todo: make request and set loading ... 
 
         // ok!
-        router.push('/br/pages/home');
+        router.push('/pages/home');
     }
 
     return (

@@ -10,13 +10,13 @@ import {
     Node,
     Edge,
 } from '@xyflow/react';
-import LoadingOverlay from '../../components/LoadingOverlay';
+import LoadingOverlay from '../../../components/LoadingOverlay';
 import { FaArrowLeft } from "react-icons/fa6";
 import { Select, MenuItem, InputLabel, FormControl } from '@mui/material';
-import MaterialsModal from '../../components/MaterialsModal';
+import MaterialsModal from '../../../components/MaterialsModal';
  
 import '@xyflow/react/dist/style.css';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from "@/src/navigation";
  
 const mockNodes: Node[] = [
     {
@@ -70,8 +70,6 @@ const mockEdges: Edge[] = [
     { id: '4-7', source: '4', target: '7' },
 ];
 
-const mockTitle = 'Matemática';
-
 const mockVideos = [
     {
         name: "Vídeo 1",
@@ -97,16 +95,26 @@ const mockWebsites = [
 const emptyNode: Node[] = [];
 const emptyEdge: Edge[] = [];
 
+const mapNames: Record<string, string> = {
+    'biologia': 'Biologia',
+    'quimica': 'Química',
+    'matematica': 'Matemática',
+    'sociologia': 'Sociologia',
+    'portugues': 'Português',
+    'none': 'Não encontrado',
+}; // todo: will be stored in backend !!
+
 export default function Roadmap() {
     const [loading, setLoading] = React.useState<boolean>(false);
     const [nodes, setNodes, onNodesChange] = useNodesState(emptyNode);
     const [edges, setEdges, onEdgesChange] = useEdgesState(emptyEdge);
     const [selectedNode, setSelectedNode] = React.useState<Node | null>(null);
-    const [title, setTitle] = React.useState<string>('');
     const [videosUrls, setVideosUrls] = React.useState<{ name: string; url: string }[]>([]);
     const [websitesUrls, setWebsitesUrls] = React.useState<{ name: string; url: string }[]>([]);
     const router = useRouter();
- 
+    const pathname = usePathname();
+    const title = pathname.split('/').pop() || 'none';
+
     // todo:
     // render styles conditionally -> will need backend.
 
@@ -129,7 +137,7 @@ export default function Roadmap() {
         // currently using mock data
         setNodes(mockNodes);
         setEdges(mockEdges);
-        setTitle(mockTitle);
+        // setTitle(mockTitle);
         setVideosUrls(mockVideos);
         setWebsitesUrls(mockWebsites);
     }, []);
@@ -143,7 +151,7 @@ export default function Roadmap() {
     }
 
     const handleNavigation = () => {
-        router.push('/br/pages/home');
+        router.back()
     }
 
     return (
@@ -164,7 +172,9 @@ export default function Roadmap() {
                         >
                             <FaArrowLeft size={24} color={"var(--marine)"} />
                         </button>
-                        <h2 className="ml-3">{title}</h2>
+                        <h2 className="ml-3">
+                            {mapNames[title]}
+                        </h2>
                     </div>
                     <FormControl
                         style={{minWidth: '250px'}} 
@@ -194,6 +204,12 @@ export default function Roadmap() {
                         </Select>
                     </FormControl>
                 </div>
+                {
+                !pathname.includes('matematica') ? (
+                    <span className='text-center'>
+                        Roadmap em produção!
+                    </span> // todo: remove later!
+                ) :
                 <ReactFlow
                     nodes={nodes}
                     edges={edges}
@@ -208,6 +224,7 @@ export default function Roadmap() {
                     <Controls showInteractive={false}/>
                     <Background />
                 </ReactFlow>
+                }
             </div>
             }
             <MaterialsModal 
