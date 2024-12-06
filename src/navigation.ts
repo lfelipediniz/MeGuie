@@ -23,7 +23,6 @@ export const pathnames: Pathnames = {
   '/pages/calendar': '/pages/calendar',
   '/pages/savedroads': '/pages/savedroads',
   '/pages/howtouse': '/pages/howtouse',
-  '/pages/youtubevideo': '/pages/youtubevideo',
 }
 
 // Exportar componentes e hooks nativos do Next.js
