@@ -3,7 +3,7 @@
 
 import React, { useState, useRef, useEffect, FC } from "react";
 import Link from 'next/link'; // Importação nativa do Next.js
-import { useRouter } from 'next/navigation'; // Use 'next/navigation' no App Router
+import { useRouter, usePathname } from 'next/navigation'; // Importação correta para App Router
 import LogoIcon from "../icons/binaryLogo";
 import {
   FaBars,
@@ -19,6 +19,7 @@ import { RiRoadMapFill } from "react-icons/ri";
 
 const Header: FC = () => {
   const router = useRouter();
+  const pathname = usePathname(); // Obtém o caminho atual
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
   const [isModalOpen, setModalOpen] = useState(false);
@@ -26,13 +27,9 @@ const Header: FC = () => {
   useEffect(() => {
     // Verifica o localStorage ao montar o componente
     const loggedInStatus = localStorage.getItem('isLoggedIn');
-    if (loggedInStatus === 'true') {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    setIsLoggedIn(loggedInStatus === 'true');
 
-    // Opcional: Sincroniza o estado de login entre múltiplas abas
+    // Sincroniza o estado de login entre múltiplas abas
     const handleStorageChange = () => {
       const updatedStatus = localStorage.getItem('isLoggedIn');
       setIsLoggedIn(updatedStatus === 'true');
@@ -60,9 +57,9 @@ const Header: FC = () => {
   };
 
   const atualPageName =
-    router.pathname && router.pathname.includes('/roadmap/') ? 
+    pathname && pathname.includes('/roadmap/') ? 
     'Roadmap' :
-    pageNamesData[router.pathname as keyof typeof pageNamesData] ||
+    pageNamesData[pathname as keyof typeof pageNamesData] ||
     "Página Não Encontrada";
 
   const navItems = [
@@ -94,7 +91,7 @@ const Header: FC = () => {
     // Atualiza o localStorage
     localStorage.setItem('isLoggedIn', 'false');
 
-    // Redireciona para a página principal e recarrega a página
+    // Redireciona para a página principal
     router.push('/'); // Ajuste o caminho conforme a estrutura da sua aplicação
   };
 
