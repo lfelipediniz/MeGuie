@@ -1,15 +1,11 @@
 'use client'
-import {
-  createLocalizedPathnamesNavigation
-} from 'next-intl/navigation'
-import { locales } from './i18n'
+import Link from 'next/link'
+import { useRouter as useNextRouter, usePathname as useNextPathname } from 'next/navigation'
 
-// Tipo para as rotas
-type LocalizedPathnames = Record<string, string>;
+// Tipo para as rotas (opcional)
+type Pathnames = Record<string, string>;
 
-export const localePrefix = 'always'
-
-export const pathnames: LocalizedPathnames = {
+export const pathnames: Pathnames = {
   '/': '/',
   '/pages/fronts': '/pages/fronts',
   '/pages/competitions': '/pages/competitions',
@@ -26,9 +22,9 @@ export const pathnames: LocalizedPathnames = {
   '/pages/home': '/pages/home',
   '/pages/calendar': '/pages/calendar',
   '/pages/savedroads': '/pages/savedroads',
-  '/pages/howtouse': 'pages/howtouse',
-  '/pages/youtubevideo': 'pages/youtubevideo',
+  '/pages/howtouse': '/pages/howtouse',
+  '/pages/youtubevideo': '/pages/youtubevideo',
 }
 
-export const { Link, redirect, usePathname, useRouter } =
-  createLocalizedPathnamesNavigation({ locales, localePrefix, pathnames })
+// Exportar componentes e hooks nativos do Next.js
+export { Link, useNextRouter as useRouter, useNextPathname as usePathname }
