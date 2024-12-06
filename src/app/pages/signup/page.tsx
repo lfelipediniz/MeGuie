@@ -1,16 +1,16 @@
+// pages/signup.tsx
 "use client";
 
 import React from "react";
-import LoadingOverlay from "../../components/LoadingOverlay";
-import { useRouter } from "@/src/navigation";
+import LoadingOverlay from "@/src/app/components/LoadingOverlay";
+import { useRouter } from 'next/navigation';
+
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const inputClassName = "p-2 pl-11 border rounded-full border-gray-500 text-gray-600 bg-background-primary placeholder-gray-700 w-full";
-
 const errorInputClassName = "p-2 pl-11 border rounded-full border-red-500 text-gray-600 bg-background-primary placeholder-red-500 w-full";
-
 const errorTextClassName = "text-red-500 text-xs -mt-1";
 
 export default function SignUp() {
@@ -57,18 +57,45 @@ export default function SignUp() {
         return Object.values(newErrors).every((error) => error === '');
     }
 
-    const handleFormSubmit = (e: React.FormEvent) => {
+    const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateFormData()) return;
 
-        // todo: make request and set loading ... 
+        setLoading(true);
 
-        // ok!
-        router.push('/pages/login');
+        try {
+            const response = await fetch('/api/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Sucesso no cadastro
+                alert(data.message);
+                router.push('/login');
+            } else {
+                // Erro no cadastro
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error('Erro ao cadastrar usuário:', error);
+            alert('Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente.');
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleNavigation = () => {
-        router.push('/pages/login');
+        router.push('/login');
     }
 
     return (
@@ -110,7 +137,7 @@ export default function SignUp() {
                         />
                     </span>
                     <input
-                        type="text"
+                        type="email"
                         name="email"
                         placeholder="E-mail"
                         aria-label="E-mail"
@@ -187,7 +214,7 @@ export default function SignUp() {
                         style={{color: "var(--action)"}}
                         onClick={handleNavigation} role="link"
                         aria-label="Ir para a página de login"
-                        tabIndex={0} // for a11y
+                        tabIndex={0} // para acessibilidade
                     >
                         Fazer Login
                     </a>
