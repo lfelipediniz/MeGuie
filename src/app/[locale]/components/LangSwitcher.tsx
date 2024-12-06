@@ -46,7 +46,7 @@ const LangSwitcher: React.FC<Props> = ({ locale }) => {
               {options.map(lang => (
                 <Link
                   key={lang.code}
-                  href={`/${lang.code}/${urlSegments.join('/')}`}
+                  href={`/${lang.code}/${(urlSegments || []).join('/')}`}
                 >
                   <button
                     lang={lang.code}
