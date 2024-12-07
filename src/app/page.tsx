@@ -78,11 +78,11 @@ export default function DashboardPage() {
   ];
 
   const handleSignup = () => {
-    router.push("/br/pages/signup");
+    router.push("/pages/signup");
   };
 
   const handleLogin = () => {
-    router.push("/br/pages/login");
+    router.push("/pages/login");
   };
 
   if (loading) {
