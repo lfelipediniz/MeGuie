@@ -2,6 +2,9 @@
 
 Welcome to the MeGuie website repository. This project is built with Next.js and provides information about the MeGuie group from the Institute of Mathematical and Computer Sciences (ICMC) at the University of São Paulo (USP), located in São Carlos.
 
+APOO - https://meguie.netlify.app/ |
+IHC -  https://meguie.vercel.app/
+
 ## Prerequisites
 
 Before you begin, ensure you have met the following requirements:
