@@ -71,7 +71,7 @@ export default function Login() {
             const locale = pathSegments[1] || 'br'; // 'br' como padrão se nenhum locale for encontrado
 
             // Construir a nova URL com o locale
-            const newUrl = `/${locale}`;
+            const newUrl = `/`;
 
             // Redirecionar para a página inicial com o locale e recarregar
             window.location.href = newUrl;
