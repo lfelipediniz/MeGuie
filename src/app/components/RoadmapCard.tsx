@@ -17,7 +17,7 @@ interface CardComponentProps {
   isFavorite: boolean;
   toggleFavorite: () => void;
   topics: Topic[];
-  handleOpenTopics: (topics: Topic[], event: React.MouseEvent) => void;
+  handleOpenTopics: (topics: Topic[], event: React.SyntheticEvent) => void;
 }
 
 const CardComponent: React.FC<CardComponentProps> = (props) => {
@@ -32,7 +32,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
     );
   }
 
-  function handleFavorite(event: React.MouseEvent) {
+  function handleFavorite(event: React.MouseEvent | React.KeyboardEvent) {
     event.stopPropagation();
     props.toggleFavorite();
   }
@@ -71,10 +71,10 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
         </div>
         <div className="flex justify-between items-center">
           <button
-            onClick={(event) => props.handleOpenTopics(props.topics, event)}
+            onClick={(event) => props.handleOpenTopics(props.topics, event as React.SyntheticEvent)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                props.handleOpenTopics(props.topics, e);
+                props.handleOpenTopics(props.topics, e as React.SyntheticEvent);
               }
             }}
             className="border border-[var(--gray)] rounded-full p-2 pointer-events-auto flex items-center gap-2 text-[var(--gray)]"
@@ -89,7 +89,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
             onClick={(event) => handleFavorite(event)}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                handleFavorite(e);
+                handleFavorite(e as unknown as React.MouseEvent);
               }
             }}
             className="pointer-events-auto"

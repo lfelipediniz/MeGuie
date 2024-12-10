@@ -144,14 +144,15 @@ export default function Roadmap() {
     };
 
     // Definição do componente de nó customizado dentro do Roadmap
-    const CustomNode = ({ id, data, style }: NodeProps) => {
+    const CustomNode = ({ id, data }: NodeProps) => {
+        const { label, style } = data as { label: string; style?: React.CSSProperties };
+    
         return (
             <div
                 tabIndex={0}
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') {
-                        // Simula o clique no nó ao pressionar Enter
-                        const syntheticMouseEvent = {} as React.MouseEvent; 
+                        const syntheticMouseEvent = {} as React.MouseEvent;
                         const nodeObj: Node = { id, data, position: { x: 0, y: 0 } };
                         handleNodeClick(syntheticMouseEvent, nodeObj);
                     }
@@ -160,18 +161,19 @@ export default function Roadmap() {
                 style={{
                     ...style,
                     padding: '10px',
-                    background: '#fff',
+                    backgroundColor: 'transparent', // Torna o fundo transparente
                     cursor: 'pointer',
                     borderRadius: '4px',
                     textAlign: 'center',
                 }}
             >
-                {data.label}
+                {label}
                 <Handle type="source" position={Position.Right} />
                 <Handle type="target" position={Position.Left} />
             </div>
         );
     };
+    
 
     const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
 
@@ -241,7 +243,7 @@ export default function Roadmap() {
                         onNodeClick={handleNodeClick}
                         nodeTypes={nodeTypes}
                         fitView
-                        style={{ backgroundColor: '#F7F9FB' }}
+                
                     >
                         <Controls showInteractive={false} />
                         <Background />
