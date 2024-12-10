@@ -87,11 +87,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
 
           <button
             onClick={(event) => handleFavorite(event)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                handleFavorite(e as unknown as React.MouseEvent);
-              }
-            }}
+            role='button'
             className="pointer-events-auto"
             aria-label={
               props.isFavorite
