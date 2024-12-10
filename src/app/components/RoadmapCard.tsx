@@ -86,7 +86,10 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
           </button>
 
           <button
-            onClick={(event) => handleFavorite(event)}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleFavorite(event);
+            }}
             role='button'
             className="pointer-events-auto"
             aria-label={
