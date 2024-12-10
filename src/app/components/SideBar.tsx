@@ -85,17 +85,23 @@ const Sidebar: React.FC = () => {
     setIsAccessibilityModalOpen(false);
   };
 
+  // Definição condicional de navItems com base no estado isLoggedIn
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
       icon: <FaHome aria-hidden="true" />,
       label: "Tela Principal",
       path: "/",
     },
-    {
-      icon: <FaStar aria-hidden="true" />,
-      label: "Roadmaps Favoritos",
-      path: "/pages/savedroads",
-    },
+    // Inclui "Roadmaps Favoritos" apenas se o usuário estiver logado
+    ...(isLoggedIn
+      ? [
+          {
+            icon: <FaStar aria-hidden="true" />,
+            label: "Roadmaps Favoritos",
+            path: "/pages/savedroads",
+          },
+        ]
+      : []),
   ];
 
   return (
