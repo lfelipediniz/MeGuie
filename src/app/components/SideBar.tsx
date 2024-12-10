@@ -71,10 +71,10 @@ const Sidebar: React.FC = () => {
 
     // Extrai o locale atual da URL
     const pathSegments = window.location.pathname.split('/');
-    const locale = pathSegments[1] || 'br'; // Define 'br' como padrão se nenhum locale for encontrado
+
 
     // Redireciona para a página principal com o locale e recarrega a página
-    window.location.href = `/${locale}/`; // Ajuste o caminho conforme a estrutura da sua aplicação
+    window.location.href = `/`; // Ajuste o caminho conforme a estrutura da sua aplicação
   };
 
   const openAccessibilityModal = () => {
