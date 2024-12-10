@@ -40,6 +40,13 @@ const FAQ: React.FC<FAQProps> = ({ data }) => {
               <div
                 className="faq-question flex justify-between items-center cursor-pointer text-primary font-inter"
                 onClick={() => toggleAnswer(index)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleAnswer(index);
+                  }
+                }}
+                tabIndex={0}
                 aria-label={`Pergunta: ${faq.question}`}
               >
                 <strong className="text-lg">{faq.question}</strong>
