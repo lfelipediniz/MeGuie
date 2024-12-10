@@ -23,7 +23,7 @@ import { usePathname, useRouter } from "@/src/navigation";
 
 const mockVideos = [
   {
-    name: "Expressões albébricas",
+    name: "Expressões algébricas",
     url: "https://www.youtube.com/embed/8NNA-8rimNs?si=YQbZAqUFA3SehgEo",
   },
   {
