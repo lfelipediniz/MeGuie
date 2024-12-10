@@ -203,3 +203,22 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.react-flow__controls {
+  background-color: rgba(0, 0, 0, 0.1) !important; 
+  border-radius: 8px !important;                 
+  padding: 8px;                                    
+}
+
+
+.react-flow__controls-button {
+  background-color: transparent !important;        
+  border: none !important;                         
+  color: inherit !important;                      
+  box-shadow: none !important;                     
+}
+
+
+.react-flow__controls-button:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important; 
+  border-radius: 4px;                              
+}
