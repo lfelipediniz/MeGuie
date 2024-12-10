@@ -111,7 +111,7 @@ export default function Home() {
     setIsTopicsModalOpen(false);
   };
 
-  function handleOpenTopics(topics: Topic[], event: React.MouseEvent) {
+  function handleOpenTopics(topics: Topic[], event: React.SyntheticEvent) {
     event.stopPropagation();
     setLocalTopics(topics);
     openTopicsModal();
