@@ -222,3 +222,17 @@
   background-color: rgba(0, 0, 0, 0.1) !important; 
   border-radius: 4px;                              
 }
+
+/* Estiliza o texto "React Flow" no canto inferior direito */
+.react-flow__attribution {
+  background-color: rgba(0, 0, 0, 0.1) !important; /* Define uma cor de fundo transparente */
+  color: white !important;                         /* Define a cor do texto */
+  border-radius: 8px !important;                   /* Bordas arredondadas */
+  padding: 4px 8px;                                /* Espaçamento interno */
+  font-size: 12px;                                 /* Tamanho da fonte */
+}
+
+/* Opcional: Remove completamente o texto "React Flow" */
+.react-flow__attribution {
+  display: none !important;
+}
