@@ -40,7 +40,7 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
     <div onClick={handleClick} className="bg-white rounded-3xl shadow-xl overflow-hidden h-auto max-w-full cursor-pointer" aria-label={`Card de ${props.title}`}>
       <Image
         src={`/images/cards/${props.image}`}
-        alt={`Imagem de ${props.title}`}
+        alt={`Imagem representativa de ${props.title}`}
         width={1000}
         height={1000}
         className="w-full h-30 md:h-36 object-cover"
