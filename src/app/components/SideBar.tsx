@@ -17,15 +17,16 @@ import { RiRoadMapFill } from "react-icons/ri";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
-  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] =
+    useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
     // Verifica o localStorage ao montar o componente
-    const loggedInStatus = localStorage.getItem('isLoggedIn');
-    if (loggedInStatus === 'true') {
+    const loggedInStatus = localStorage.getItem("isLoggedIn");
+    if (loggedInStatus === "true") {
       setIsLoggedIn(true);
     } else {
       setIsLoggedIn(false);
@@ -33,14 +34,14 @@ const Sidebar: React.FC = () => {
 
     // Opcional: Sincroniza o estado de login entre múltiplas abas
     const handleStorageChange = () => {
-      const updatedStatus = localStorage.getItem('isLoggedIn');
-      setIsLoggedIn(updatedStatus === 'true');
+      const updatedStatus = localStorage.getItem("isLoggedIn");
+      setIsLoggedIn(updatedStatus === "true");
     };
 
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
@@ -67,11 +68,10 @@ const Sidebar: React.FC = () => {
     // Atualiza o estado
     setIsLoggedIn(false);
     // Atualiza o localStorage
-    localStorage.setItem('isLoggedIn', 'false');
+    localStorage.setItem("isLoggedIn", "false");
 
     // Extrai o locale atual da URL
-    const pathSegments = window.location.pathname.split('/');
-
+    const pathSegments = window.location.pathname.split("/");
 
     // Redireciona para a página principal com o locale e recarrega a página
     window.location.href = `/`; // Ajuste o caminho conforme a estrutura da sua aplicação
@@ -188,6 +188,11 @@ const Sidebar: React.FC = () => {
                     cursor: "pointer",
                   }}
                   onClick={() => router.push(path as any)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      router.push(path as any);
+                    }
+                  }}
                   role="link"
                   tabIndex={0}
                   aria-label={label}
@@ -238,6 +243,11 @@ const Sidebar: React.FC = () => {
                 cursor: "pointer",
               }}
               onClick={openAccessibilityModal}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  openAccessibilityModal();
+                }
+              }}
               role="button"
               tabIndex={0}
               aria-label="Abrir menu de acessibilidade"
