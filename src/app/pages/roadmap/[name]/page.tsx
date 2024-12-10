@@ -96,12 +96,48 @@ const mockNodes: Node[] = [
 ];
 
 const mockEdges: Edge[] = [
-  { id: "1-2", source: "1", target: "2" },
-  { id: "1-3", source: "1", target: "3" },
-  { id: "3-4", source: "3", target: "4" },
-  { id: "2-5", source: "2", target: "5" },
-  { id: "5-6", source: "5", target: "6" },
-  { id: "4-7", source: "4", target: "7" },
+  {
+    id: "1-2",
+    source: "1",
+    target: "2",
+    sourceHandle: "leftSource",
+    targetHandle: "topTarget",
+  },
+  {
+    id: "1-3",
+    source: "1",
+    target: "3",
+    sourceHandle: "rightSource",
+    targetHandle: "topTarget",
+  },
+  {
+    id: "2-5",
+    source: "2",
+    target: "5",
+    sourceHandle: "bottomSource",
+    targetHandle: "topTarget",
+  },
+  {
+    id: "5-6",
+    source: "5",
+    target: "6",
+    sourceHandle: "bottomSource",
+    targetHandle: "topTarget",
+  },
+  {
+    id: "3-4",
+    source: "3",
+    target: "4",
+    sourceHandle: "bottomSource",
+    targetHandle: "topTarget",
+  },
+  {
+    id: "4-7",
+    source: "4",
+    target: "7",
+    sourceHandle: "bottomSource",
+    targetHandle: "topTarget",
+  },
 ];
 
 const mapNames: Record<string, string> = {
@@ -122,14 +158,11 @@ export default function Roadmap() {
   const [websitesUrls, setWebsitesUrls] = React.useState<
     { name: string; url: string }[]
   >([]);
-  const [nodes, setNodes, onNodesChange] = useNodesState(mockNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(mockEdges);
   const router = useRouter();
   const pathname = usePathname();
   const title = pathname ? pathname.split("/").pop() || "none" : "none";
 
   React.useEffect(() => {
-    // Simula carregamento
     setLoading(false);
     setVideosUrls(mockVideos);
     setWebsitesUrls(mockWebsites);
@@ -147,11 +180,41 @@ export default function Roadmap() {
     router.back();
   };
 
-  // Definição do componente de nó customizado dentro do Roadmap
+  // Calculando quais handles estão em uso por cada nó
+  const handleUsage = mockEdges.reduce((acc: Record<string, string[]>, edge) => {
+    if (edge.source && edge.sourceHandle) {
+      acc[edge.source] = acc[edge.source] || [];
+      if (!acc[edge.source].includes(edge.sourceHandle)) {
+        acc[edge.source].push(edge.sourceHandle);
+      }
+    }
+    if (edge.target && edge.targetHandle) {
+      acc[edge.target] = acc[edge.target] || [];
+      if (!acc[edge.target].includes(edge.targetHandle)) {
+        acc[edge.target].push(edge.targetHandle);
+      }
+    }
+    return acc;
+  }, {});
+
+  // Criando uma cópia dos nodes para injetar usedHandles
+  const nodesWithUsage = mockNodes.map((node) => ({
+    ...node,
+    data: {
+      ...node.data,
+      usedHandles: handleUsage[node.id] || [],
+    },
+  }));
+
+  const [nodes, setNodes, onNodesChange] = useNodesState(nodesWithUsage);
+  const [edges, setEdges, onEdgesChange] = useEdgesState(mockEdges);
+
+  // Componente CustomNode atualizado para exibir apenas os handles usados
   const CustomNode = ({ id, data }: NodeProps) => {
-    const { label, style } = data as {
+    const { label, style, usedHandles = [] } = data as {
       label: string;
       style?: React.CSSProperties;
+      usedHandles: string[];
     };
 
     return (
@@ -168,15 +231,80 @@ export default function Roadmap() {
         style={{
           ...style,
           padding: "10px",
-          backgroundColor: "transparent", // Torna o fundo transparente
+          backgroundColor: "transparent",
           cursor: "pointer",
           borderRadius: "4px",
           textAlign: "center",
+          position: "relative",
         }}
       >
         {label}
-        <Handle type="source" position={Position.Right} />
-        <Handle type="target" position={Position.Left} />
+        {/* Renderizar apenas os handles que estão em usedHandles */}
+        {usedHandles.includes("topSource") && (
+          <Handle
+            type="source"
+            position={Position.Top}
+            id="topSource"
+            style={{ left: "50%", transform: "translateX(-50%)" }}
+          />
+        )}
+        {usedHandles.includes("bottomSource") && (
+          <Handle
+            type="source"
+            position={Position.Bottom}
+            id="bottomSource"
+            style={{ left: "50%", transform: "translateX(-50%)" }}
+          />
+        )}
+        {usedHandles.includes("leftSource") && (
+          <Handle
+            type="source"
+            position={Position.Left}
+            id="leftSource"
+            style={{ top: "50%", transform: "translateY(-50%)" }}
+          />
+        )}
+        {usedHandles.includes("rightSource") && (
+          <Handle
+            type="source"
+            position={Position.Right}
+            id="rightSource"
+            style={{ top: "50%", transform: "translateY(-50%)" }}
+          />
+        )}
+
+        {usedHandles.includes("topTarget") && (
+          <Handle
+            type="target"
+            position={Position.Top}
+            id="topTarget"
+            style={{ left: "50%", transform: "translateX(-50%)" }}
+          />
+        )}
+        {usedHandles.includes("bottomTarget") && (
+          <Handle
+            type="target"
+            position={Position.Bottom}
+            id="bottomTarget"
+            style={{ left: "50%", transform: "translateX(-50%)" }}
+          />
+        )}
+        {usedHandles.includes("leftTarget") && (
+          <Handle
+            type="target"
+            position={Position.Left}
+            id="leftTarget"
+            style={{ top: "50%", transform: "translateY(-50%)" }}
+          />
+        )}
+        {usedHandles.includes("rightTarget") && (
+          <Handle
+            type="target"
+            position={Position.Right}
+            id="rightTarget"
+            style={{ top: "50%", transform: "translateY(-50%)" }}
+          />
+        )}
       </div>
     );
   };
@@ -184,19 +312,13 @@ export default function Roadmap() {
   const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
 
   return (
-    <div
-      className="mt-24 mb-5 mx-auto"
-      style={{ width: "90vw", height: "80vh" }}
-    >
+    <div className="mt-24 mb-5 mx-auto" style={{ width: "90vw", height: "80vh" }}>
       {loading ? (
         <div className="transition-opacity duration-500 opacity-100">
           <LoadingOverlay />
         </div>
       ) : (
-        <div
-          className="flex flex-col gap-7"
-          style={{ width: "100%", height: "100%" }}
-        >
+        <div className="flex flex-col gap-7" style={{ width: "100%", height: "100%" }}>
           <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
             <div className="flex items-center mb-5 xs:mb-0">
               <button
@@ -209,10 +331,7 @@ export default function Roadmap() {
               <h2 className="ml-3">{mapNames[title]}</h2>
             </div>
             <FormControl sx={{ minWidth: "250px" }} size="small">
-              <InputLabel
-                id="legenda-de-cores"
-                sx={{ color: "var(--primary)" }}
-              >
+              <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
                 Legenda de Cores
               </InputLabel>
               <Select
@@ -275,9 +394,7 @@ export default function Roadmap() {
         isOpen={!!selectedNode}
         onClose={handleMenuClose}
         title={
-          typeof selectedNode?.data.label === "string"
-            ? selectedNode.data.label
-            : ""
+          typeof selectedNode?.data.label === "string" ? selectedNode.data.label : ""
         }
         videos={videosUrls}
         websites={websitesUrls}
