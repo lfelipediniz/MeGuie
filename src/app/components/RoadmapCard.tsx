@@ -90,6 +90,13 @@ const CardComponent: React.FC<CardComponentProps> = (props) => {
               event.stopPropagation();
               handleFavorite(event);
             }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault(); // Previne comportamentos padrão, como rolar a página
+                e.stopPropagation(); // Evita que o evento suba para o pai
+                handleFavorite(e); // Executa a lógica do botão
+              }
+            }}
             role='button'
             className="pointer-events-auto"
             aria-label={
