@@ -27,7 +27,6 @@
     --marine-header: #315D6D;
 
     --red: #AD0123;
-    --red2: #AD0123;
     --purple: #860B8E;
     --gray: #3D3C3C;
     --light-gray: #EEEEEE;
@@ -85,7 +84,6 @@
     --marine-header: #ffffff;
 
     --red: #000000;
-    --red2: #ff5050;
     --purple: #000000;
     --gray: #000000;
     --light-gray: #0099ff;
@@ -205,3 +203,29 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.react-flow__controls {
+  background-color: var(--action) !important; 
+  border-radius: 8px !important;                 
+  padding: 8px;                                    
+}
+
+
+.react-flow__controls-button {
+  background-color: transparent !important;        
+  border: none !important;                         
+  color: var(--background) !important;                      
+  box-shadow: none !important;                     
+}
+
+
+.react-flow__controls-button:hover {
+  background-color: rgba(0, 0, 0, 0.1) !important; 
+  border-radius: 4px;                              
+}
+
+
+
+/* remove completamente o texto "React Flow" */
+.react-flow__attribution {
+  display: none !important;
+}

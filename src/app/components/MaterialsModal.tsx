@@ -1,83 +1,87 @@
-'use client'
+'use client';
 
-import React, { useState } from "react";
-import { FiMinus, FiPlus, FiRefreshCw } from "react-icons/fi"; // Ícones para ajuste de fonte
-import { IoIosContrast } from "react-icons/io"; // Ícone para contraste4
-import { IoClose } from "react-icons/io5";
+import React, { useEffect, useRef, useState } from 'react';
+import { IoClose } from 'react-icons/io5';
 
-const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: string }[]; websites?: { name: string, url: string }[]; isOpen: boolean; onClose: () => void }> = ({ title, videos, websites, isOpen, onClose }) => {
-  const [fontSizeClicks, setFontSizeClicks] = useState(0);
-  const [isHighContrast, setIsHighContrast] = useState(false); // Estado para o modo de alto contraste
-  const [checkedItems, setCheckedItems] = useState<Record<number, boolean>>({}); // Estado para os checkboxes
-  const maxClicks = 5;
-  const originalFontSize = 16;
+const MaterialsModal: React.FC<{
+  title: string;
+  videos?: { name: string; url: string }[];
+  websites?: { name: string; url: string }[];
+  isOpen: boolean;
+  onClose: () => void;
+}> = ({ title, videos, websites, isOpen, onClose }) => {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
-  const changeFontSize = (delta: number) => {
-    const root = document.documentElement;
-    const currentFontSize = parseFloat(
-      getComputedStyle(root).getPropertyValue("--base-font-size")
-    );
-
-    if ((delta > 0 && fontSizeClicks >= maxClicks) || (delta < 0 && fontSizeClicks <= 0)) return;
-
-    const newFontSize = currentFontSize + delta;
-    root.style.setProperty("--base-font-size", `${newFontSize}px`);
-
-    if (delta > 0) setFontSizeClicks(fontSizeClicks + 1);
-    if (delta < 0) setFontSizeClicks(fontSizeClicks - 1);
-  };
-
-  const resetFontSize = () => {
-    document.documentElement.style.setProperty("--base-font-size", `${originalFontSize}px`);
-    setFontSizeClicks(0);
-  };
-
-  const handleCheckboxChange = (index: number) => {
-    setCheckedItems(prev => ({
+  // Função para alternar o checkbox
+  const handleCheckboxChange = (id: string) => {
+    setCheckedItems((prev) => ({
       ...prev,
-      [index]: !prev[index], // Alterna o valor do checkbox
+      [id]: !prev[id],
     }));
   };
 
-  const toggleContrastTheme = () => {
-    const root = document.documentElement;
-    const isDark = root.classList.contains("dark");
-    if (isDark) {
-      root.classList.remove("dark");
-      setIsHighContrast(false);
-    } else {
-      root.classList.add("dark");
-      setIsHighContrast(true);
+  // Função para prender o foco dentro do modal
+  const trapFocus = (e: KeyboardEvent) => {
+    if (e.key === 'Tab' && modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      } else if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      }
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current?.focus();
+      document.addEventListener('keydown', trapFocus);
+    } else {
+      document.removeEventListener('keydown', trapFocus);
+    }
+
+    return () => document.removeEventListener('keydown', trapFocus);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed top-0 left-0 inset-0 z-50 flex w-screen h-screen"
-      style={{ backgroundColor: "var(--background-opacity)" }}
-      onClick={onClose}
-    >
+    <div className="fixed top-0 left-0 inset-0 z-50 flex w-screen h-screen bg-black bg-opacity-50" onClick={onClose}>
       <div
-        className="bg-white dark:bg-background-secondary shadow-lg pt-[4.5rem] md:pt-16 w-full h-full min-h-fit md:w-96 absolute right-0"
+        ref={modalRef}
+        className="bg-white dark:bg-background-secondary shadow-lg pt-16 w-full h-full md:w-96 absolute right-0 overflow-auto"
         onClick={(e) => e.stopPropagation()}
+        tabIndex={-1}
       >
-        <div className="flex justify-between items-center p-4 border border-[var(--light-gray)]">
+        <div className="flex justify-between items-center p-4 border-b">
           <h2 className="text-[var(--dark-blue)] text-lg font-bold">Conteúdos sobre {title}</h2>
-          <button onClick={onClose} className="bg-[var(--button-primary)] hover:opacity-90 rounded-full w-8 h-8 flex justify-center items-center" aria-label="Fechar modal"> 
-            <IoClose color={"#ffffff"} size={24} />
+          <button
+            onClick={onClose}
+            className="bg-[var(--button-text)] hover:opacity-90 rounded-full w-8 h-8 flex justify-center items-center"
+            aria-label="Fechar modal"
+          >
+            <IoClose color="red" size={24} />
           </button>
         </div>
-        <div className="w-full h-full overflow-scroll p-4">
-          <div className="w-full h-auto flex flex-col gap-2">
-            <div>
-              <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas no YouTube</h3>
-              {videos ? videos.map((video, index) => (
-                <div key={index} className="shadow-lg rounded-md overflow-hidden mb-4">
+
+        <div className="p-4">
+          <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas no YouTube</h3>
+          {videos?.length ? (
+            videos.map((video, index) => {
+              const videoId = `video-${index}`;
+              return (
+                <div key={videoId} className="shadow-lg rounded-md overflow-hidden mb-4">
                   <iframe
                     src={video.url}
-                    title="YouTube video player"
+                    title={video.name}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                     referrerPolicy="strict-origin-when-cross-origin"
@@ -85,29 +89,56 @@ const MaterialsModal: React.FC<{ title: string; videos?: { name: string, url: st
                     height={200}
                     className="w-full"
                   ></iframe>
-                  <div className="p-4 flex flex-row justify-between">
-                    <h3 key={index} className="text-[var(--dark-blue)] text-lg">{video.name}</h3>
+                  <div className="p-4 flex justify-between">
+                    <h3 className="text-[var(--dark-blue)] text-lg">{video.name}</h3>
                     <input
                       type="checkbox"
-                      className="w-6 h-6" 
-                      checked={!!checkedItems[index]} // Verifica se o item está marcado
-                      onChange={() => handleCheckboxChange(index)}
+                      className="w-6 h-6 cursor-pointer"
+                      checked={!!checkedItems[videoId]}
+                      onChange={() => handleCheckboxChange(videoId)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') handleCheckboxChange(videoId);
+                      }}
                       aria-label={`Marcar vídeo ${video.name} como assistido`}
                     />
-                  </div> 
-              </div>
-              )) : <p className="text-base font-[var(--dark-blue)]">Não encontramos vídeos para essa matéria</p> }
-            </div>
-            <div className="mt-4 mb-10">
-              <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Sites para estudo</h3>
-              {websites ? websites.map((website, index) => (
-                <a href={website.url} target="_blank" className="p-4 flex justify-between items-center w-full border-2 border-[var(--light-gray)] mb-4 hover:bg-[var(--dropdown)] transition" aria-label={`Visitar site ${website.name}`}>
-                  <h3 key={index} className="text-[var(--dark-blue)] text-lg">{website.name}</h3>
-                  <input type="checkbox" className="w-6 h-6" aria-label={`Marcar site ${website.name} como visitado`} />
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-base text-[var(--dark-blue)]">Não encontramos vídeos para essa matéria.</p>
+          )}
+
+          <h3 className="text-[var(--dark-blue)] text-lg font-bold mt-6 mb-4">Sites para estudo</h3>
+          {websites?.length ? (
+            websites.map((website, index) => {
+              const websiteId = `website-${index}`;
+              return (
+                <a
+                  key={websiteId}
+                  href={website.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-4 flex justify-between items-center border-2 border-[var(--light-gray)] mb-4 hover:bg-[var(--dropdown)] transition"
+                  aria-label={`Visitar site ${website.name}`}
+                >
+                  <h3 className="text-[var(--dark-blue)] text-lg">{website.name}</h3>
+                  <input
+                    type="checkbox"
+                    className="w-6 h-6 cursor-pointer"
+                    checked={!!checkedItems[websiteId]}
+                    onChange={() => handleCheckboxChange(websiteId)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleCheckboxChange(websiteId);
+                    }}
+                    aria-label={`Marcar site ${website.name} como visitado`}
+                  />
                 </a>
-              )) : <p className="text-base font-[var(--dark-blue)]">Não encontramos sites para essa matéria</p> }
-            </div>
-          </div>
+              );
+            })
+          ) : (
+            <p className="text-base text-[var(--dark-blue)]">Não encontramos sites para essa matéria.</p>
+          )}
         </div>
       </div>
     </div>

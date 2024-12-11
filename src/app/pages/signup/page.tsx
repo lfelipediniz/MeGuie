@@ -2,21 +2,18 @@
 "use client";
 
 import React from "react";
-import LoadingOverlay from "@/src/app/components/LoadingOverlay";
 import { useRouter } from 'next/navigation';
-
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import LoadingOverlay from "@/src/app/components/LoadingOverlay";
 
 const inputClassName = "p-2 pl-11 border rounded-full border-gray-500 text-gray-600 bg-background-primary placeholder-gray-700 w-full";
 const errorInputClassName = "p-2 pl-11 border rounded-full border-red-500 text-gray-600 bg-background-primary placeholder-red-500 w-full";
 const errorTextClassName = "text-red-500 text-xs -mt-1";
 
 export default function SignUp() {
-
     const router = useRouter();
-
     const [loading, setLoading] = React.useState(false);
 
     const [formData, setFormData] = React.useState({
@@ -37,16 +34,20 @@ export default function SignUp() {
             name: '', email: '', password: '', confirm: '',
         };
 
-        if (!formData.name) newErrors.name = 'Nome é obrigatório.';
+        if (!formData.name) {
+            newErrors.name = 'Nome é obrigatório.';
+        }
 
         if (!formData.email) {
             newErrors.email = 'E-mail é obrigatório.';
         } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
             newErrors.email = 'Formato de e-mail inválido.';
         }
-        
-        if (!formData.password) newErrors.password = 'Senha é obrigatória.';
-        
+
+        if (!formData.password) {
+            newErrors.password = 'Senha é obrigatória.';
+        }
+
         if (!formData.confirm) {
             newErrors.confirm = 'Confirmação de Senha é obrigatória.';
         } else if (formData.confirm !== formData.password) {
@@ -57,41 +58,17 @@ export default function SignUp() {
         return Object.values(newErrors).every((error) => error === '');
     }
 
-    const handleFormSubmit = async (e: React.FormEvent) => {
+    const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateFormData()) return;
 
         setLoading(true);
 
-        try {
-            const response = await fetch('/api/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // Sucesso no cadastro
-                alert(data.message);
-                router.push('/login');
-            } else {
-                // Erro no cadastro
-                alert(data.message);
-            }
-        } catch (error) {
-            console.error('Erro ao cadastrar usuário:', error);
-            alert('Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente.');
-        } finally {
+        // Simulando um "cadastro" no frontend
+        setTimeout(() => {
             setLoading(false);
-        }
+            router.push('/pages/login');
+        }, 1000);
     }
 
     const handleNavigation = () => {
@@ -104,11 +81,11 @@ export default function SignUp() {
                 <div className="transition-opacity duration-500 opacity-100">
                     <LoadingOverlay />
                 </div>
-            ) 
+            )
             :
             <div className="flex flex-col gap-y-3">
                 <p>Insira as suas informações:</p>
-                    
+
                 <div className="relative flex items-center">
                     <span className="absolute left-3 text-gray-400">
                         <PersonOutlineIcon 
@@ -130,6 +107,7 @@ export default function SignUp() {
                         {errors.name}
                     </p>
                 }
+
                 <div className="relative flex items-center">
                     <span className="absolute left-3 text-gray-400">
                         <MailOutlineIcon 
@@ -152,6 +130,7 @@ export default function SignUp() {
                         {errors.email}
                     </p>
                 }
+
                 <div className="relative flex items-center">
                     <span className="absolute left-3 text-gray-400">
                         <LockOutlinedIcon 
@@ -173,6 +152,7 @@ export default function SignUp() {
                         {errors.password}
                     </p>
                 }
+
                 <div className="relative flex items-center">
                     <span className="absolute left-3 text-gray-400">
                         <LockOutlinedIcon 
@@ -195,7 +175,7 @@ export default function SignUp() {
                     </p>
                 }
 
-                <button 
+                <button
                     className="px-4 py-2 mt-5 rounded-lg hover:opacity-90"
                     style={{
                       backgroundColor: "var(--action)",
@@ -214,7 +194,7 @@ export default function SignUp() {
                         style={{color: "var(--action)"}}
                         onClick={handleNavigation} role="link"
                         aria-label="Ir para a página de login"
-                        tabIndex={0} // para acessibilidade
+                        tabIndex={0}
                     >
                         Fazer Login
                     </a>

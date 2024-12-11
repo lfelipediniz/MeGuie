@@ -64,7 +64,7 @@ export const Footer: FC = () => {
                 </li>
                 <li>
                   <a 
-                    href={`/pages/youtubevideo`}
+                    href={`https://www.youtube.com/watch?v=l1THA3vg5UQ`}
                     aria-label="Vídeo de tutorial no YouTube" title="Vídeo de tutorial no YouTube">
                     Tutorial em vídeo
                   </a>
@@ -78,7 +78,7 @@ export const Footer: FC = () => {
               <ul className="font-medium text-[var(--background)]">
                 <li className="mb-4">
                   <a
-                     href={`/pages/youtubevideo?videoId=QTlIH-LTydM?si=MKSvgcaLv2tO-94p&section=Como+organizar+os+estudos`}
+                     href={`https://www.youtube.com/watch?v=ANctp8kBVzY`}
                     aria-label="Vídeo no YouTube de como organizar os estudos"
                   >
                     {"Como organizar os estudos"}
@@ -86,7 +86,7 @@ export const Footer: FC = () => {
                 </li>
                 <li>
                   <a
-                    href={`/pages/youtubevideo?videoId=BF-6ofd0DNg?si=LmP2F7wqVBhf4BD6&section=Como+resolver+questões+do+ENEM`}
+                    href={`https://www.youtube.com/watch?v=XwvAehZAEPQ`}
                     aria-label="Vídeo no YouTube de como resolver questões do ENEM"
                   >
                     {"Guia de como resolver questões do ENEM"}
