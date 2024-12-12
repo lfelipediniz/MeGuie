@@ -81,7 +81,7 @@ export default function SignUp() {
             if (response.ok) {
                 // Sucesso no cadastro
                 alert(data.message);
-                router.push('/login');
+                router.push('/pages/login');
             } else {
                 // Erro no cadastro
                 alert(data.message);
