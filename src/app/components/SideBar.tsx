@@ -100,9 +100,9 @@ const Sidebar: React.FC = () => {
         className="z-50 md:block hidden"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        tabIndex={0}
+        onFocus={handleFocus} // Expande ao receber foco
+        onBlur={handleBlur} // Recolhe ao perder foco
+        tabIndex={0} // Permite que a sidebar também receba foco diretamente
       >
         <Drawer
           variant="permanent"
@@ -165,7 +165,13 @@ const Sidebar: React.FC = () => {
           <Divider style={{ margin: "10px 0" }} />
 
           {/* Navegação */}
-          <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              marginTop: "10px",
+            }}
+          >
             {navItems.map(({ icon, label, path }, index) => (
               <Tooltip title={!expanded ? label : ""} key={index}>
                 <div
@@ -177,10 +183,10 @@ const Sidebar: React.FC = () => {
                     transition: "all 0.3s",
                     cursor: "pointer",
                   }}
-                  onClick={() => router.push(path)}
+                  onClick={() => router.push(path as any)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      router.push(path);
+                      router.push(path as any);
                     }
                   }}
                   role="link"
@@ -189,7 +195,10 @@ const Sidebar: React.FC = () => {
                 >
                   <div
                     style={{
-                      color: pathname === path ? "var(--action-sidebar)" : "var(--contrast-bt-nav)",
+                      color:
+                        pathname === path
+                          ? "var(--action-sidebar)"
+                          : "var(--contrast-bt-nav)",
                       fontSize: "1.5rem",
                     }}
                   >
@@ -203,7 +212,10 @@ const Sidebar: React.FC = () => {
                       overflow: "hidden",
                       transition: "opacity 0.3s",
                       fontSize: "1.1rem",
-                      color: pathname === path ? "var(--action-sidebar)" : "var(--contrast-bt-nav)",
+                      color:
+                        pathname === path
+                          ? "var(--action-sidebar)"
+                          : "var(--contrast-bt-nav)",
                     }}
                   >
                     {label}
@@ -215,19 +227,105 @@ const Sidebar: React.FC = () => {
 
           <Divider style={{ margin: "10px 0" }} />
 
-          {/* Botão de Logout */}
+          {/* Botão de Acessibilidade */}
+          <Tooltip title={!expanded ? "Acessibilidade" : ""}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: expanded ? "flex-start" : "center",
+                padding: "10px 16px",
+                transition: "all 0.3s",
+                cursor: "pointer",
+              }}
+              onClick={openAccessibilityModal}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  openAccessibilityModal();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Abrir menu de acessibilidade"
+            >
+              <FaUniversalAccess
+                style={{
+                  color: "var(--contrast-bt-nav)",
+                  fontSize: "1.5rem",
+                }}
+              />
+              {expanded && (
+                <span
+                  style={{
+                    marginLeft: "15px",
+                    opacity: expanded ? 1 : 0,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    transition: "opacity 0.3s",
+                    fontSize: "1.1rem",
+                    color: "var(--contrast-bt-nav)",
+                  }}
+                >
+                  Acessibilidade
+                </span>
+              )}
+            </div>
+          </Tooltip>
+
+          {/* Seção de Perfil (renderizada condicionalmente) */}
           {isLoggedIn && (
             <div
               style={{
                 position: "absolute",
-                bottom: "20px",
+                bottom: "80px",
                 width: "100%",
                 display: "flex",
-                justifyContent: "center",
+                alignItems: "center",
               }}
+              role="button"
+              tabIndex={0}
+              aria-label="Seção de Perfil"
             >
-              <IconButton onClick={handleLogout} aria-label="Sair">
-                <FaSignOutAlt color="var(--red-sidebar)" size={24} />
+              <img
+                src="https://thispersondoesnotexist.com/"
+                alt="Foto de Fulano de Tal"
+                style={{
+                  width: "45px",
+                  height: "45px",
+                  borderRadius: "10px",
+                  marginLeft: "6px",
+                  objectFit: "cover",
+                  marginRight: expanded ? "10px" : "0",
+                  transition: "margin-right 0.3s",
+                }}
+              />
+              <span
+                style={{
+                  flexGrow: 1,
+                  opacity: expanded ? 1 : 0,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  transition: "opacity 0.3s",
+                  fontSize: "1rem",
+                  color: "var(--contrast-bt-nav)",
+                  fontWeight: "bold",
+                }}
+              >
+                Fulano de Tal
+              </span>
+              <IconButton
+                onClick={handleLogout}
+                size="small"
+                tabIndex={0}
+                aria-label="Sair"
+                style={{
+                  color: "var(--contrast-bt-nav)",
+                  marginLeft: "8px",
+                  marginRight: "8px",
+                }}
+              >
+                <FaSignOutAlt color="var(--red-sidebar)" size={20} />
               </IconButton>
             </div>
           )}
@@ -235,7 +333,10 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Modal de Acessibilidade */}
-      <AccessibilityModal isOpen={isAccessibilityModalOpen} onClose={closeAccessibilityModal} />
+      <AccessibilityModal
+        isOpen={isAccessibilityModalOpen}
+        onClose={closeAccessibilityModal}
+      />
     </div>
   );
 };

@@ -1,8 +1,9 @@
+// src/app/components/Header.tsx
 'use client';
 
 import React, { useState, useRef, useEffect, FC } from "react";
-import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import Link from 'next/link'; // Importação nativa do Next.js
+import { useRouter, usePathname } from 'next/navigation'; // Importação correta para App Router
 import LogoIcon from "../icons/binaryLogo";
 import {
   FaBars,
@@ -12,8 +13,8 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { BsPersonArmsUp } from "react-icons/bs";
-import AccessibilityModal from "./AccessibilityModal";
-import pageNamesData from "@/data/br/pagesTitle.json";
+import AccessibilityModal from "./AccessibilityModal"; // Import do modal
+import pageNamesData from "@/data/br/pagesTitle.json"; // Ajuste o caminho conforme necessário
 import { RiRoadMapFill } from "react-icons/ri";
 
 const Header: FC = () => {
@@ -131,20 +132,38 @@ const Header: FC = () => {
         </div>
 
         <div>
-          <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
-            <FaBars className="h-8 w-8" style={{ color: "var(--background)" }} />
-          </button>
+          <div className="h-md:hidden flex">
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
+              <FaBars
+                className="h-8 w-8"
+                style={{ color: "var(--background)" }}
+              />
+            </button>
+          </div>
+          <div className="flex md:hidden h-sm:hidden">
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
+              <FaBars
+                className="h-8 w-8"
+                style={{ color: "var(--background)" }}
+              />
+            </button>
+          </div>
         </div>
       </div>
 
       {menuOpen && (
         <>
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMenuOpen(false)}></div>
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setMenuOpen(false)}
+          ></div>
 
           <div
             ref={menuRef}
             className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{ backgroundColor: "var(--background-secondary)" }}
+            style={{
+              backgroundColor: "var(--background-secondary)",
+            }}
           >
             <button
               className="absolute top-5 right-5 text-3xl"
@@ -155,45 +174,58 @@ const Header: FC = () => {
               <FaTimes />
             </button>
 
-            <div className="flex flex-col items-center text-center p-4 w-full max-w-lg">
-              {navItems.map(({ icon, label, path }, index) => (
-                <Link
-                  key={index}
-                  href={path}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500"
-                  style={{ color: "var(--primary)" }}
-                >
-                  {icon}
-                  <span>{label}</span>
-                </Link>
-              ))}
-
-              <div className="border-t border-gray-300 my-4"></div>
-
-              <button onClick={openModal} className="flex items-center space-x-4 p-4 text-lg font-bold" aria-label="Abrir opções de acessibilidade">
-                <BsPersonArmsUp style={{ color: "var(--primary)" }} />
-                <span style={{ color: "var(--primary)" }}>Acessibilidade</span>
-              </button>
-
-              {isLoggedIn && (
-                <>
-                  <div className="border-t border-gray-300 my-4"></div>
-                  <button
-                    className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300"
-                    onClick={handleLogout}
-                    aria-label="Sair"
+            <div
+              className="flex flex-col items-center text-center p-4 w-full max-w-lg overflow-y-auto"
+              style={{
+                height: "100vh",
+                maxHeight: "100vh",
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <div className="space-y-8 w-full">
+                {navItems.map(({ icon, label, path }, index) => (
+                  <Link
+                    key={index}
+                    href={path}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500 w-full justify-center"
+                    style={{ color: "var(--primary)" }}
                   >
-                    <FaSignOutAlt style={{ color: "var(--red)" }} />
-                    <span style={{ color: "var(--red)" }}>Sair</span>
+                    <div>{icon}</div>
+                    <span>{label}</span>
+                  </Link>
+                ))}
+
+                <div className="border-t border-gray-300 my-4"></div>
+
+                {/* Accessibility Button */}
+                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center cursor-pointer" >
+                  <button onClick={openModal} className="flex items-center" aria-label="Abrir opções de acessibilidade">
+                    <BsPersonArmsUp style={{ color: "var(--primary)" }} />
+                    <span style={{ color: "var(--primary)" }}>
+                      Acessibilidade
+                    </span>
                   </button>
-                </>
-              )}
+                </div>
+
+                <div className="border-t border-gray-300 my-4"></div>
+                <button
+                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
+                  style={{ color: "var(--primary)" }}
+                  onClick={handleLogout}
+                  aria-label="Sair"
+                >
+                  <FaSignOutAlt style={{ color: "var(--red)" }} />
+                  <span style={{ color: "var(--red)" }}>Sair</span>
+                </button>
+              </div>
             </div>
           </div>
         </>
       )}
 
+      {/* Accessibility Modal */}
       <AccessibilityModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
