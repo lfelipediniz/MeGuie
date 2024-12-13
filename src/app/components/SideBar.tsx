@@ -14,23 +14,51 @@ import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
 import AccessibilityModal from "./AccessibilityModal";
 import { RiRoadMapFill } from "react-icons/ri";
+import axios from "axios"; // Importando axios
+
+interface IUser {
+  name: string;
+  email: string;
+  // Adicione outros campos conforme necessário
+}
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<IUser | null>(null); // Estado para armazenar o usuário
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    // Verifica se o token existe no localStorage ao montar o componente
     const authToken = localStorage.getItem("authToken");
     setIsLoggedIn(!!authToken);
 
-    // Opcional: Sincroniza o estado de login entre múltiplas abas
+    if (authToken) {
+      // Buscar dados do usuário
+      axios
+        .get("/api/user", {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar dados do usuário:", error);
+          // Opcional: lidar com erros, como redirecionar para login
+        });
+    }
+
     const handleStorageChange = () => {
       const updatedToken = localStorage.getItem("authToken");
       setIsLoggedIn(!!updatedToken);
+      if (updatedToken) {
+        // Repetir a busca dos dados do usuário se necessário
+      } else {
+        setUser(null);
+      }
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -59,11 +87,9 @@ const Sidebar: React.FC = () => {
   };
 
   const handleLogout = () => {
-    // Remove o token do localStorage
     localStorage.removeItem("authToken");
     setIsLoggedIn(false);
-
-    // Redireciona para a página principal e recarrega a página
+    setUser(null);
     window.location.href = "/";
   };
 
@@ -75,7 +101,6 @@ const Sidebar: React.FC = () => {
     setIsAccessibilityModalOpen(false);
   };
 
-  // Definição condicional de navItems com base no estado isLoggedIn
   const navItems: { icon: JSX.Element; label: string; path: string }[] = [
     {
       icon: <FaHome aria-hidden="true" />,
@@ -100,9 +125,9 @@ const Sidebar: React.FC = () => {
         className="z-50 md:block hidden"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onFocus={handleFocus} // Expande ao receber foco
-        onBlur={handleBlur} // Recolhe ao perder foco
-        tabIndex={0} // Permite que a sidebar também receba foco diretamente
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        tabIndex={0}
       >
         <Drawer
           variant="permanent"
@@ -273,7 +298,7 @@ const Sidebar: React.FC = () => {
           </Tooltip>
 
           {/* Seção de Perfil (renderizada condicionalmente) */}
-          {isLoggedIn && (
+          {isLoggedIn && user && (
             <div
               style={{
                 position: "absolute",
@@ -288,7 +313,7 @@ const Sidebar: React.FC = () => {
             >
               <img
                 src="https://thispersondoesnotexist.com/"
-                alt="Foto de Fulano de Tal"
+                alt={`Foto de ${user.name}`}
                 style={{
                   width: "45px",
                   height: "45px",
@@ -312,7 +337,7 @@ const Sidebar: React.FC = () => {
                   fontWeight: "bold",
                 }}
               >
-                Fulano de Tal
+                {user.name}
               </span>
               <IconButton
                 onClick={handleLogout}
