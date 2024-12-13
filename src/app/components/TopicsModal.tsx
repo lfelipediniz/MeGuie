@@ -4,9 +4,10 @@ interface TopicsModalProps {
   isOpen: boolean;
   onClose: () => void;
   topics?: { title: string; description: string }[]; // Propriedade opcional para os tópicos
+  title?: string; // Novo título opcional
 }
 
-const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics }) => {
+const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics, title }) => {
   if (!isOpen) return null;
 
   // Tópicos padrão, caso o usuário não forneça nenhum
@@ -41,7 +42,7 @@ const TopicsModal: React.FC<TopicsModalProps> = ({ isOpen, onClose, topics }) =>
           }}
           aria-label="Topics Modal Title"
         >
-          Tópicos Abordados
+          {title || "Tópicos Abordados"}
         </h2>
         <div className="space-y-4" aria-label="Topics List">
           {topicsToDisplay.map((topic, index) => (

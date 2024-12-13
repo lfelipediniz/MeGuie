@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import LoadingOverlay from "@/src/app/components/LoadingOverlay";
+import TopicsModal from "@/src/app/components/TopicsModal";
 import { useRouter } from 'next/navigation';
 
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
@@ -15,15 +16,25 @@ const errorTextClassName = "text-red-500 text-xs -mt-1";
 export default function SignUp() {
     const router = useRouter();
 
-    const [loading, setLoading] = React.useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const [formData, setFormData] = React.useState({
+    const [formData, setFormData] = useState({
         name: '', email: '', password: '', confirm: '',
     });
 
-    const [errors, setErrors] = React.useState({
+    const [errors, setErrors] = useState({
         name: '', email: '', password: '', confirm: '',
     });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalContent, setModalContent] = useState({ title: "", description: "" });
+
+    const openModal = (title: string, description: string) => {
+        setModalContent({ title, description });
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => setIsModalOpen(false);
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -85,11 +96,11 @@ export default function SignUp() {
                 window.location.href = '/';
             } else {
                 // Erro no cadastro
-                alert(data.message);
+                openModal("Erro no Cadastro", data.message);
             }
         } catch (error) {
             console.error('Erro ao cadastrar usuário:', error);
-            alert('Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente.');
+            openModal("Erro no Cadastro", "Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente.");
         } finally {
             setLoading(false);
         }
@@ -117,14 +128,12 @@ export default function SignUp() {
                             type="text"
                             name="name"
                             placeholder="Nome Completo"
-                            aria-label="Nome Completo"
-                            aria-describedby={errors.name ? "name-error" : undefined}
                             className={errors.name ? errorInputClassName : inputClassName}
                             value={formData.name}
                             onChange={handleFormChange}
                         />
                     </div>
-                    {errors.name && <p id="name-error" className={errorTextClassName}>{errors.name}</p>}
+                    {errors.name && <p className={errorTextClassName}>{errors.name}</p>}
 
                     <div className="relative flex items-center">
                         <span className="absolute left-3 text-gray-400">
@@ -134,14 +143,12 @@ export default function SignUp() {
                             type="email"
                             name="email"
                             placeholder="E-mail"
-                            aria-label="E-mail"
-                            aria-describedby={errors.email ? "email-error" : undefined}
-                            className={`${errors.email ? errorInputClassName : inputClassName} pl-10`}
+                            className={errors.email ? errorInputClassName : inputClassName}
                             value={formData.email}
                             onChange={handleFormChange}
                         />
                     </div>
-                    {errors.email && <p id="email-error" className={errorTextClassName}>{errors.email}</p>}
+                    {errors.email && <p className={errorTextClassName}>{errors.email}</p>}
 
                     <div className="relative flex items-center">
                         <span className="absolute left-3 text-gray-400">
@@ -151,14 +158,12 @@ export default function SignUp() {
                             type="password"
                             name="password"
                             placeholder="Senha"
-                            aria-label="Senha"
-                            aria-describedby={errors.password ? "password-error" : undefined}
                             className={errors.password ? errorInputClassName : inputClassName}
                             value={formData.password}
                             onChange={handleFormChange}
                         />
                     </div>
-                    {errors.password && <p id="password-error" className={errorTextClassName}>{errors.password}</p>}
+                    {errors.password && <p className={errorTextClassName}>{errors.password}</p>}
 
                     <div className="relative flex items-center">
                         <span className="absolute left-3 text-gray-400">
@@ -168,21 +173,18 @@ export default function SignUp() {
                             type="password"
                             name="confirm"
                             placeholder="Confirmar Senha"
-                            aria-label="Confirmar Senha"
-                            aria-describedby={errors.confirm ? "confirm-error" : undefined}
                             className={errors.confirm ? errorInputClassName : inputClassName}
                             value={formData.confirm}
                             onChange={handleFormChange}
                         />
                     </div>
-                    {errors.confirm && <p id="confirm-error" className={errorTextClassName}>{errors.confirm}</p>}
+                    {errors.confirm && <p className={errorTextClassName}>{errors.confirm}</p>}
 
                     <button
                         className="px-4 py-2 mt-5 rounded-lg hover:opacity-90"
                         style={{
                             backgroundColor: "var(--action)",
                             color: "var(--background)",
-                            fontFamily: "var(--font-inter)",
                         }}
                         onClick={handleFormSubmit}
                         aria-label="Cadastrar nova conta"
@@ -196,15 +198,19 @@ export default function SignUp() {
                             className="cursor-pointer underline"
                             style={{ color: "var(--action)" }}
                             onClick={handleNavigation}
-                            role="link"
-                            aria-label="Ir para a página de login"
-                            tabIndex={0}
                         >
                             Fazer Login
                         </a>
                     </p>
                 </div>
             )}
+
+            <TopicsModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                title={" "}
+                topics={[{ title: modalContent.title, description: modalContent.description }]}
+            />
         </div>
     );
 }
