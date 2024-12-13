@@ -1,8 +1,7 @@
-// /pages/signup.tsx
-
 "use client";
 
 import React, { useState } from "react";
+import axios from "axios"; // Importando axios
 import LoadingOverlay from "../../components/LoadingOverlay";
 import TopicsModal from "../../components/TopicsModal";
 import { useRouter } from "next/navigation";
@@ -17,19 +16,38 @@ const errorInputClassName =
   "p-2 pl-11 border rounded-full border-red-500 text-gray-600 bg-background-primary placeholder-red-500 w-full";
 const errorTextClassName = "text-red-500 text-xs -mt-1";
 
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirm: string;
+}
+
+interface FormErrors {
+  name: string;
+  email: string;
+  password: string;
+  confirm: string;
+}
+
+interface ModalContent {
+  title: string;
+  description: string;
+}
+
 export default function SignUp() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     password: "",
     confirm: "",
   });
 
-  const [errors, setErrors] = useState({
+  const [errors, setErrors] = useState<FormErrors>({
     name: "",
     email: "",
     password: "",
@@ -37,7 +55,7 @@ export default function SignUp() {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState({
+  const [modalContent, setModalContent] = useState<ModalContent>({
     title: "",
     description: "",
   });
@@ -51,26 +69,30 @@ export default function SignUp() {
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   const validateFormData = (): boolean => {
-    const newErrors = {
+    const newErrors: FormErrors = {
       name: "",
       email: "",
       password: "",
       confirm: "",
     };
 
-    if (!formData.name) newErrors.name = "Nome é obrigatório.";
+    if (!formData.name.trim()) newErrors.name = "Nome é obrigatório.";
 
-    if (!formData.email) {
+    if (!formData.email.trim()) {
       newErrors.email = "E-mail é obrigatório.";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = "Formato de e-mail inválido.";
     }
 
-    if (!formData.password) newErrors.password = "Senha é obrigatória.";
+    if (!formData.password) {
+      newErrors.password = "Senha é obrigatória.";
+    } else if (formData.password.length < 6) {
+      newErrors.password = "A senha deve ter pelo menos 6 caracteres.";
+    }
 
     if (!formData.confirm) {
       newErrors.confirm = "Confirmação de Senha é obrigatória.";
@@ -85,40 +107,42 @@ export default function SignUp() {
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateFormData()) return;
-  
+
     setLoading(true);
-  
+
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      const response = await axios.post("/api/signup", {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
-  
-      const data = await response.json();
-      console.log('Resposta da API:', data); // Adicione este log para depuração
-  
-      if (response.ok) {
-        // Salva o token no Local Storage
-        localStorage.setItem("authToken", data.token);
-  
+
+      console.log("Resposta da API:", response.data); // Log para depuração
+
+      if (response.status === 201 || response.status === 200) {
+        // Supondo que a API retorne um token na propriedade 'token'
+        localStorage.setItem("authToken", response.data.token);
+
         // Redireciona para a página inicial e recarrega a página
         window.location.href = "/";
       } else {
-        openModal("Erro no Cadastro", data.message);
+        openModal("Erro no Cadastro", response.data.message || "Ocorreu um erro.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao cadastrar usuário:", error);
-      openModal(
-        "Erro no Cadastro",
-        "Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente."
-      );
+
+      // Verifica se o erro é do tipo AxiosError para acessar a resposta
+      if (axios.isAxiosError(error) && error.response) {
+        openModal(
+          "Erro no Cadastro",
+          error.response.data.message || "Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente."
+        );
+      } else {
+        openModal(
+          "Erro no Cadastro",
+          "Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente."
+        );
+      }
     } finally {
       setLoading(false);
     }

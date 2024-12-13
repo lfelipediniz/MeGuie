@@ -1,30 +1,45 @@
 "use client";
 
 import React from "react";
+import axios from 'axios';
 import LoadingOverlay from "../../components/LoadingOverlay";
+import TopicsModal from "../../components/TopicsModal";
 import { useRouter } from "@/src/navigation";
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
 const inputClassName = "p-2 pl-11 border rounded-full border-gray-500 text-gray-600 bg-background-primary placeholder-gray-700 w-full";
-
 const errorInputClassName = "p-2 pl-11 border rounded-full border-red-500 text-gray-600 bg-background-primary placeholder-red-500 w-full";
-
 const errorTextClassName = "text-red-500 text-xs -mt-1";
 
 export default function Login() {
-
     const router = useRouter();
 
     const [loading, setLoading] = React.useState(false);
 
     const [formData, setFormData] = React.useState({
-        email: '', password: '',
+        email: '', 
+        password: '',
     });
 
     const [errors, setErrors] = React.useState({
-        email: '', password: '',
+        email: '', 
+        password: '',
     });
+
+    // Estados para o modal de erro
+    const [isModalOpen, setIsModalOpen] = React.useState(false);
+    const [modalContent, setModalContent] = React.useState({
+        title: '',
+        description: '',
+    });
+
+    const openModal = (title: string, description: string) => {
+        setModalContent({ title, description });
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => setIsModalOpen(false);
 
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -32,9 +47,7 @@ export default function Login() {
     }
 
     const validateFormData = (): boolean => {
-        const newErrors = {
-            email: '', password: '',
-        };
+        const newErrors = { email: '', password: '' };
 
         if (!formData.email) {
             newErrors.email = 'E-mail é obrigatório.';
@@ -55,33 +68,31 @@ export default function Login() {
         setLoading(true);
 
         try {
-            // TODO: Realizar a requisição de login aqui.
-            // Por exemplo:
-            // const response = await api.post('/login', formData);
-            // if (response.ok) { ... }
+            const response = await axios.post('/api/login', {
+                email: formData.email,
+                password: formData.password,
+            });
 
-            // Simulação de requisição assíncrona com timeout
-            await new Promise((resolve) => setTimeout(resolve, 2000));
+            // Se o login foi bem-sucedido, a API retorna 200 e o token.
+            if (response.status === 200 && response.data.token) {
+                // Padronizar o armazenamento: usar "authToken" para manter consistência com signup
+                localStorage.setItem('authToken', response.data.token);
+                localStorage.setItem('userId', response.data.userId || '');
+                localStorage.setItem('isLoggedIn', 'true');
 
-            // Atualizar o localStorage
-            localStorage.setItem('isLoggedIn', 'true');
-
-            // Extrair o locale atual da URL
-            const pathSegments = window.location.pathname.split('/');
-            const locale = pathSegments[1] || 'br'; // 'br' como padrão se nenhum locale for encontrado
-
-            // Construir a nova URL com o locale
-            const newUrl = `/`;
-
-            // Redirecionar para a página inicial com o locale e recarregar
-            window.location.href = newUrl;
-            // Alternativamente, se preferir recarregar a página atual:
-            // window.location.reload();
-
-        } catch (error) {
-            // Tratar erros de login aqui
+                // Redirecionar para a página inicial e recarregar a página
+                window.location.href = "/";
+            } else {
+                openModal("Erro no Login", response.data.message || "Ocorreu um erro ao tentar fazer login.");
+            }
+        } catch (error: any) {
             console.error("Erro ao fazer login:", error);
-            // Opcional: Exibir uma mensagem de erro para o usuário
+
+            if (error.response && error.response.data && error.response.data.message) {
+                openModal("Erro no Login", error.response.data.message);
+            } else {
+                openModal("Erro no Login", "Ocorreu um erro ao tentar fazer login. Tente novamente mais tarde.");
+            }
         } finally {
             setLoading(false);
         }
@@ -93,70 +104,73 @@ export default function Login() {
                 <div className="transition-opacity duration-500 opacity-100">
                     <LoadingOverlay />
                 </div>
-            ) 
-            :
-            <div className="flex flex-col gap-y-3">
-                <p>Insira as suas informações:</p>
-                
-                <div className="relative flex items-center">
-                    <span className="absolute left-3 text-gray-400">
-                        <MailOutlineIcon 
-                            className={errors.email ? 'text-red-500' : ''}
+            ) : (
+                <form onSubmit={handleFormSubmit} className="flex flex-col gap-y-3">
+                    <p>Insira as suas informações:</p>
+                    
+                    <div className="relative flex items-center">
+                        <span className="absolute left-3 text-gray-400">
+                            <MailOutlineIcon className={errors.email ? 'text-red-500' : ''} />
+                        </span>
+                        <input
+                            type="text"
+                            name="email"
+                            placeholder="E-mail"
+                            aria-label="E-mail"
+                            aria-describedby={errors.email ? "email-error" : undefined}
+                            className={`${errors.email ? errorInputClassName : inputClassName} pl-10`}
+                            value={formData.email}
+                            onChange={handleFormChange}
                         />
-                    </span>
-                    <input
-                        type="text"
-                        name="email"
-                        placeholder="E-mail"
-                        aria-label="E-mail"
-                        aria-describedby={errors.email ? "email-error" : undefined}
-                        className={`${errors.email ? errorInputClassName : inputClassName} pl-10`}
-                        value={formData.email}
-                        onChange={handleFormChange}
-                    />
-                </div>
-                {errors.email && 
-                    <p id="email-error" className={errorTextClassName}>
-                        {errors.email}
-                    </p>
-                }
+                    </div>
+                    {errors.email && 
+                        <p id="email-error" className={errorTextClassName}>
+                            {errors.email}
+                        </p>
+                    }
 
-                <div className="relative flex items-center">
-                    <span className="absolute left-3 text-gray-400">
-                        <LockOutlinedIcon 
-                            className={errors.password ? 'text-red-500' : ''}
+                    <div className="relative flex items-center">
+                        <span className="absolute left-3 text-gray-400">
+                            <LockOutlinedIcon className={errors.password ? 'text-red-500' : ''} />
+                        </span>
+                        <input
+                            type="password"
+                            name="password"
+                            placeholder="Senha"
+                            aria-label="Senha"
+                            aria-describedby={errors.password ? "password-error" : undefined}
+                            className={errors.password ? errorInputClassName : inputClassName}
+                            value={formData.password}
+                            onChange={handleFormChange}
                         />
-                    </span>
-                    <input
-                        type="password" name="password"
-                        placeholder="Senha"
-                        aria-label="Senha"
-                        aria-describedby={errors.password ? "password-error" : undefined}
-                        className={errors.password ? errorInputClassName : inputClassName}
-                        value={formData.password}
-                        onChange={handleFormChange}
-                    />
-                </div>
-                {errors.password && 
-                    <p id="password-error" className={errorTextClassName}>
-                        {errors.password}
-                    </p>
-                }
+                    </div>
+                    {errors.password && 
+                        <p id="password-error" className={errorTextClassName}>
+                            {errors.password}
+                        </p>
+                    }
 
-                <button
-                    onClick={handleFormSubmit}
-                    className="px-4 py-2 mt-5 rounded-lg hover:opacity-90"
-                    style={{
-                      backgroundColor: "var(--action)",
-                      color: "var(--background)",
-                      fontFamily: "var(--font-inter)",
-                    }}
-                    aria-label="Entrar na conta"
-                >
-                    Entrar
-                </button>
-            </div>
-            }
+                    <button
+                        type="submit"
+                        className="px-4 py-2 mt-5 rounded-lg hover:opacity-90"
+                        style={{
+                            backgroundColor: "var(--action)",
+                            color: "var(--background)",
+                            fontFamily: "var(--font-inter)",
+                        }}
+                        aria-label="Entrar na conta"
+                    >
+                        Entrar
+                    </button>
+                </form>
+            )}
+
+            <TopicsModal
+                isOpen={isModalOpen}
+                onClose={closeModal}
+                title={" "}
+                topics={[{ title: modalContent.title, description: modalContent.description }]}
+            />
         </div>
     )
 }
