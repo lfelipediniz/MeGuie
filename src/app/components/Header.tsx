@@ -1,9 +1,8 @@
-// src/app/components/Header.tsx
 'use client';
 
 import React, { useState, useRef, useEffect, FC } from "react";
-import Link from 'next/link'; // Importação nativa do Next.js
-import { useRouter, usePathname } from 'next/navigation'; // Importação correta para App Router
+import Link from 'next/link';
+import { useRouter, usePathname } from 'next/navigation';
 import LogoIcon from "../icons/binaryLogo";
 import {
   FaBars,
@@ -13,26 +12,26 @@ import {
   FaSignOutAlt,
 } from "react-icons/fa";
 import { BsPersonArmsUp } from "react-icons/bs";
-import AccessibilityModal from "./AccessibilityModal"; // Import do modal
-import pageNamesData from "@/data/br/pagesTitle.json"; // Ajuste o caminho conforme necessário
+import AccessibilityModal from "./AccessibilityModal";
+import pageNamesData from "@/data/br/pagesTitle.json";
 import { RiRoadMapFill } from "react-icons/ri";
 
 const Header: FC = () => {
   const router = useRouter();
-  const pathname = usePathname(); // Obtém o caminho atual
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    // Verifica o localStorage ao montar o componente
-    const loggedInStatus = localStorage.getItem('isLoggedIn');
-    setIsLoggedIn(loggedInStatus === 'true');
+    // Verifica se o authToken existe no localStorage ao montar o componente
+    const authToken = localStorage.getItem('authToken');
+    setIsLoggedIn(!!authToken);
 
     // Sincroniza o estado de login entre múltiplas abas
     const handleStorageChange = () => {
-      const updatedStatus = localStorage.getItem('isLoggedIn');
-      setIsLoggedIn(updatedStatus === 'true');
+      const updatedToken = localStorage.getItem('authToken');
+      setIsLoggedIn(!!updatedToken);
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -43,8 +42,7 @@ const Header: FC = () => {
   }, []);
 
   const [expanded, setExpanded] = useState(false);
-  const [accessibilityMenuAnchor, setAccessibilityMenuAnchor] =
-    useState<null | HTMLElement>(null);
+  const [accessibilityMenuAnchor, setAccessibilityMenuAnchor] = useState<null | HTMLElement>(null);
 
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -57,42 +55,34 @@ const Header: FC = () => {
   };
 
   const atualPageName =
-    pathname && pathname.includes('/roadmap/') ? 
-    'Roadmap' :
-    pageNamesData[pathname as keyof typeof pageNamesData] ||
-    "Página Não Encontrada";
+    pathname && pathname.includes('/roadmap/')
+      ? 'Roadmap'
+      : pageNamesData[pathname as keyof typeof pageNamesData] || "Página Não Encontrada";
 
   const navItems = [
     {
-      icon: <FaHome 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para a tela principal"
-        tabIndex={0}
-      />,
+      icon: <FaHome aria-label="Ir para a tela principal" />,
       label: "Tela Principal",
       path: "/",
     },
-    {
-      icon: <FaStar 
-        className="cursor-pointer"
-        role="link"
-        aria-label="Ir para os roadmaps favoritos"
-        tabIndex={0}
-      />,
-      label: "Roadmaps Favoritos",
-      path: "/pages/savedroads",
-    },
+    ...(isLoggedIn
+      ? [
+          {
+            icon: <FaStar aria-label="Ir para os roadmaps favoritos" />,
+            label: "Roadmaps Favoritos",
+            path: "/pages/savedroads",
+          },
+        ]
+      : []),
   ];
 
   const handleLogout = () => {
-    // Atualiza o estado
+    // Remove o authToken do localStorage
+    localStorage.removeItem('authToken');
     setIsLoggedIn(false);
-    // Atualiza o localStorage
-    localStorage.setItem('isLoggedIn', 'false');
 
     // Redireciona para a página principal
-    router.push('/'); // Ajuste o caminho conforme a estrutura da sua aplicação
+    router.push('/');
   };
 
   const openModal = () => setModalOpen(true);
@@ -141,38 +131,20 @@ const Header: FC = () => {
         </div>
 
         <div>
-          <div className="h-md:hidden flex">
-            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
-              <FaBars
-                className="h-8 w-8"
-                style={{ color: "var(--background)" }}
-              />
-            </button>
-          </div>
-          <div className="flex md:hidden h-sm:hidden">
-            <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
-              <FaBars
-                className="h-8 w-8"
-                style={{ color: "var(--background)" }}
-              />
-            </button>
-          </div>
+          <button onClick={() => setMenuOpen(!menuOpen)} aria-label="Abrir menu">
+            <FaBars className="h-8 w-8" style={{ color: "var(--background)" }} />
+          </button>
         </div>
       </div>
 
       {menuOpen && (
         <>
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-40"
-            onClick={() => setMenuOpen(false)}
-          ></div>
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setMenuOpen(false)}></div>
 
           <div
             ref={menuRef}
             className="fixed inset-0 z-50 flex items-center justify-center"
-            style={{
-              backgroundColor: "var(--background-secondary)",
-            }}
+            style={{ backgroundColor: "var(--background-secondary)" }}
           >
             <button
               className="absolute top-5 right-5 text-3xl"
@@ -183,58 +155,45 @@ const Header: FC = () => {
               <FaTimes />
             </button>
 
-            <div
-              className="flex flex-col items-center text-center p-4 w-full max-w-lg overflow-y-auto"
-              style={{
-                height: "100vh",
-                maxHeight: "100vh",
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
-              <div className="space-y-8 w-full">
-                {navItems.map(({ icon, label, path }, index) => (
-                  <Link
-                    key={index}
-                    href={path}
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500 w-full justify-center"
-                    style={{ color: "var(--primary)" }}
-                  >
-                    <div>{icon}</div>
-                    <span>{label}</span>
-                  </Link>
-                ))}
-
-                <div className="border-t border-gray-300 my-4"></div>
-
-                {/* Accessibility Button */}
-                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center cursor-pointer" >
-                  <button onClick={openModal} className="flex items-center" aria-label="Abrir opções de acessibilidade">
-                    <BsPersonArmsUp style={{ color: "var(--primary)" }} />
-                    <span style={{ color: "var(--primary)" }}>
-                      Acessibilidade
-                    </span>
-                  </button>
-                </div>
-
-                <div className="border-t border-gray-300 my-4"></div>
-                <button
-                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300 w-full justify-center"
+            <div className="flex flex-col items-center text-center p-4 w-full max-w-lg">
+              {navItems.map(({ icon, label, path }, index) => (
+                <Link
+                  key={index}
+                  href={path}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-gray-500"
                   style={{ color: "var(--primary)" }}
-                  onClick={handleLogout}
-                  aria-label="Sair"
                 >
-                  <FaSignOutAlt style={{ color: "var(--red)" }} />
-                  <span style={{ color: "var(--red)" }}>Sair</span>
-                </button>
-              </div>
+                  {icon}
+                  <span>{label}</span>
+                </Link>
+              ))}
+
+              <div className="border-t border-gray-300 my-4"></div>
+
+              <button onClick={openModal} className="flex items-center space-x-4 p-4 text-lg font-bold" aria-label="Abrir opções de acessibilidade">
+                <BsPersonArmsUp style={{ color: "var(--primary)" }} />
+                <span style={{ color: "var(--primary)" }}>Acessibilidade</span>
+              </button>
+
+              {isLoggedIn && (
+                <>
+                  <div className="border-t border-gray-300 my-4"></div>
+                  <button
+                    className="flex items-center space-x-4 p-4 text-lg font-bold hover:text-red-300"
+                    onClick={handleLogout}
+                    aria-label="Sair"
+                  >
+                    <FaSignOutAlt style={{ color: "var(--red)" }} />
+                    <span style={{ color: "var(--red)" }}>Sair</span>
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </>
       )}
 
-      {/* Accessibility Modal */}
       <AccessibilityModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );
