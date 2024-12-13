@@ -4,8 +4,10 @@ import dbConnect from '../../lib/mongodb';
 import User, { IUser } from '../../models/User';
 import bcrypt from 'bcryptjs';
 
+// Adicione o campo `userId` no tipo Data para retornar o ID do usuário
 type Data = {
   message: string;
+  userId?: string; // Adicionado para retornar o ObjectId
   error?: string;
 };
 
@@ -44,7 +46,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     await newUser.save();
 
-    return res.status(201).json({ message: 'Usuário cadastrado com sucesso.' });
+    // Retornar o ID do novo usuário
+// Retornar o ID do novo usuário convertido para string
+return res.status(201).json({ message: 'Usuário cadastrado com sucesso.', userId: newUser._id.toString() });
+
   } catch (error) {
     console.error('Erro ao cadastrar usuário:', error);
     return res.status(500).json({ message: 'Erro interno do servidor.', error: 'Internal Server Error' });
