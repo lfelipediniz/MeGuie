@@ -5,20 +5,13 @@ import LogoIcon from "./icons/logo";
 import LottieStudy from "./components/LottieStudy";
 import Sponsors from "./components/Sponsors";
 import FAQ from "./components/FAQ";
-import {
-  FaInstagram,
-  FaFacebook,
-  FaWhatsapp,
-  FaEnvelope,
-} from "react-icons/fa";
+import { FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { MdOutlineEmail } from "react-icons/md";
+import { RiFacebookCircleLine } from "react-icons/ri";
 import { useRouter } from "next/navigation";
 
 import Home from "./pages/home/page";
-import LoadingOverlay from "./components/LoadingOverlay"; 
-
-import { MdOutlineEmail } from "react-icons/md";
-import { RiFacebookCircleLine } from "react-icons/ri";
-
+import LoadingOverlay from "./components/LoadingOverlay";
 
 export default function DashboardPage() {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -27,8 +20,8 @@ export default function DashboardPage() {
   const router = useRouter();
 
   // Estado para rastrear se o usuário está logado
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null)
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const handleResize = () => {
@@ -41,8 +34,8 @@ export default function DashboardPage() {
     window.addEventListener("resize", handleResize);
 
     const checkLoginStatus = () => {
-      const isLoggedInStorage = localStorage.getItem("isLoggedIn");
-      setIsLoggedIn(isLoggedInStorage === "true");
+      const authToken = localStorage.getItem("authToken");
+      setIsLoggedIn(!!authToken); // Define como true se o token existir
       setLoading(false);
     };
 
@@ -92,7 +85,6 @@ export default function DashboardPage() {
       </div>
     );
   }
-
 
   if (isLoggedIn) {
     return <Home />;
@@ -163,7 +155,7 @@ export default function DashboardPage() {
       <h2 className="text-center">Sobre o Projeto</h2>
       <br />
       <p className="text-center" id="main-content">
-        O MeGuie é uma plataforma que oferece Roadmaps completos para estudantes
+        O MeGuie é uma plataforma que oferece Roadmaps completos para estudantes
         do ensino fundamental e médio, criando um caminho claro e eficiente para
         quem deseja se preparar para o vestibular de forma gratuita. Nosso
         objetivo é democratizar o acesso ao conhecimento de qualidade disponível
@@ -171,7 +163,7 @@ export default function DashboardPage() {
         que há uma infinidade de conteúdos educativos gratuitos e de alta
         qualidade online, mas a falta de uma organização estruturada muitas
         vezes impede os estudantes de aproveitarem esses recursos ao máximo. O
-        MeGuie resolve esse problema ao indexar e organizar esses conteúdos,
+        MeGuie resolve esse problema ao indexar e organizar esses conteúdos,
         criando uma jornada de aprendizado com um passo a passo em cada matéria,
         para que você possa estudar com mais foco e direção.
       </p>
@@ -188,49 +180,17 @@ export default function DashboardPage() {
         Entre em contato conosco nas redes sociais!
       </p>
       <div className="flex justify-center space-x-6 mt-4">
-        <a
-          href="https://instagram.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Abrir Instagram"
-        >
-          <FaInstagram
-            size={isMobile ? 30 : 40}
-            className="hover:text-gray-700 transition duration-300"
-          />
+        <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Abrir Instagram">
+          <FaInstagram size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
         </a>
-        <a
-          href="https://facebook.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Abrir Facebook"
-        >
-          <RiFacebookCircleLine
-            size={isMobile ? 30 : 40}
-            className="hover:text-gray-700 transition duration-300"
-          />
+        <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Abrir Facebook">
+          <RiFacebookCircleLine size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
         </a>
-        <a
-          href="https://wa.me/35988550516"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Abrir WhatsApp"
-        >
-          <FaWhatsapp
-            size={isMobile ? 30 : 40}
-            className="hover:text-gray-700 transition duration-300"
-          />
+        <a href="https://wa.me/35988550516" target="_blank" rel="noopener noreferrer" aria-label="Abrir WhatsApp">
+          <FaWhatsapp size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
         </a>
-        <a
-          href="mailto:contato@meguie.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Enviar email"
-        >
-          <MdOutlineEmail
-            size={isMobile ? 30 : 40}
-            className="hover:text-gray-700 transition duration-300"
-          />
+        <a href="mailto:contato@meguie.com" target="_blank" rel="noopener noreferrer" aria-label="Enviar email">
+          <MdOutlineEmail size={isMobile ? 30 : 40} className="hover:text-gray-700 transition duration-300" />
         </a>
       </div>
     </div>

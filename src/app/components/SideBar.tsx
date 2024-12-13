@@ -17,25 +17,20 @@ import { RiRoadMapFill } from "react-icons/ri";
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
-  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] =
-    useState(false);
+  const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
   const pathname = usePathname();
   const router = useRouter();
 
   useEffect(() => {
-    // Verifica o localStorage ao montar o componente
-    const loggedInStatus = localStorage.getItem("isLoggedIn");
-    if (loggedInStatus === "true") {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    // Verifica se o token existe no localStorage ao montar o componente
+    const authToken = localStorage.getItem("authToken");
+    setIsLoggedIn(!!authToken);
 
     // Opcional: Sincroniza o estado de login entre múltiplas abas
     const handleStorageChange = () => {
-      const updatedStatus = localStorage.getItem("isLoggedIn");
-      setIsLoggedIn(updatedStatus === "true");
+      const updatedToken = localStorage.getItem("authToken");
+      setIsLoggedIn(!!updatedToken);
     };
 
     window.addEventListener("storage", handleStorageChange);
@@ -54,27 +49,22 @@ const Sidebar: React.FC = () => {
   };
 
   const handleFocus = () => {
-    setExpanded(true); // Expande a sidebar quando qualquer elemento recebe foco
+    setExpanded(true);
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
-    // Recolhe a sidebar apenas se o foco sair completamente dela
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setExpanded(false);
     }
   };
 
   const handleLogout = () => {
-    // Atualiza o estado
+    // Remove o token do localStorage
+    localStorage.removeItem("authToken");
     setIsLoggedIn(false);
-    // Atualiza o localStorage
-    localStorage.setItem("isLoggedIn", "false");
 
-    // Extrai o locale atual da URL
-    const pathSegments = window.location.pathname.split("/");
-
-    // Redireciona para a página principal com o locale e recarrega a página
-    window.location.href = `/`; // Ajuste o caminho conforme a estrutura da sua aplicação
+    // Redireciona para a página principal e recarrega a página
+    window.location.href = "/";
   };
 
   const openAccessibilityModal = () => {
@@ -110,9 +100,9 @@ const Sidebar: React.FC = () => {
         className="z-50 md:block hidden"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        onFocus={handleFocus} // Expande ao receber foco
-        onBlur={handleBlur} // Recolhe ao perder foco
-        tabIndex={0} // Permite que a sidebar também receba foco diretamente
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        tabIndex={0}
       >
         <Drawer
           variant="permanent"
@@ -175,13 +165,7 @@ const Sidebar: React.FC = () => {
           <Divider style={{ margin: "10px 0" }} />
 
           {/* Navegação */}
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              marginTop: "10px",
-            }}
-          >
+          <div style={{ display: "flex", flexDirection: "column", marginTop: "10px" }}>
             {navItems.map(({ icon, label, path }, index) => (
               <Tooltip title={!expanded ? label : ""} key={index}>
                 <div
@@ -193,10 +177,10 @@ const Sidebar: React.FC = () => {
                     transition: "all 0.3s",
                     cursor: "pointer",
                   }}
-                  onClick={() => router.push(path as any)}
+                  onClick={() => router.push(path)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      router.push(path as any);
+                      router.push(path);
                     }
                   }}
                   role="link"
@@ -205,10 +189,7 @@ const Sidebar: React.FC = () => {
                 >
                   <div
                     style={{
-                      color:
-                        pathname === path
-                          ? "var(--action-sidebar)"
-                          : "var(--contrast-bt-nav)",
+                      color: pathname === path ? "var(--action-sidebar)" : "var(--contrast-bt-nav)",
                       fontSize: "1.5rem",
                     }}
                   >
@@ -222,10 +203,7 @@ const Sidebar: React.FC = () => {
                       overflow: "hidden",
                       transition: "opacity 0.3s",
                       fontSize: "1.1rem",
-                      color:
-                        pathname === path
-                          ? "var(--action-sidebar)"
-                          : "var(--contrast-bt-nav)",
+                      color: pathname === path ? "var(--action-sidebar)" : "var(--contrast-bt-nav)",
                     }}
                   >
                     {label}
@@ -237,105 +215,19 @@ const Sidebar: React.FC = () => {
 
           <Divider style={{ margin: "10px 0" }} />
 
-          {/* Botão de Acessibilidade */}
-          <Tooltip title={!expanded ? "Acessibilidade" : ""}>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: expanded ? "flex-start" : "center",
-                padding: "10px 16px",
-                transition: "all 0.3s",
-                cursor: "pointer",
-              }}
-              onClick={openAccessibilityModal}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  openAccessibilityModal();
-                }
-              }}
-              role="button"
-              tabIndex={0}
-              aria-label="Abrir menu de acessibilidade"
-            >
-              <FaUniversalAccess
-                style={{
-                  color: "var(--contrast-bt-nav)",
-                  fontSize: "1.5rem",
-                }}
-              />
-              {expanded && (
-                <span
-                  style={{
-                    marginLeft: "15px",
-                    opacity: expanded ? 1 : 0,
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
-                    transition: "opacity 0.3s",
-                    fontSize: "1.1rem",
-                    color: "var(--contrast-bt-nav)",
-                  }}
-                >
-                  Acessibilidade
-                </span>
-              )}
-            </div>
-          </Tooltip>
-
-          {/* Seção de Perfil (renderizada condicionalmente) */}
+          {/* Botão de Logout */}
           {isLoggedIn && (
             <div
               style={{
                 position: "absolute",
-                bottom: "80px",
+                bottom: "20px",
                 width: "100%",
                 display: "flex",
-                alignItems: "center",
+                justifyContent: "center",
               }}
-              role="button"
-              tabIndex={0}
-              aria-label="Seção de Perfil"
             >
-              <img
-                src="https://thispersondoesnotexist.com/"
-                alt="Foto de Fulano de Tal"
-                style={{
-                  width: "45px",
-                  height: "45px",
-                  borderRadius: "10px",
-                  marginLeft: "6px",
-                  objectFit: "cover",
-                  marginRight: expanded ? "10px" : "0",
-                  transition: "margin-right 0.3s",
-                }}
-              />
-              <span
-                style={{
-                  flexGrow: 1,
-                  opacity: expanded ? 1 : 0,
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  transition: "opacity 0.3s",
-                  fontSize: "1rem",
-                  color: "var(--contrast-bt-nav)",
-                  fontWeight: "bold",
-                }}
-              >
-                Fulano de Tal
-              </span>
-              <IconButton
-                onClick={handleLogout}
-                size="small"
-                tabIndex={0}
-                aria-label="Sair"
-                style={{
-                  color: "var(--contrast-bt-nav)",
-                  marginLeft: "8px",
-                  marginRight: "8px",
-                }}
-              >
-                <FaSignOutAlt color="var(--red-sidebar)" size={20} />
+              <IconButton onClick={handleLogout} aria-label="Sair">
+                <FaSignOutAlt color="var(--red-sidebar)" size={24} />
               </IconButton>
             </div>
           )}
@@ -343,10 +235,7 @@ const Sidebar: React.FC = () => {
       </div>
 
       {/* Modal de Acessibilidade */}
-      <AccessibilityModal
-        isOpen={isAccessibilityModalOpen}
-        onClose={closeAccessibilityModal}
-      />
+      <AccessibilityModal isOpen={isAccessibilityModalOpen} onClose={closeAccessibilityModal} />
     </div>
   );
 };

@@ -17,96 +17,104 @@ export default function SignUp() {
     const router = useRouter();
 
     const [loading, setLoading] = useState(false);
-
+  
     const [formData, setFormData] = useState({
-        name: '', email: '', password: '', confirm: '',
+      name: '',
+      email: '',
+      password: '',
+      confirm: '',
     });
-
+  
     const [errors, setErrors] = useState({
-        name: '', email: '', password: '', confirm: '',
+      name: '',
+      email: '',
+      password: '',
+      confirm: '',
     });
-
+  
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [modalContent, setModalContent] = useState({ title: "", description: "" });
-
+    const [modalContent, setModalContent] = useState({ title: '', description: '' });
+  
     const openModal = (title: string, description: string) => {
-        setModalContent({ title, description });
-        setIsModalOpen(true);
+      setModalContent({ title, description });
+      setIsModalOpen(true);
     };
-
+  
     const closeModal = () => setIsModalOpen(false);
-
+  
     const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
     };
-
+  
     const validateFormData = (): boolean => {
-        const newErrors = {
-            name: '', email: '', password: '', confirm: '',
-        };
-
-        if (!formData.name) newErrors.name = 'Nome é obrigatório.';
-
-        if (!formData.email) {
-            newErrors.email = 'E-mail é obrigatório.';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Formato de e-mail inválido.';
-        }
-
-        if (!formData.password) newErrors.password = 'Senha é obrigatória.';
-
-        if (!formData.confirm) {
-            newErrors.confirm = 'Confirmação de Senha é obrigatória.';
-        } else if (formData.confirm !== formData.password) {
-            newErrors.confirm = 'As senhas não coincidem.';
-        }
-
-        setErrors(newErrors);
-        return Object.values(newErrors).every((error) => error === '');
+      const newErrors = {
+        name: '',
+        email: '',
+        password: '',
+        confirm: '',
+      };
+  
+      if (!formData.name) newErrors.name = 'Nome é obrigatório.';
+  
+      if (!formData.email) {
+        newErrors.email = 'E-mail é obrigatório.';
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+        newErrors.email = 'Formato de e-mail inválido.';
+      }
+  
+      if (!formData.password) newErrors.password = 'Senha é obrigatória.';
+  
+      if (!formData.confirm) {
+        newErrors.confirm = 'Confirmação de Senha é obrigatória.';
+      } else if (formData.confirm !== formData.password) {
+        newErrors.confirm = 'As senhas não coincidem.';
+      }
+  
+      setErrors(newErrors);
+      return Object.values(newErrors).every((error) => error === '');
     };
-
+  
     const handleFormSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!validateFormData()) return;
-
-        setLoading(true);
-
-        try {
-            const response = await fetch('/api/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: formData.name,
-                    email: formData.email,
-                    password: formData.password,
-                }),
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                // salva no Local Storage
-                localStorage.setItem('isLoggedIn', 'true');
-                localStorage.setItem('userId', data.userId);
-
-                // redireciona para a página inicial e recarrega a página
-                window.location.href = '/';
-            } else {
-                openModal("Erro no Cadastro", data.message);
-            }
-        } catch (error) {
-            console.error('Erro ao cadastrar usuário:', error);
-            openModal("Erro no Cadastro", "Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente.");
-        } finally {
-            setLoading(false);
+      e.preventDefault();
+      if (!validateFormData()) return;
+  
+      setLoading(true);
+  
+      try {
+        const response = await fetch('/api/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+          }),
+        });
+  
+        const data = await response.json();
+  
+        if (response.ok) {
+          // Salva o token no Local Storage
+          localStorage.setItem('authToken', data.token);
+  
+          // Redireciona para a página inicial e recarrega a página
+          window.location.href = '/';
+        } else {
+          openModal('Erro no Cadastro', data.message);
         }
+      } catch (error) {
+        console.error('Erro ao cadastrar usuário:', error);
+        openModal('Erro no Cadastro', 'Ocorreu um erro ao tentar cadastrar. Por favor, tente novamente.');
+      } finally {
+        setLoading(false);
+      }
     };
-
+  
     const handleNavigation = () => {
-        router.push('/pages/login');
+      router.push('/pages/login');
     };
 
     return (

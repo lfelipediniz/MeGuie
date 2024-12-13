@@ -43,6 +43,8 @@
     "fs": "^0.0.1-security",
     "gray-matter": "^4.0.3",
     "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "jwt-decode": "^4.0.0",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.460.0",
     "markdown-it": "^14.1.0",
@@ -73,6 +75,8 @@
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/js-cookie": "^3.0.6",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/jwt-decode": "^3.1.0",
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.56",
     "@types/react-dom": "^18.2.19",
