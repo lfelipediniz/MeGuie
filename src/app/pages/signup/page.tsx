@@ -88,14 +88,13 @@ export default function SignUp() {
             const data = await response.json();
 
             if (response.ok) {
-                // Salva no Local Storage
+                // salva no Local Storage
                 localStorage.setItem('isLoggedIn', 'true');
                 localStorage.setItem('userId', data.userId);
 
-                // Redireciona para a página inicial e recarrega a página
+                // redireciona para a página inicial e recarrega a página
                 window.location.href = '/';
             } else {
-                // Erro no cadastro
                 openModal("Erro no Cadastro", data.message);
             }
         } catch (error) {

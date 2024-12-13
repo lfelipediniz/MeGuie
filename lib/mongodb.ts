@@ -1,4 +1,3 @@
-// lib/mongodb.ts
 import mongoose from 'mongoose';
 
 const MONGODB_URI: string = process.env.MONGODB_URI as string;
@@ -9,7 +8,7 @@ if (!MONGODB_URI) {
 }
 
 /**
- * Verifica se já existe uma conexão Mongoose
+ * verifica se já existe uma conexão Mongoose
  */
 let cached = (global as any).mongoose;
 
@@ -27,7 +26,6 @@ async function dbConnect() {
     console.log('Estabelecendo nova conexão Mongoose...');
     const opts = {
       bufferCommands: false,
-      // Adicione outras opções conforme necessário
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
