@@ -88,7 +88,7 @@ export default function Admin() {
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
   const onConnect = useCallback((params: any) => setEdges((eds: any[]) => addEdge(params, eds)), []);
 
- 
+
   const [nodeName, setNodeName] = useState("");
   const [nodeDescription, setNodeDescription] = useState("");
   const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
@@ -251,7 +251,7 @@ export default function Admin() {
     }
 
     const newNode = {
-      id: `node_${nodes.length + 1}`,
+      id: nodeName, // Usando nodeName como ID
       type: "custom",
       data: {
         label: nodeName,
@@ -280,15 +280,15 @@ export default function Admin() {
 
     try {
       const convertedNodes = nodes.map((n: any) => ({
-        name: n.data.name || n.id,
+        name: n.data.name || n.id, // Agora n.id é nodeName
         description: n.data.description || "",
         contents: n.data.contents || [],
         position: { x: n.position.x, y: n.position.y },
       }));
 
       const convertedEdges = edges.map((e: any) => ({
-        source: e.source,
-        target: e.target,
+        source: e.source, // Deve ser nodeName
+        target: e.target, // Deve ser nodeName
         sourceHandle: e.sourceHandle,
         targetHandle: e.targetHandle,
       }));

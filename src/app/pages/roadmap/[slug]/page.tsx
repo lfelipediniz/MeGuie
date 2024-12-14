@@ -28,7 +28,6 @@ interface IContent {
   url: string;
 }
 
-
 interface INodeData {
   _id: string;
   name: string;
@@ -70,7 +69,6 @@ export default function RoadmapPage() {
   const [roadmapData, setRoadmapData] = useState<IRoadmap | null>(null);
   const [selectedNodeData, setSelectedNodeData] = useState<INodeData | null>(null);
 
-
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -79,86 +77,70 @@ export default function RoadmapPage() {
     }
 
     if (!slug || slug === "none") {
-      // Se não tiver slug válido, tratar como erro
+      // se não tiver slug válido, tratar como erro
       setLoading(false);
       return;
     }
 
-    // Buscar dados do roadmap via slug
-    axios.get(`/api/roadmap/${slug}`, {
-      headers: { Authorization: `Bearer ${authToken}` }
-    })
-    .then(response => {
-      const data: IRoadmap = response.data;
-      setRoadmapData(data);
+    // buscar dados do roadmap via slug
+    axios
+      .get(`/api/roadmap/${slug}`, {
+        headers: { Authorization: `Bearer ${authToken}` },
+      })
+      .then((response) => {
+        const data: IRoadmap = response.data;
+        setRoadmapData(data);
 
-      const convertedEdges: Edge[] = data.edges.map((edgeData, index) => ({
-        id: `${edgeData.source}-${edgeData.target}-${index}`,
-        source: edgeData.source,
-        target: edgeData.target,
-        sourceHandle: edgeData.sourceHandle,
-        targetHandle: edgeData.targetHandle,
-      }));
+        const convertedEdges: Edge[] = data.edges.map((edgeData, index) => ({
+          id: `${edgeData.source}-${edgeData.target}-${index}`,
+          source: edgeData.source, // Deve ser nodeName
+          target: edgeData.target, // Deve ser nodeName
+          sourceHandle: edgeData.sourceHandle,
+          targetHandle: edgeData.targetHandle,
+        }));
 
-      const handleUsage = convertedEdges.reduce((acc: Record<string, string[]>, edge) => {
-        if (edge.source && edge.sourceHandle) {
-          acc[edge.source] = acc[edge.source] || [];
-          if (!acc[edge.source].includes(edge.sourceHandle)) {
-            acc[edge.source].push(edge.sourceHandle);
-          }
-        }
-        if (edge.target && edge.targetHandle) {
-          acc[edge.target] = acc[edge.target] || [];
-          if (!acc[edge.target].includes(edge.targetHandle)) {
-            acc[edge.target].push(edge.targetHandle);
-          }
-        }
-        return acc;
-      }, {});
+        const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
+          const borderColor = "gray";
+          return {
+            id: nodeData.name, // Usando nodeName como ID
+            type: "custom",
+            data: {
+              label: nodeData.name,
+            },
+            position: { x: nodeData.position.x, y: nodeData.position.y },
+            style: { border: `1px solid ${borderColor}` },
+          };
+        });
 
-      const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
-        const borderColor = "gray";
-        return {
-          id: nodeData.name,
-          type: "custom",
-          data: {
-            label: nodeData.name,
-            usedHandles: handleUsage[nodeData.name] || [],
-          },
-          position: { x: nodeData.position.x, y: nodeData.position.y },
-          style: { border: `1px solid ${borderColor}` },
-        };
+        setNodes(convertedNodes);
+        setEdges(convertedEdges);
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar roadmap:", error);
+        // redirecionar para 404 caso não encontre
+        // router.push('/404');
+      })
+      .finally(() => {
+        setLoading(false);
       });
-
-      setNodes(convertedNodes);
-      setEdges(convertedEdges);
-    })
-    .catch(error => {
-      console.error("Erro ao carregar roadmap:", error);
-      // redirecionar para 404 caso não encontre
-      // router.push('/404');
-    })
-    .finally(() => {
-      setLoading(false);
-    });
   }, [slug]);
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     if (!roadmapData) return;
-  
+
     const nodeData = roadmapData.nodes.find((n) => n.name === node.data.label);
     if (nodeData) {
       setSelectedNode(node);
-      setSelectedNodeData(nodeData);  // Armazena o nodeData corretamente
-  
+      setSelectedNodeData(nodeData); // armazena o nodeData 
+
       const videos = nodeData.contents
         .filter((c) => c.type === "vídeo")
         .map((c) => ({ _id: c._id.toString(), name: c.title, url: c.url }));
-  
+
       const websites = nodeData.contents
         .filter((c) => c.type === "website")
         .map((c) => ({ _id: c._id.toString(), name: c.title, url: c.url }));
-  
+
       setVideosUrls(videos);
       setWebsitesUrls(websites);
     } else {
@@ -167,23 +149,20 @@ export default function RoadmapPage() {
       setWebsitesUrls([]);
     }
   };
-  
-  
 
   const handleMenuClose = () => {
     setSelectedNode(null);
     setSelectedNodeData(null);
-  };  
+  };
 
   const handleNavigation = () => {
     router.back();
   };
 
   const CustomNode = ({ id, data }: NodeProps) => {
-    const { label, style, usedHandles = [] } = data as {
+    const { label, style } = data as {
       label: string;
       style?: React.CSSProperties;
-      usedHandles: string[];
     };
 
     return (
@@ -211,71 +190,29 @@ export default function RoadmapPage() {
         }}
       >
         {label}
-        {usedHandles.includes("topSource") && (
-          <Handle
-            type="source"
-            position={Position.Top}
-            id="topSource"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("bottomSource") && (
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id="bottomSource"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("leftSource") && (
-          <Handle
-            type="source"
-            position={Position.Left}
-            id="leftSource"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("rightSource") && (
-          <Handle
-            type="source"
-            position={Position.Right}
-            id="rightSource"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
-
-        {usedHandles.includes("topTarget") && (
-          <Handle
-            type="target"
-            position={Position.Top}
-            id="topTarget"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("bottomTarget") && (
-          <Handle
-            type="target"
-            position={Position.Bottom}
-            id="bottomTarget"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("leftTarget") && (
-          <Handle
-            type="target"
-            position={Position.Left}
-            id="leftTarget"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("rightTarget") && (
-          <Handle
-            type="target"
-            position={Position.Right}
-            id="rightTarget"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
+        {/* Handles invisíveis */}
+        <Handle
+          type="target"
+          position={Position.Top}
+          style={{
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 0,
+            height: 0,
+            opacity: 0,
+          }}
+        />
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          style={{
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: 0,
+            height: 0,
+            opacity: 0,
+          }}
+        />
       </div>
     );
   };
@@ -288,93 +225,90 @@ export default function RoadmapPage() {
         <div className="transition-opacity duration-500 opacity-100">
           <LoadingOverlay />
         </div>
-      ) : (
-        roadmapData ? (
-          <div className="flex flex-col gap-7" style={{ width: "100%", height: "100%" }}>
-            <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
-              <div className="flex items-center mb-5 xs:mb-0">
-                <button
-                  className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500"
-                  onClick={handleNavigation}
-                  aria-label="Voltar para Roadmaps"
-                >
-                  <FaArrowLeft size={24} color={"var(--action)"} />
-                </button>
-                <h2 className="ml-3">{roadmapData.name}</h2>
-              </div>
-              <FormControl sx={{ minWidth: "250px" }} size="small">
-                <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
-                  Legenda de Cores
-                </InputLabel>
-                <Select
-                  labelId="legenda-de-cores"
-                  label="Legenda de Cores"
-                  id="lista-cores"
-                  value=""
-                  aria-label="Legenda de Cores"
-                  sx={{
-                    "& .MuiOutlinedInput-notchedOutline": {
-                      borderColor: "var(--primary) !important",
-                    },
-                    backgroundColor: "var(--background) !important",
-                    color: "var(--primary)",
-                    "& .MuiSvgIcon-root": {
-                      color: "var(--primary)",
-                    },
-                  }}
-                >
-                  <MenuItem value="green">
-                    <span style={{ color: "#42b48c" }}>Verde</span>&nbsp;
-                    <span>(Concluído)</span>
-                  </MenuItem>
-                  <MenuItem value="orange">
-                    <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
-                    <span>(Em progresso)</span>
-                  </MenuItem>
-                  <MenuItem value="gray">
-                    <span style={{ color: "gray" }}>Cinza</span>&nbsp;
-                    <span>(Não Iniciada)</span>
-                  </MenuItem>
-                </Select>
-              </FormControl>
+      ) : roadmapData ? (
+        <div className="flex flex-col gap-7" style={{ width: "100%", height: "100%" }}>
+          <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
+            <div className="flex items-center mb-5 xs:mb-0">
+              <button
+                className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500"
+                onClick={handleNavigation}
+                aria-label="Voltar para Roadmaps"
+              >
+                <FaArrowLeft size={24} color={"var(--action)"} />
+              </button>
+              <h2 className="ml-3">{roadmapData.name}</h2>
             </div>
-
-            <ReactFlow
-              nodes={nodes}
-              edges={edges}
-              onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              nodesConnectable={false}
-              nodesDraggable={false}
-              onNodeClick={handleNodeClick}
-              nodeTypes={nodeTypes}
-              fitView
-            >
-              <Controls
-                showInteractive={false}
-                style={{
-                  backgroundColor: "rgba(0, 0, 0, 0.1)",
-                  borderRadius: "8px",
+            <FormControl sx={{ minWidth: "250px" }} size="small">
+              <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
+                Legenda de Cores
+              </InputLabel>
+              <Select
+                labelId="legenda-de-cores"
+                label="Legenda de Cores"
+                id="lista-cores"
+                value=""
+                aria-label="Legenda de Cores"
+                sx={{
+                  "& .MuiOutlinedInput-notchedOutline": {
+                    borderColor: "var(--primary) !important",
+                  },
+                  backgroundColor: "var(--background) !important",
+                  color: "var(--primary)",
+                  "& .MuiSvgIcon-root": {
+                    color: "var(--primary)",
+                  },
                 }}
-              />
-              <Background />
-            </ReactFlow>
+              >
+                <MenuItem value="green">
+                  <span style={{ color: "#42b48c" }}>Verde</span>&nbsp;
+                  <span>(Concluído)</span>
+                </MenuItem>
+                <MenuItem value="orange">
+                  <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
+                  <span>(Em progresso)</span>
+                </MenuItem>
+                <MenuItem value="gray">
+                  <span style={{ color: "gray" }}>Cinza</span>&nbsp;
+                  <span>(Não Iniciada)</span>
+                </MenuItem>
+              </Select>
+            </FormControl>
           </div>
-        ) : (
-          <p>Roadmap não encontrado.</p>
-        )
+
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            nodesConnectable={false}
+            nodesDraggable={false}
+            onNodeClick={handleNodeClick}
+            nodeTypes={nodeTypes}
+            fitView
+          >
+            <Controls
+              showInteractive={false}
+              style={{
+                backgroundColor: "rgba(0, 0, 0, 0.1)",
+                borderRadius: "8px",
+              }}
+            />
+            <Background />
+          </ReactFlow>
+        </div>
+      ) : (
+        <p>Roadmap não encontrado.</p>
       )}
 
       <MaterialsModal
         isOpen={!!selectedNode}
         onClose={handleMenuClose}
-        title={typeof selectedNode?.data.label === 'string' ? selectedNode.data.label : ""}
+        title={typeof selectedNode?.data.label === "string" ? selectedNode.data.label : ""}
         videos={videosUrls}
         websites={websitesUrls}
-        roadmapId={roadmapData?._id}  // Passe o ID do roadmap
-        nodeId={selectedNodeData?._id}
+        roadmapId={roadmapData?._id} // Passe o ID do roadmap
+        nodeId={selectedNodeData?.name} // Atualizado para nodeName
       />
-
     </div>
   );
 }
