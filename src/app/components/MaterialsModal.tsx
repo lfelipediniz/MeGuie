@@ -65,10 +65,10 @@ const MaterialsModal: React.FC<{
           <h2 className="text-[var(--dark-blue)] text-lg font-bold">Conteúdos sobre {title}</h2>
           <button
             onClick={onClose}
-            className="bg-[var(--button-text)] hover:opacity-90 rounded-full w-8 h-8 flex justify-center items-center"
+            className="bg-[var(--text-secondary)] hover:opacity-90 rounded-full w-8 h-8 flex justify-center items-center"
             aria-label="Fechar modal"
           >
-            <IoClose color="red" size={24} />
+            <IoClose color="var(--background-secondary)" size={24} />
           </button>
         </div>
 
