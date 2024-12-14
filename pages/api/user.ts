@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import User, { IUser } from '../../models/User';
 import jwt from 'jsonwebtoken';
-import Roadmap from '../../models/Roadmap'; // Para validar roadmaps
+import Roadmap from '../../models/Roadmap';
 
 const connectDB = async () => {
   if (mongoose.connections[0].readyState) {
@@ -37,19 +37,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   switch (method) {
-    // GET: Obter informações do usuário
     case 'GET':
       try {
         const userId = authenticateUser();
-
         if (!userId) {
           return res.status(401).json({ message: 'Token de autenticação inválido.' });
         }
 
         const user = await User.findById(userId)
           .select('+admin -password') // Inclui o campo admin explicitamente e remove o password
-          .populate('favoriteRoadmaps', 'name') // Popula os roadmaps favoritos com os nomes
-          .populate('seenContents.roadmapId', 'name'); // Popula os roadmaps dos conteúdos vistos com os nomes
+          .populate('favoriteRoadmaps', 'name')
+          .populate('seenContents.roadmapId', 'name');
 
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -62,54 +60,57 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    // PUT: Atualizar favoriteRoadmaps ou seenContents
     case 'PUT':
       try {
         const userId = authenticateUser();
-
         if (!userId) {
           return res.status(401).json({ message: 'Token de autenticação inválido.' });
         }
 
-        const { favoriteRoadmaps, seenContents } = req.body;
+        const { action, roadmapId, contentId, favoriteRoadmaps } = req.body;
 
         const user = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
-        // Atualizar favoriteRoadmaps
+        // Atualizar favoriteRoadmaps se fornecido
         if (favoriteRoadmaps) {
-          // Garantir que estamos adicionando IDs de roadmaps válidos
           const validRoadmaps = await Roadmap.find({ _id: { $in: favoriteRoadmaps } });
           user.favoriteRoadmaps = validRoadmaps.map((r) => r._id);
         }
 
-        // Atualizar seenContents agrupados por roadmapId
-        if (seenContents) {
-          for (const entry of seenContents) {
-            const { roadmapId, contentIds } = entry;
+        // Lógica para seenContents
+        if (action && roadmapId && contentId) {
+          const rid = new mongoose.Types.ObjectId(roadmapId);
+          const cid = new mongoose.Types.ObjectId(contentId);
 
-            // Validar se o roadmap existe
-            const roadmapExists = await Roadmap.findById(roadmapId);
-            if (!roadmapExists) {
-              return res.status(400).json({ message: `Roadmap com ID ${roadmapId} não encontrado.` });
-            }
+          const idx = user.seenContents.findIndex(entry => entry.roadmapId.equals(rid));
 
-            // Encontrar o índice do roadmapId em seenContents
-            const existingEntryIndex = user.seenContents.findIndex((item) => item.roadmapId.equals(roadmapId));
-
-            if (existingEntryIndex >= 0) {
-              // Se já existe, adicionar os novos contentIds sem duplicar
-              user.seenContents[existingEntryIndex].contentIds = [
-                ...Array.from(new Set([...user.seenContents[existingEntryIndex].contentIds, ...contentIds])),
-              ];
-            } else {
-              // Se não existe, adicionar uma nova entrada
+          if (action === 'add') {
+            if (idx === -1) {
+              // Adiciona um novo roadmapId
               user.seenContents.push({
-                roadmapId: new mongoose.Types.ObjectId(roadmapId),
-                contentIds: contentIds.map((id: string) => new mongoose.Types.ObjectId(id)),
+                roadmapId: rid,
+                contentIds: [cid],
               });
+            } else {
+              // Adiciona o conteúdo sem duplicar
+              const currentContentIds = user.seenContents[idx].contentIds.map(id => id.toString());
+              if (!currentContentIds.includes(cid.toString())) {
+                user.seenContents[idx].contentIds.push(cid);
+              }
+            }
+          } else if (action === 'remove') {
+            if (idx > -1) {
+              // Remove o conteúdo
+              user.seenContents[idx].contentIds = user.seenContents[idx].contentIds.filter(
+                id => !id.equals(cid)
+              );
+              // Se não houver mais conteúdos, remover a entrada do roadmap
+              if (user.seenContents[idx].contentIds.length === 0) {
+                user.seenContents.splice(idx, 1);
+              }
             }
           }
         }
@@ -122,7 +123,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    // Método não permitido
     default:
       res.setHeader('Allow', ['GET', 'PUT']);
       res.status(405).end(`Método ${method} não permitido.`);
