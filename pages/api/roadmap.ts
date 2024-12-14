@@ -44,7 +44,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const { name } = query;
 
         if (name) {
-          // Buscar por nome específico
           const roadmap = await Roadmap.findOne({ nameSlug: name.toString().toLowerCase() });
           if (!roadmap) {
             return res.status(404).json({ message: 'Roadmap não encontrado.' });
@@ -52,7 +51,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(200).json(roadmap);
         }
 
-        // Se não for passado o nome, retorna todos os roadmaps
         const roadmaps = await Roadmap.find();
         res.status(200).json(roadmaps);
       } catch (error) {
@@ -61,7 +59,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    // POST: Cria um novo roadmap a partir de um JSON com name, nameSlug, nodes (com contents embutidos) e edges
+    // POST: Cria um novo roadmap
     case 'POST':
       try {
         const { name, nameSlug, nodes, edges } = body;
@@ -72,27 +70,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         if (!Array.isArray(nodes) || nodes.length === 0) {
           return res.status(400).json({ message: 'É necessário adicionar pelo menos um node.' });
-        }
-
-        // Valida cada node
-        for (const node of nodes) {
-          if (!node.name || !node.description || !node.contents || !node.position) {
-            return res.status(400).json({ message: 'Cada node deve conter name, description, contents e position.' });
-          }
-
-          if (!Array.isArray(node.contents) || node.contents.length === 0) {
-            return res.status(400).json({ message: `O node ${node.name} deve conter ao menos um conteúdo.` });
-          }
-
-          for (const content of node.contents) {
-            if (!content.type || !content.title || !content.url) {
-              return res.status(400).json({ message: `Cada conteúdo do node ${node.name} deve ter type, title e url.` });
-            }
-          }
-        }
-
-        if (!Array.isArray(edges)) {
-          return res.status(400).json({ message: 'É necessário enviar o array de edges (mesmo que vazio).' });
         }
 
         const newRoadmap = new Roadmap({ name, nameSlug, nodes, edges });

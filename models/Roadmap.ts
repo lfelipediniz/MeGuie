@@ -6,6 +6,7 @@ export interface IPosition {
 }
 
 export interface IContent {
+  _id: Types.ObjectId; // ID gerado automaticamente
   type: 'vídeo' | 'website';
   title: string;
   url: string;
@@ -40,6 +41,7 @@ const PositionSchema = new Schema<IPosition>({
 });
 
 const ContentSchema = new Schema<IContent>({
+  _id: { type: Types.ObjectId, auto: true }, // ID gerado automaticamente pelo MongoDB
   type: {
     type: String,
     enum: ['vídeo', 'website'],
@@ -56,20 +58,18 @@ const ContentSchema = new Schema<IContent>({
 });
 
 const NodeSchema = new Schema<INode>({
+  _id: { type: Types.ObjectId, auto: true }, // ID gerado automaticamente para o node
   name: { type: String, required: true },
   description: { type: String, required: true, trim: true },
   contents: {
     type: [ContentSchema],
     validate: {
       validator: (v: IContent[]) => v.length > 0,
-      message: 'Pelo menos um conteúdo é obrigatório.'
+      message: 'Pelo menos um conteúdo é obrigatório.',
     },
     required: true,
   },
-  position: {
-    x: { type: Number, required: true },
-    y: { type: Number, required: true },
-  },
+  position: PositionSchema,
 });
 
 const EdgeSchema = new Schema<IEdge>({
