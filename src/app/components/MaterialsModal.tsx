@@ -3,7 +3,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
 import axios from 'axios';
-import { Types } from 'mongoose';
 
 interface VideoContent {
   _id: string;
@@ -106,6 +105,23 @@ const MaterialsModal: React.FC<{
     }
   };  
 
+  // Função para converter YouTube URL para embed URL
+  const getEmbedUrl = (url: string) => {
+    if (url.includes('youtube.com/watch')) {
+      const videoId = url.split('v=')[1]?.split('&')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    } else if (url.includes('youtu.be')) {
+      const videoId = url.split('youtu.be/')[1]?.split('?')[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    return url;
+  };
+
+  // Função para verificar se a URL é de um vídeo local suportado
+  const isLocalVideo = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg)$/);
+  };
+
   // Função para prender o foco dentro do modal
   const trapFocus = (e: KeyboardEvent) => {
     if (e.key === 'Tab' && modalRef.current) {
@@ -158,23 +174,33 @@ const MaterialsModal: React.FC<{
         </div>
 
         <div className="p-4">
-          <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas no YouTube</h3>
+          <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas</h3>
           {videos?.length ? (
             videos.map((video) => {
               const videoId = `video-${video._id}`;
               const isChecked = !!checkedItems[videoId];
+              const embedUrl = getEmbedUrl(video.url);
+              const localVideo = isLocalVideo(embedUrl);
+
               return (
                 <div key={videoId} className="shadow-lg rounded-md overflow-hidden mb-4">
-                  <iframe
-                    src={video.url}
-                    title={video.name}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                    height={200}
-                    className="w-full"
-                  ></iframe>
+                  {localVideo ? (
+                    <video controls className="w-full" height={200}>
+                      <source src={embedUrl} type={`video/${embedUrl.split('.').pop()}`} />
+                      Seu navegador não suporta o elemento de vídeo.
+                    </video>
+                  ) : (
+                    <iframe
+                      src={embedUrl}
+                      title={video.name}
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                      height={200}
+                      className="w-full"
+                    ></iframe>
+                  )}
                   <div className="p-4 flex justify-between">
                     <h3 className="text-[var(--dark-blue)] text-lg">{video.name}</h3>
                     <input
