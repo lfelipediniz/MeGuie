@@ -21,6 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { method } = req;
 
   // Função auxiliar para autenticar o usuário
+  // Função auxiliar para autenticar o usuário
   const authenticateUser = (): string | null => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -46,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const user = await User.findById(userId)
           .select('+admin -password') // Inclui o campo admin explicitamente e remove o password
           .populate('favoriteRoadmaps', 'name')
-          .populate('seenContents.roadmapId', 'name');
+          .populate('seenContents.roadmapId', 'name'); // Verifique se 'roadmapId' está sendo populado corretamente
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
@@ -79,9 +80,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Lógica para toggle de seenContents
         if (action && roadmapId && nodeId && contentId) {
-          const rid = new mongoose.Types.ObjectId(roadmapId);
-          const nid = new mongoose.Types.ObjectId(nodeId);
-          const cid = new mongoose.Types.ObjectId(contentId);
+          let rid, nid, cid;
+          try {
+            rid = new mongoose.Types.ObjectId(roadmapId);
+            nid = new mongoose.Types.ObjectId(nodeId);
+            cid = new mongoose.Types.ObjectId(contentId);
+          } catch (err) {
+            return res.status(400).json({ message: 'Invalid roadmapId, nodeId, or contentId.' });
+          }
 
           // Encontra o índice do roadmap na lista de seenContents
           const roadmapIndex = user.seenContents.findIndex((entry) => entry.roadmapId.equals(rid));
@@ -149,8 +155,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       break;
 
     default:
-      res.setHeader('Allow', ['PUT']);
+      res.setHeader('Allow', ['PUT', 'GET']);
       res.status(405).end(`Método ${method} não permitido.`);
       break;
   }
+
 }

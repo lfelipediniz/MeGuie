@@ -30,45 +30,72 @@ const MaterialsModal: React.FC<{
 
   // Função para buscar os conteúdos vistos do usuário
   const fetchSeenContents = async () => {
-    if (!roadmapId || !nodeId) return;
-  
+    if (!roadmapId || !nodeId || !videos || !websites) {
+      console.log("Missing roadmapId, nodeId, videos, or websites");
+      return;
+    }
+
     const authToken = localStorage.getItem("authToken");
-    if (!authToken) return;
-  
+    if (!authToken) {
+      console.log("No authToken found");
+      return;
+    }
+
     try {
       const response = await axios.get('/api/user', {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-  
+
       const user = response.data;
       console.log("Dados do usuário:", user);
-  
+
       const seenContents = user.seenContents || [];
-  
-      const seenForRoadmap = seenContents.find((entry: any) => entry.roadmapId.toString() === roadmapId);
-      const seenForNode = seenForRoadmap?.nodes.find((node: any) => node.nodeId.toString() === nodeId);
-  
+      console.log("seenContents:", seenContents);
+
+      // Adicionando logs para cada roadmapId
+      seenContents.forEach((entry: any) => {
+        console.log("RoadmapId entry:", entry.roadmapId?._id?.toString());
+      });
+
+      const seenForRoadmap = seenContents.find(
+        (entry: any) => entry.roadmapId?._id?.toString() === roadmapId
+      );
+      console.log("seenForRoadmap:", seenForRoadmap);
+
+      const seenForNode = seenForRoadmap?.nodes.find(
+        (node: any) => node.nodeId.toString() === nodeId
+      );
+      console.log("seenForNode:", seenForNode);
+
       const initialCheckedItems: Record<string, boolean> = {};
-  
+
       if (seenForNode) {
         seenForNode.contentIds.forEach((contentId: string) => {
-          initialCheckedItems[`video-${contentId}`] = true;
-          initialCheckedItems[`website-${contentId}`] = true;
+          console.log("Processing contentId:", contentId);
+          if (videos.some(video => video._id === contentId)) {
+            console.log(`Setting video-${contentId} to true`);
+            initialCheckedItems[`video-${contentId}`] = true;
+          } else if (websites.some(website => website._id === contentId)) {
+            console.log(`Setting website-${contentId} to true`);
+            initialCheckedItems[`website-${contentId}`] = true;
+          } else {
+            console.log(`ContentId ${contentId} not found in videos or websites`);
+          }
         });
       }
-  
+
       setCheckedItems(initialCheckedItems);
     } catch (error) {
       console.error("Erro ao buscar conteúdos vistos:", error);
     }
-  };  
+  };
 
   // Chama a função de busca ao abrir o modal
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && roadmapId && nodeId && videos && websites) {
       fetchSeenContents();
     }
-  }, [isOpen, roadmapId, nodeId]);
+  }, [isOpen, roadmapId, nodeId, videos, websites]);
 
   // Função para alternar o checkbox
   const handleCheckboxChange = async (id: string, contentId: string, isChecked: boolean) => {
@@ -76,34 +103,34 @@ const MaterialsModal: React.FC<{
       ...prev,
       [id]: !prev[id],
     }));
-  
+
     if (!roadmapId || !nodeId) {
       console.error("roadmapId ou nodeId não definido.");
       return;
     }
-  
+
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
       console.error("Token de autenticação não encontrado.");
       return;
     }
-  
+
     const action = isChecked ? 'remove' : 'add';
-  
+
     console.log("Enviando requisição PUT com:", { action, roadmapId, nodeId, contentId });
-  
+
     try {
       const response = await axios.put(
         '/api/user',
         { action, roadmapId, nodeId, contentId },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-  
+
       console.log("Resposta do backend:", response.data);
     } catch (error) {
       console.error("Erro ao atualizar conteúdos vistos:", error);
     }
-  };  
+  };
 
   // Função para converter YouTube URL para embed URL
   const getEmbedUrl = (url: string) => {
