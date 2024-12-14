@@ -1,5 +1,3 @@
-// /pages/api/signup.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../lib/mongodb';
 import User, { IUser } from '../../models/User';
@@ -49,6 +47,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       name,
       email,
       password: hashedPassword,
+      favoriteRoadmaps: [],  // Inicializa com um array vazio para roadmaps favoritos
+      seenContents: []       // Inicializa com um array vazio para conteúdos vistos
     });
 
     await newUser.save();

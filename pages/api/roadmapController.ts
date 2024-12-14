@@ -1,10 +1,7 @@
-// /pages/api/roadmap.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import Roadmap, { IRoadmap } from '../../models/Roadmap';
-import Content from '../../models/Content';
 
 const connectDB = async () => {
   if (mongoose.connections[0].readyState) {
@@ -47,10 +44,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   switch (method) {
-    // GET: Lista todos os roadmaps com os conteúdos populados
+    // GET: Lista todos os roadmaps com os nodes e conteúdos populados
     case 'GET':
       try {
-        const roadmaps = await Roadmap.find().populate('contents');
+        const roadmaps = await Roadmap.find().populate({
+          path: 'nodes.contents',
+          model: 'Content',
+        });
         res.status(200).json(roadmaps);
       } catch (error) {
         console.error(error);
@@ -61,13 +61,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // POST: Cria um novo roadmap
     case 'POST':
       try {
-        const { title, contents } = body;
+        const { name, nodes } = body;
 
-        if (!title) {
-          return res.status(400).json({ message: 'O título é obrigatório.' });
+        if (!name) {
+          return res.status(400).json({ message: 'O nome é obrigatório.' });
         }
 
-        const newRoadmap = new Roadmap({ title, contents });
+        // Valida que os nodes estão sendo passados corretamente
+        if (!Array.isArray(nodes) || nodes.length === 0) {
+          return res.status(400).json({ message: 'É necessário adicionar pelo menos um node.' });
+        }
+
+        // Cria o novo roadmap
+        const newRoadmap = new Roadmap({ name, nodes });
         await newRoadmap.save();
 
         res.status(201).json({ message: 'Roadmap criado com sucesso.', roadmap: newRoadmap });
@@ -81,13 +87,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'PUT':
       try {
         const { id } = query;
-        const { title, contents } = body;
+        const { name, nodes } = body;
 
+        // Verifica se o roadmap existe
         const updatedRoadmap = await Roadmap.findByIdAndUpdate(
           id,
-          { title, contents },
+          { name, nodes },
           { new: true, runValidators: true }
-        ).populate('contents');
+        ).populate({
+          path: 'nodes.contents',
+          model: 'Content',
+        });
 
         if (!updatedRoadmap) {
           return res.status(404).json({ message: 'Roadmap não encontrado.' });

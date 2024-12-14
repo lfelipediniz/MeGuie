@@ -1,5 +1,3 @@
-// /pages/api/login.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import dbConnect from '../../lib/mongodb';
 import User from '../../models/User';
@@ -10,6 +8,8 @@ type Data = {
   message: string;
   userId?: string;
   token?: string;
+  favoriteRoadmaps?: string[];  // Adicionado para retornar os roadmaps favoritos
+  seenContents?: string[];      // Adicionado para retornar os conteúdos vistos
   error?: string;
 };
 
@@ -33,14 +33,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     await dbConnect();
     console.log('Conectado ao banco de dados.');
 
-    // ve se o usuário existe
+    // Verifica se o usuário existe
     const user = await User.findOne({ email }).select('+password'); // Inclui o campo password
     if (!user) {
       console.log(`Usuário não encontrado para o e-mail: ${email}`);
       return res.status(401).json({ message: 'Credenciais inválidas.' });
     }
 
-    // compara senha fornecida com a senha armazenada
+    // Compara a senha fornecida com a senha armazenada
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       console.log(`Senha incorreta para o e-mail: ${email}`);
@@ -55,7 +55,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       });
     }
 
-    // gera o token JWT com duração de 30 dias
+    // Gera o token JWT com duração de 30 dias
     const token = jwt.sign(
       { userId: user._id, email: user.email },
       process.env.JWT_SECRET,
@@ -63,10 +63,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     );
     console.log(`Token JWT gerado para o usuário: ${user._id}`);
 
+    // Retorna o login com os dados do usuário, incluindo roadmaps favoritos e conteúdos vistos
     return res.status(200).json({
       message: 'Login realizado com sucesso.',
       userId: user._id.toString(),
       token,
+      favoriteRoadmaps: user.favoriteRoadmaps.map((id: any) => id.toString()),  // Convertendo para string os ObjectIds
+      seenContents: user.seenContents.map((id: any) => id.toString())           // Convertendo para string os ObjectIds
     });
   } catch (error) {
     console.error('Erro ao realizar login:', error);

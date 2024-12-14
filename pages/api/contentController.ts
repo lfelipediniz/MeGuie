@@ -1,10 +1,7 @@
-// /pages/api/content.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import Content, { IContent } from '../../models/Content';
-import User from '../../models/User';
 
 const connectDB = async () => {
   if (mongoose.connections[0].readyState) {
@@ -61,13 +58,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // POST: Cria um novo conteúdo
     case 'POST':
       try {
-        const { title, videos, websites } = body;
+        const { type, title, url, seen } = body;
 
-        if (!title) {
-          return res.status(400).json({ message: 'O título é obrigatório.' });
+        if (!type || !title || !url || seen === undefined) {
+          return res.status(400).json({ message: 'Todos os campos são obrigatórios (type, title, url, seen).' });
         }
 
-        const newContent = new Content({ title, videos, websites });
+        // Verifica se o tipo de conteúdo é válido
+        if (!['vídeo', 'website'].includes(type)) {
+          return res.status(400).json({ message: 'Tipo de conteúdo inválido. Deve ser "vídeo" ou "website".' });
+        }
+
+        const newContent = new Content({ type, title, url, seen });
         await newContent.save();
 
         res.status(201).json({ message: 'Conteúdo criado com sucesso.', content: newContent });
@@ -81,11 +83,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'PUT':
       try {
         const { id } = query;
-        const { title, videos, websites } = body;
+        const { type, title, url, seen } = body;
 
+        // Verifica se o conteúdo foi encontrado
         const updatedContent = await Content.findByIdAndUpdate(
           id,
-          { title, videos, websites },
+          { type, title, url, seen },
           { new: true, runValidators: true }
         );
 

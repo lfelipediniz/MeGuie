@@ -7,8 +7,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   admin: boolean;
-  roadmapsFavoritos: Types.ObjectId[]; // Array de IDs de roadmaps favoritos
-  conteudosVistos: Types.ObjectId[];   // Array de IDs de conteúdos vistos
+  favoriteRoadmaps: Types.ObjectId[]; // Array de IDs de roadmaps favoritos
+  seenContents: Types.ObjectId[];   // Array de IDs de conteúdos vistos
 }
 
 // Definição do esquema do usuário
@@ -35,12 +35,12 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
       default: false,
       select: false, // Não retornar por padrão em consultas
     },
-    roadmapsFavoritos: {
+    favoriteRoadmaps: {
       type: [Types.ObjectId], // Array de ObjectIds de roadmaps favoritos
       ref: 'Roadmap',         // Referência para o modelo Roadmap
       default: [],
     },
-    conteudosVistos: {
+    seenContents: {
       type: [Types.ObjectId], // Array de ObjectIds de conteúdos vistos
       ref: 'Content',        // Referência para o modelo Conteudo
       default: [],
