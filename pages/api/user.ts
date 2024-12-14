@@ -37,8 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const decoded = jwt.verify(token, secret) as JwtPayload;
 
         const user = await User.findById(decoded.userId)
-          .populate('favoriteRoadmaps', 'nome descricao')  // Popula os roadmaps favoritos
-          .populate('seenContents', 'nome tipo url seen')  // Popula os conteúdos vistos (agora seenContents)
           .select('-password');
 
         if (!user) {
