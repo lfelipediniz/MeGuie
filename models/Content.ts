@@ -1,55 +1,41 @@
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
-// Tipos para vídeos e sites
-type Video = {
-  title: string;
-  url: string;
-  seen: boolean;
-};
-
-type Website = {
-  title: string;
-  url: string;
-  seen: boolean;
-};
-
-// Interface para o documento de conteúdo
+// Interface para o documento do conteúdo
 export interface IContent extends Document {
   _id: Types.ObjectId;
+  type: 'vídeo' | 'website';
   title: string;
-  videos: Video[];
-  websites: Website[];
+  url: string;
+  seen: boolean;
 }
 
-// Definição do esquema de conteúdo
+// Definição do esquema do conteúdo
 const ContentSchema: Schema<IContent> = new Schema<IContent>(
   {
+    type: {
+      type: String,
+      enum: ['vídeo', 'website'],
+      required: [true, 'Tipo de conteúdo é obrigatório.'],
+    },
     title: {
       type: String,
-      required: [true, 'Título é obrigatório.'],
-      trim: true,
+      required: [true, 'Título do conteúdo é obrigatório.'],
     },
-    videos: [
-      {
-        title: { type: String, required: true },
-        url: { type: String, required: true },
-        seen: { type: Boolean, default: false },
-      },
-    ],
-    websites: [
-      {
-        title: { type: String, required: true },
-        url: { type: String, required: true },
-        seen: { type: Boolean, default: false },
-      },
-    ],
+    url: {
+      type: String,
+      required: [true, 'URL do conteúdo é obrigatória.'],
+    },
+    seen: {
+      type: Boolean,
+      required: [true, 'Parâmetro seen é obrigatório.'],
+      default: false,
+    }
   },
   {
     timestamps: true,
   }
 );
 
-// Verifica se o modelo já foi compilado para evitar recompilações
 const Content: Model<IContent> = mongoose.models.Content || mongoose.model<IContent>('Content', ContentSchema);
 
 export default Content;

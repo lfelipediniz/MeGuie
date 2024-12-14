@@ -1,5 +1,3 @@
-// /models/User.ts
-
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 // Interface para o documento do usuário
@@ -9,6 +7,8 @@ export interface IUser extends Document {
   email: string;
   password: string;
   admin: boolean;
+  roadmapsFavoritos: Types.ObjectId[]; // Array de IDs de roadmaps favoritos
+  conteudosVistos: Types.ObjectId[];   // Array de IDs de conteúdos vistos
 }
 
 // Definição do esquema do usuário
@@ -35,9 +35,19 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
       default: false,
       select: false, // Não retornar por padrão em consultas
     },
+    roadmapsFavoritos: {
+      type: [Types.ObjectId], // Array de ObjectIds de roadmaps favoritos
+      ref: 'Roadmap',         // Referência para o modelo Roadmap
+      default: [],
+    },
+    conteudosVistos: {
+      type: [Types.ObjectId], // Array de ObjectIds de conteúdos vistos
+      ref: 'Content',        // Referência para o modelo Conteudo
+      default: [],
+    },
   },
   {
-    timestamps: true,
+    timestamps: true, // Adiciona campos de criação e atualização automaticamente
   }
 );
 

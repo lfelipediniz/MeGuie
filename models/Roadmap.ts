@@ -1,30 +1,48 @@
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
-import Content, { IContent } from './Content'; // Importe o modelo e a interface Content
 
-// Interface para o documento de Roadmap
+// Interface para o documento do roadmap
 export interface IRoadmap extends Document {
   _id: Types.ObjectId;
-  title: string;
-  contents: Types.ObjectId[] | IContent[];
+  name: string;
+  nodes: Types.Array<{
+    _id: Types.ObjectId;
+    name: string;
+    description: string;
+    contents: Types.Array<Types.ObjectId>; // Array de referências ao modelo Conteudo
+  }>;
 }
 
-// Definição do esquema de Roadmap
+// Definição do esquema do roadmap
 const RoadmapSchema: Schema<IRoadmap> = new Schema<IRoadmap>(
   {
-    title: {
+    name: {
       type: String,
-      required: [true, 'Título é obrigatório.'],
+      required: [true, 'Nome é obrigatório.'],
       trim: true,
     },
-    contents: [
+    nodes: [
       {
-        type: Types.ObjectId,
-        ref: 'Content', // Referência ao modelo Content
+        name: {
+          type: String,
+          required: [true, 'Nome do node é obrigatório.'],
+        },
+        description: {
+          type: String,
+          required: [true, 'Descrição é obrigatória.'],
+          trim: true,
+        },
+        contents: [
+          {
+            type: Types.ObjectId,
+            ref: 'Content', // Referência ao modelo Conteudo
+            required: [true, 'Conteúdo é obrigatório.'],
+          },
+        ],
       },
     ],
   },
   {
-    timestamps: true,
+    timestamps: true, // Adiciona campos de criação e atualização automaticamente
   }
 );
 
