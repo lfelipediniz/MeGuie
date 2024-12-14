@@ -2,8 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import User, { IUser } from '../../models/User';
 import jwt from 'jsonwebtoken';
-import Roadmap from '../../models/Roadmap';  // Para popular os roadmaps
-import Content from '../../models/Content';  // Para popular os conteúdos
+import Roadmap from '../../models/Roadmap'; // Para validar roadmaps
 
 const connectDB = async () => {
   if (mongoose.connections[0].readyState) {
@@ -21,21 +20,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { method } = req;
 
+  // Função auxiliar para autenticar o usuário
+  const authenticateUser = (): string | null => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
+    }
+    const token = authHeader.split(' ')[1];
+    try {
+      const secret = process.env.JWT_SECRET as string;
+      const decoded = jwt.verify(token, secret) as JwtPayload;
+      return decoded.userId;
+    } catch {
+      return null;
+    }
+  };
+
   switch (method) {
+    // GET: Obter informações do usuário
     case 'GET':
       try {
-        const authHeader = req.headers.authorization;
+        const userId = authenticateUser();
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        if (!userId) {
           return res.status(401).json({ message: 'Token de autenticação inválido.' });
         }
 
-        const token = authHeader.split(' ')[1];
-        const secret = process.env.JWT_SECRET as string;
-        const decoded = jwt.verify(token, secret) as JwtPayload;
-
-        const user = await User.findById(decoded.userId)
-          .select('+admin -password'); // Inclui o campo admin explicitamente e remove o password
+        const user = await User.findById(userId)
+          .select('+admin -password') // Inclui o campo admin explicitamente e remove o password
+          .populate('favoriteRoadmaps', 'name') // Popula os roadmaps favoritos com os nomes
+          .populate('seenContents.roadmapId', 'name'); // Popula os roadmaps dos conteúdos vistos com os nomes
 
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -48,36 +62,56 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    case 'PUT': // Atualizar favoriteRoadmaps ou seenContents
+    // PUT: Atualizar favoriteRoadmaps ou seenContents
+    case 'PUT':
       try {
-        const authHeader = req.headers.authorization;
+        const userId = authenticateUser();
 
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        if (!userId) {
           return res.status(401).json({ message: 'Token de autenticação inválido.' });
         }
 
-        const token = authHeader.split(' ')[1];
-        const secret = process.env.JWT_SECRET as string;
-        const decoded = jwt.verify(token, secret) as JwtPayload;
-
         const { favoriteRoadmaps, seenContents } = req.body;
 
-        const user = await User.findById(decoded.userId);
+        const user = await User.findById(userId);
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
-        // Atualizar favoriteRoadmaps e seenContents
+        // Atualizar favoriteRoadmaps
         if (favoriteRoadmaps) {
           // Garantir que estamos adicionando IDs de roadmaps válidos
-          const validRoadmaps = await Roadmap.find({ '_id': { $in: favoriteRoadmaps } });
-          user.favoriteRoadmaps = validRoadmaps.map(r => r._id);
+          const validRoadmaps = await Roadmap.find({ _id: { $in: favoriteRoadmaps } });
+          user.favoriteRoadmaps = validRoadmaps.map((r) => r._id);
         }
 
+        // Atualizar seenContents agrupados por roadmapId
         if (seenContents) {
-          // Garantir que estamos adicionando IDs de conteúdos válidos
-          const validContents = await Content.find({ '_id': { $in: seenContents } });
-          user.seenContents = validContents.map(c => c._id);
+          for (const entry of seenContents) {
+            const { roadmapId, contentIds } = entry;
+
+            // Validar se o roadmap existe
+            const roadmapExists = await Roadmap.findById(roadmapId);
+            if (!roadmapExists) {
+              return res.status(400).json({ message: `Roadmap com ID ${roadmapId} não encontrado.` });
+            }
+
+            // Encontrar o índice do roadmapId em seenContents
+            const existingEntryIndex = user.seenContents.findIndex((item) => item.roadmapId.equals(roadmapId));
+
+            if (existingEntryIndex >= 0) {
+              // Se já existe, adicionar os novos contentIds sem duplicar
+              user.seenContents[existingEntryIndex].contentIds = [
+                ...Array.from(new Set([...user.seenContents[existingEntryIndex].contentIds, ...contentIds])),
+              ];
+            } else {
+              // Se não existe, adicionar uma nova entrada
+              user.seenContents.push({
+                roadmapId: new mongoose.Types.ObjectId(roadmapId),
+                contentIds: contentIds.map((id: string) => new mongoose.Types.ObjectId(id)),
+              });
+            }
+          }
         }
 
         await user.save();
@@ -88,6 +122,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
+    // Método não permitido
     default:
       res.setHeader('Allow', ['GET', 'PUT']);
       res.status(405).end(`Método ${method} não permitido.`);

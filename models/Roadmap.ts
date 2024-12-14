@@ -41,7 +41,7 @@ const PositionSchema = new Schema<IPosition>({
 });
 
 const ContentSchema = new Schema<IContent>({
-  _id: { type: Types.ObjectId, auto: true }, // ID gerado automaticamente pelo MongoDB
+  _id: { type: Schema.Types.ObjectId, auto: true }, // ID gerado automaticamente pelo MongoDB
   type: {
     type: String,
     enum: ['vídeo', 'website'],
@@ -58,7 +58,7 @@ const ContentSchema = new Schema<IContent>({
 });
 
 const NodeSchema = new Schema<INode>({
-  _id: { type: Types.ObjectId, auto: true }, // ID gerado automaticamente para o node
+  _id: { type: Schema.Types.ObjectId, auto: true }, // ID gerado automaticamente para o node
   name: { type: String, required: true },
   description: { type: String, required: true, trim: true },
   contents: {

@@ -1,5 +1,11 @@
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
+// Interface para conteúdos vistos agrupados por roadmapId
+interface ISeenRoadmapContents {
+  roadmapId: Types.ObjectId;
+  contentIds: Types.ObjectId[];
+}
+
 // Interface para o documento do usuário
 export interface IUser extends Document {
   _id: Types.ObjectId;
@@ -7,9 +13,23 @@ export interface IUser extends Document {
   email: string;
   password: string;
   admin: boolean;
-  favoriteRoadmaps: Types.ObjectId[]; // Array de IDs de roadmaps favoritos
-  seenContents: Types.ObjectId[];   // Array de IDs de conteúdos vistos
+  favoriteRoadmaps: Types.ObjectId[];       // Array de IDs de roadmaps favoritos
+  seenContents: ISeenRoadmapContents[];      // Array de conteúdos vistos agrupados por roadmapId
 }
+
+// Definição do esquema de conteúdos vistos agrupados por roadmapId
+const SeenRoadmapContentsSchema = new Schema<ISeenRoadmapContents>({
+  roadmapId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Roadmap',
+    required: true,
+  },
+  contentIds: {
+    type: [Types.ObjectId],
+    required: true,
+    default: [],
+  },
+});
 
 // Definição do esquema do usuário
 const UserSchema: Schema<IUser> = new Schema<IUser>(
@@ -36,13 +56,12 @@ const UserSchema: Schema<IUser> = new Schema<IUser>(
       select: false, // Não retornar por padrão em consultas
     },
     favoriteRoadmaps: {
-      type: [Types.ObjectId], // Array de ObjectIds de roadmaps favoritos
-      ref: 'Roadmap',         // Referência para o modelo Roadmap
+      type: [Types.ObjectId],
+      ref: 'Roadmap',
       default: [],
     },
     seenContents: {
-      type: [Types.ObjectId], // Array de ObjectIds de conteúdos vistos
-      ref: 'Content',        // Referência para o modelo Conteudo
+      type: [SeenRoadmapContentsSchema], // Array de conteúdos vistos agrupados por roadmapId
       default: [],
     },
   },
