@@ -1,11 +1,10 @@
+// Sidebar.tsx
+
 "use client";
 import React, { useState, useEffect } from "react";
 import { Drawer, IconButton, Tooltip, Divider } from "@mui/material";
 import {
-  FaAngleLeft,
-  FaAngleRight,
   FaHome,
-  FaCalendarAlt,
   FaStar,
   FaSignOutAlt,
   FaUniversalAccess,
@@ -14,19 +13,20 @@ import LogoIcon from "@/src/app/icons/logo";
 import { usePathname, useRouter } from "@/src/navigation";
 import AccessibilityModal from "./AccessibilityModal";
 import { RiRoadMapFill } from "react-icons/ri";
-import axios from "axios"; // Importando axios
+import { MdAdminPanelSettings } from "react-icons/md";
+import axios from "axios";
 
 interface IUser {
   name: string;
   email: string;
-  // Adicione outros campos conforme necessário
+  admin?: boolean;
 }
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
   const [isAccessibilityModalOpen, setIsAccessibilityModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<IUser | null>(null); // Estado para armazenar o usuário
+  const [user, setUser] = useState<IUser | null>(null);
   const pathname = usePathname();
   const router = useRouter();
 
@@ -35,7 +35,6 @@ const Sidebar: React.FC = () => {
     setIsLoggedIn(!!authToken);
 
     if (authToken) {
-      // Buscar dados do usuário
       axios
         .get("/api/user", {
           headers: {
@@ -47,22 +46,18 @@ const Sidebar: React.FC = () => {
         })
         .catch((error) => {
           console.error("Erro ao buscar dados do usuário:", error);
-          // Opcional: lidar com erros, como redirecionar para login
         });
     }
 
     const handleStorageChange = () => {
       const updatedToken = localStorage.getItem("authToken");
       setIsLoggedIn(!!updatedToken);
-      if (updatedToken) {
-        // Repetir a busca dos dados do usuário se necessário
-      } else {
+      if (!updatedToken) {
         setUser(null);
       }
     };
 
     window.addEventListener("storage", handleStorageChange);
-
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
@@ -101,13 +96,12 @@ const Sidebar: React.FC = () => {
     setIsAccessibilityModalOpen(false);
   };
 
-  const navItems: { icon: JSX.Element; label: string; path: string }[] = [
+  const navItems = [
     {
       icon: <FaHome aria-hidden="true" />,
       label: "Tela Principal",
       path: "/",
     },
-    // Inclui "Roadmaps Favoritos" apenas se o usuário estiver logado
     ...(isLoggedIn
       ? [
           {
@@ -145,7 +139,7 @@ const Sidebar: React.FC = () => {
             },
           }}
         >
-          {/* Logo do App */}
+          {/* Logo */}
           <div
             style={{
               display: "flex",
@@ -208,10 +202,10 @@ const Sidebar: React.FC = () => {
                     transition: "all 0.3s",
                     cursor: "pointer",
                   }}
-                  onClick={() => router.push(path as any)}
+                  onClick={() => router.push(path)}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      router.push(path as any);
+                      router.push(path);
                     }
                   }}
                   role="link"
@@ -248,6 +242,59 @@ const Sidebar: React.FC = () => {
                 </div>
               </Tooltip>
             ))}
+
+            {/* Botão de Admin */}
+            {isLoggedIn && user?.admin && (
+              <Tooltip title={!expanded ? "Administrador" : ""}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    padding: "10px 16px",
+                    transition: "all 0.3s",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => router.push('/pages/admin')}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      router.push('/pages/admin');
+                    }
+                  }}
+                  role="link"
+                  tabIndex={0}
+                  aria-label="Administrador"
+                >
+                  <MdAdminPanelSettings
+                    style={{
+                      color:
+                        pathname === '/pages/admin'
+                          ? "var(--action-sidebar)"
+                          : "var(--contrast-bt-nav)",
+                      fontSize: "1.5rem",
+                    }}
+                  />
+                  {expanded && (
+                    <span
+                      style={{
+                        marginLeft: "15px",
+                        opacity: expanded ? 1 : 0,
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        transition: "opacity 0.3s",
+                        fontSize: "1.1rem",
+                        color:
+                          pathname === '/pages/admin'
+                            ? "var(--action-sidebar)"
+                            : "var(--contrast-bt-nav)",
+                      }}
+                    >
+                      Administrador
+                    </span>
+                  )}
+                </div>
+              </Tooltip>
+            )}
           </div>
 
           <Divider style={{ margin: "10px 0" }} />
@@ -297,7 +344,7 @@ const Sidebar: React.FC = () => {
             </div>
           </Tooltip>
 
-          {/* Seção de Perfil (renderizada condicionalmente) */}
+          {/* Seção de Perfil */}
           {isLoggedIn && user && (
             <div
               style={{
@@ -357,7 +404,6 @@ const Sidebar: React.FC = () => {
         </Drawer>
       </div>
 
-      {/* Modal de Acessibilidade */}
       <AccessibilityModal
         isOpen={isAccessibilityModalOpen}
         onClose={closeAccessibilityModal}

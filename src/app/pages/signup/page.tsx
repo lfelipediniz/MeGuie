@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import axios from "axios"; // Importando axios
+import axios from "axios";
 import LoadingOverlay from "../../components/LoadingOverlay";
 import TopicsModal from "../../components/TopicsModal";
 import { useRouter } from "next/navigation";
-
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
@@ -117,13 +116,13 @@ export default function SignUp() {
         password: formData.password,
       });
 
-      console.log("Resposta da API:", response.data); // Log para depuração
+      console.log("Resposta da API:", response.data);
 
       if (response.status === 201 || response.status === 200) {
-        // Supondo que a API retorne um token na propriedade 'token'
         localStorage.setItem("authToken", response.data.token);
+        localStorage.setItem("userId", response.data.userId || "");
+        localStorage.setItem("isLoggedIn", "true");
 
-        // Redireciona para a página inicial e recarrega a página
         window.location.href = "/";
       } else {
         openModal("Erro no Cadastro", response.data.message || "Ocorreu um erro.");
@@ -131,7 +130,6 @@ export default function SignUp() {
     } catch (error: any) {
       console.error("Erro ao cadastrar usuário:", error);
 
-      // Verifica se o erro é do tipo AxiosError para acessar a resposta
       if (axios.isAxiosError(error) && error.response) {
         openModal(
           "Erro no Cadastro",
@@ -149,7 +147,7 @@ export default function SignUp() {
   };
 
   const handleNavigation = () => {
-    router.push("/pages/login"); // Ajuste o caminho conforme necessário
+    router.push("/pages/login");
   };
 
   return (

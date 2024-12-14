@@ -31,13 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
 
         const token = authHeader.split(' ')[1];
-
         const secret = process.env.JWT_SECRET as string;
-
         const decoded = jwt.verify(token, secret) as JwtPayload;
 
         const user = await User.findById(decoded.userId)
-          .select('-password');
+          .select('+admin -password'); // Inclui o campo admin explicitamente e remove o password
 
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
