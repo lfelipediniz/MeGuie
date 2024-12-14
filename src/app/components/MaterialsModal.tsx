@@ -2,23 +2,56 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { IoClose } from 'react-icons/io5';
+import axios from 'axios';
+
+interface VideoContent {
+  _id: string;
+  name: string;
+  url: string;
+}
+
+interface WebsiteContent {
+  _id: string;
+  name: string;
+  url: string;
+}
 
 const MaterialsModal: React.FC<{
   title: string;
-  videos?: { name: string; url: string }[];
-  websites?: { name: string; url: string }[];
+  videos?: VideoContent[];
+  websites?: WebsiteContent[];
   isOpen: boolean;
   onClose: () => void;
-}> = ({ title, videos, websites, isOpen, onClose }) => {
+  roadmapId?: string; // Novo campo
+}> = ({ title, videos, websites, isOpen, onClose, roadmapId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
   // Função para alternar o checkbox
-  const handleCheckboxChange = (id: string) => {
+  const handleCheckboxChange = async (id: string, contentId: string, isChecked: boolean) => {
     setCheckedItems((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
+    
+    if (!roadmapId) return; // Caso não tenha roadmapId
+
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) return; // Caso o usuário não esteja logado
+
+    const action = isChecked ? 'remove' : 'add';
+
+    try {
+      await axios.put('/api/user', {
+        action,
+        roadmapId,
+        contentId
+      }, {
+        headers: { Authorization: `Bearer ${authToken}` }
+      });
+    } catch (error) {
+      console.error("Erro ao atualizar conteúdos vistos:", error);
+    }
   };
 
   // Função para prender o foco dentro do modal
@@ -76,7 +109,8 @@ const MaterialsModal: React.FC<{
           <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas no YouTube</h3>
           {videos?.length ? (
             videos.map((video, index) => {
-              const videoId = `video-${index}`;
+              const videoId = `video-${video._id}`;
+              const isChecked = !!checkedItems[videoId];
               return (
                 <div key={videoId} className="shadow-lg rounded-md overflow-hidden mb-4">
                   <iframe
@@ -94,10 +128,10 @@ const MaterialsModal: React.FC<{
                     <input
                       type="checkbox"
                       className="w-6 h-6 cursor-pointer"
-                      checked={!!checkedItems[videoId]}
-                      onChange={() => handleCheckboxChange(videoId)}
+                      checked={isChecked}
+                      onChange={() => handleCheckboxChange(videoId, video._id, isChecked)}
                       onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleCheckboxChange(videoId);
+                        if (e.key === 'Enter') handleCheckboxChange(videoId, video._id, isChecked);
                       }}
                       aria-label={`Marcar vídeo ${video.name} como assistido`}
                     />
@@ -112,28 +146,33 @@ const MaterialsModal: React.FC<{
           <h3 className="text-[var(--dark-blue)] text-lg font-bold mt-6 mb-4">Sites para estudo</h3>
           {websites?.length ? (
             websites.map((website, index) => {
-              const websiteId = `website-${index}`;
+              const websiteId = `website-${website._id}`;
+              const isChecked = !!checkedItems[websiteId];
               return (
-                <a
+                <div
                   key={websiteId}
-                  href={website.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="p-4 flex justify-between items-center border-2 border-[var(--light-gray)] mb-4 hover:bg-[var(--dropdown)] transition"
-                  aria-label={`Visitar site ${website.name}`}
                 >
-                  <h3 className="text-[var(--dark-blue)] text-lg">{website.name}</h3>
+                  <a
+                    href={website.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Visitar site ${website.name}`}
+                    className="text-[var(--dark-blue)] text-lg"
+                  >
+                    {website.name}
+                  </a>
                   <input
                     type="checkbox"
                     className="w-6 h-6 cursor-pointer"
-                    checked={!!checkedItems[websiteId]}
-                    onChange={() => handleCheckboxChange(websiteId)}
+                    checked={isChecked}
+                    onChange={() => handleCheckboxChange(websiteId, website._id, isChecked)}
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleCheckboxChange(websiteId);
+                      if (e.key === 'Enter') handleCheckboxChange(websiteId, website._id, isChecked);
                     }}
                     aria-label={`Marcar site ${website.name} como visitado`}
                   />
-                </a>
+                </div>
               );
             })
           ) : (

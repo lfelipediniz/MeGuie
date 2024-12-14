@@ -22,10 +22,12 @@ import { usePathname, useRouter } from "@/src/navigation";
 import axios from "axios";
 
 interface IContent {
+  _id: string;
   type: "vídeo" | "website";
   title: string;
   url: string;
 }
+
 
 interface INodeData {
   name: string;
@@ -45,6 +47,7 @@ interface IEdgeData {
 }
 
 interface IRoadmap {
+  _id: string;
   name: string;
   nameSlug: string;
   nodes: INodeData[];
@@ -54,8 +57,8 @@ interface IRoadmap {
 export default function RoadmapPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
-  const [videosUrls, setVideosUrls] = useState<{ name: string; url: string }[]>([]);
-  const [websitesUrls, setWebsitesUrls] = useState<{ name: string; url: string }[]>([]);
+  const [videosUrls, setVideosUrls] = useState<{ _id: string; name: string; url: string }[]>([]);
+  const [websitesUrls, setWebsitesUrls] = useState<{ _id: string; name: string; url: string }[]>([]);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -144,17 +147,17 @@ export default function RoadmapPage() {
     if (nodeData) {
       const videos = nodeData.contents
         .filter(c => c.type === 'vídeo')
-        .map(c => ({ name: c.title, url: c.url }));
+        .map(c => ({ _id: c._id, name: c.title, url: c.url }));
       const websites = nodeData.contents
         .filter(c => c.type === 'website')
-        .map(c => ({ name: c.title, url: c.url }));
-
+        .map(c => ({ _id: c._id, name: c.title, url: c.url }));
+    
       setVideosUrls(videos);
       setWebsitesUrls(websites);
     } else {
       setVideosUrls([]);
       setWebsitesUrls([]);
-    }
+    } 
   };
 
   const handleMenuClose = () => {
@@ -357,7 +360,9 @@ export default function RoadmapPage() {
         title={typeof selectedNode?.data.label === 'string' ? selectedNode.data.label : ""}
         videos={videosUrls}
         websites={websitesUrls}
+        roadmapId={roadmapData?._id}  // Passe o ID do roadmap
       />
+
     </div>
   );
 }
