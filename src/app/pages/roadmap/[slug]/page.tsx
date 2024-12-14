@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   Background,
   ReactFlow,
@@ -20,125 +20,36 @@ import MaterialsModal from "../../../components/MaterialsModal";
 
 import "@xyflow/react/dist/style.css";
 import { usePathname, useRouter } from "@/src/navigation";
+import axios from "axios";
 
-const mockVideos = [
-  {
-    name: "Expressões algébricas",
-    url: "https://www.youtube.com/embed/8NNA-8rimNs?si=YQbZAqUFA3SehgEo",
-  },
-  {
-    name: "Área de figuras planas",
-    url: "https://www.youtube.com/embed/th5k6bzSDTA?si=zWEtDT9wAqadCbFc",
-  },
-];
+interface IContent {
+  type: "vídeo" | "website";
+  title: string;
+  url: string;
+}
 
-const mockWebsites = [
-  {
-    name: "Elementos químicos",
-    url: "https://www.todamateria.com.br/elementos-quimicos/",
-  },
-  {
-    name: "Animais extintos",
-    url: "https://www.todamateria.com.br/animais-extintos/",
-  },
-];
+interface INodeData {
+  name: string;
+  description: string;
+  contents: IContent[];
+  position: {
+    x: number;
+    y: number;
+  };
+}
 
-const mockNodes: Node[] = [
-  {
-    id: "1",
-    type: "custom",
-    data: { label: "Números" },
-    position: { x: 250, y: 5 },
-    style: { border: "1px solid #42b48c" },
-  },
-  {
-    id: "2",
-    type: "custom",
-    data: { label: "Álgebra" },
-    position: { x: 100, y: 100 },
-    style: { border: "1px solid #42b48c" },
-  },
-  {
-    id: "3",
-    type: "custom",
-    data: { label: "Geometria" },
-    position: { x: 400, y: 100 },
-    style: { border: "1px solid #FA8F32" },
-  },
-  {
-    id: "4",
-    type: "custom",
-    data: { label: "Trigonometria" },
-    position: { x: 400, y: 200 },
-    style: { border: "1px solid gray" },
-  },
-  {
-    id: "5",
-    type: "custom",
-    data: { label: "Probabilidade" },
-    position: { x: 100, y: 200 },
-    style: { border: "1px solid #42b48c" },
-  },
-  {
-    id: "6",
-    type: "custom",
-    data: { label: "Gráficos" },
-    position: { x: 100, y: 300 },
-    style: { border: "1px solid gray" },
-  },
-  {
-    id: "7",
-    type: "custom",
-    data: { label: "Funções" },
-    position: { x: 400, y: 300 },
-    style: { border: "1px solid gray" },
-  },
-];
+interface IEdgeData {
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+}
 
-const mockEdges: Edge[] = [
-  {
-    id: "1-2",
-    source: "1",
-    target: "2",
-    sourceHandle: "leftSource",
-    targetHandle: "topTarget",
-  },
-  {
-    id: "1-3",
-    source: "1",
-    target: "3",
-    sourceHandle: "rightSource",
-    targetHandle: "topTarget",
-  },
-  {
-    id: "2-5",
-    source: "2",
-    target: "5",
-    sourceHandle: "bottomSource",
-    targetHandle: "topTarget",
-  },
-  {
-    id: "5-6",
-    source: "5",
-    target: "6",
-    sourceHandle: "bottomSource",
-    targetHandle: "topTarget",
-  },
-  {
-    id: "3-4",
-    source: "3",
-    target: "4",
-    sourceHandle: "bottomSource",
-    targetHandle: "topTarget",
-  },
-  {
-    id: "4-7",
-    source: "4",
-    target: "7",
-    sourceHandle: "bottomSource",
-    targetHandle: "topTarget",
-  },
-];
+interface IRoadmap {
+  name: string;
+  nodes: INodeData[];
+  edges: IEdgeData[];
+}
 
 const mapNames: Record<string, string> = {
   biologia: "Biologia",
@@ -150,26 +61,118 @@ const mapNames: Record<string, string> = {
 };
 
 export default function Roadmap() {
-  const [loading, setLoading] = React.useState<boolean>(false);
-  const [selectedNode, setSelectedNode] = React.useState<Node | null>(null);
-  const [videosUrls, setVideosUrls] = React.useState<
-    { name: string; url: string }[]
-  >([]);
-  const [websitesUrls, setWebsitesUrls] = React.useState<
-    { name: string; url: string }[]
-  >([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [videosUrls, setVideosUrls] = useState<{ name: string; url: string }[]>([]);
+  const [websitesUrls, setWebsitesUrls] = useState<{ name: string; url: string }[]>([]);
+
   const router = useRouter();
   const pathname = usePathname();
-  const title = pathname ? pathname.split("/").pop() || "none" : "none";
+  const slug = pathname ? pathname.split("/").pop() || "none" : "none";
+  const originalName = mapNames[slug] || "Não encontrado";
 
-  React.useEffect(() => {
-    setLoading(false);
-    setVideosUrls(mockVideos);
-    setWebsitesUrls(mockWebsites);
-  }, []);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  const [roadmapData, setRoadmapData] = useState<IRoadmap | null>(null);
+
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      setLoading(false);
+      return;
+    }
+
+    if (originalName === "Não encontrado") {
+      // se o slug não estiver mapeado, exibir mensagem de erro ou redirecionar
+      setLoading(false);
+      return;
+    }
+
+    // Buscar dados do roadmap no backend
+    axios.get(`/api/roadmap/${slug}`, {
+      headers: { Authorization: `Bearer ${authToken}` }
+    })
+    .then(response => {
+      const data: IRoadmap = response.data;
+      setRoadmapData(data);
+
+      // Converter IRoadmap em nodes e edges do React Flow
+      const convertedEdges: Edge[] = data.edges.map((edgeData, index) => ({
+        id: `${edgeData.source}-${edgeData.target}-${index}`,
+        source: edgeData.source,
+        target: edgeData.target,
+        sourceHandle: edgeData.sourceHandle,
+        targetHandle: edgeData.targetHandle,
+      }));
+
+      // Calcular handles usados
+      const handleUsage = convertedEdges.reduce((acc: Record<string, string[]>, edge) => {
+        if (edge.source && edge.sourceHandle) {
+          acc[edge.source] = acc[edge.source] || [];
+          if (!acc[edge.source].includes(edge.sourceHandle)) {
+            acc[edge.source].push(edge.sourceHandle);
+          }
+        }
+        if (edge.target && edge.targetHandle) {
+          acc[edge.target] = acc[edge.target] || [];
+          if (!acc[edge.target].includes(edge.targetHandle)) {
+            acc[edge.target].push(edge.targetHandle);
+          }
+        }
+        return acc;
+      }, {});
+
+      const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
+        // aqui você pode determinar a cor da borda com base no progresso do usuário, por exemplo.
+        // Por enquanto, a gente defini tudo como cinza.
+        const borderColor = "gray";
+        return {
+          id: nodeData.name,
+          type: "custom",
+          data: {
+            label: nodeData.name,
+            usedHandles: handleUsage[nodeData.name] || [],
+          },
+          position: { x: nodeData.position.x, y: nodeData.position.y },
+          style: { border: `1px solid ${borderColor}` },
+        };
+      });
+
+      setNodes(convertedNodes);
+      setEdges(convertedEdges);
+    })
+    .catch(error => {
+      console.error("Erro ao carregar roadmap:", error);
+      // redirecionar para 404 caso não encontre o roadmap
+      // router.push('/404');
+    })
+    .finally(() => {
+      setLoading(false);
+    });
+  }, [slug, originalName]);
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
+
+    if (!roadmapData) return;
+
+    // Encontrar o node no roadmapData
+    const nodeData = roadmapData.nodes.find(n => n.name === node.data.label);
+    if (nodeData) {
+      const videos = nodeData.contents
+        .filter(c => c.type === 'vídeo')
+        .map(c => ({ name: c.title, url: c.url }));
+      const websites = nodeData.contents
+        .filter(c => c.type === 'website')
+        .map(c => ({ name: c.title, url: c.url }));
+
+      setVideosUrls(videos);
+      setWebsitesUrls(websites);
+    } else {
+      setVideosUrls([]);
+      setWebsitesUrls([]);
+    }
   };
 
   const handleMenuClose = () => {
@@ -180,36 +183,6 @@ export default function Roadmap() {
     router.back();
   };
 
-  // Calculando quais handles estão em uso por cada nó
-  const handleUsage = mockEdges.reduce((acc: Record<string, string[]>, edge) => {
-    if (edge.source && edge.sourceHandle) {
-      acc[edge.source] = acc[edge.source] || [];
-      if (!acc[edge.source].includes(edge.sourceHandle)) {
-        acc[edge.source].push(edge.sourceHandle);
-      }
-    }
-    if (edge.target && edge.targetHandle) {
-      acc[edge.target] = acc[edge.target] || [];
-      if (!acc[edge.target].includes(edge.targetHandle)) {
-        acc[edge.target].push(edge.targetHandle);
-      }
-    }
-    return acc;
-  }, {});
-
-  // Criando uma cópia dos nodes para injetar usedHandles
-  const nodesWithUsage = mockNodes.map((node) => ({
-    ...node,
-    data: {
-      ...node.data,
-      usedHandles: handleUsage[node.id] || [],
-    },
-  }));
-
-  const [nodes, setNodes, onNodesChange] = useNodesState(nodesWithUsage);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(mockEdges);
-
-  // Componente CustomNode atualizado para exibir apenas os handles usados
   const CustomNode = ({ id, data }: NodeProps) => {
     const { label, style, usedHandles = [] } = data as {
       label: string;
@@ -237,9 +210,11 @@ export default function Roadmap() {
           textAlign: "center",
           position: "relative",
         }}
+        onClick={(e) => {
+          handleNodeClick(e, { id, data, position: { x: 0, y: 0 } });
+        }}
       >
         {label}
-        {/* Renderizar apenas os handles que estão em usedHandles */}
         {usedHandles.includes("topSource") && (
           <Handle
             type="source"
@@ -328,7 +303,7 @@ export default function Roadmap() {
               >
                 <FaArrowLeft size={24} color={"var(--action)"} />
               </button>
-              <h2 className="ml-3">{mapNames[title]}</h2>
+              <h2 className="ml-3">{originalName}</h2>
             </div>
             <FormControl sx={{ minWidth: "250px" }} size="small">
               <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
@@ -357,7 +332,7 @@ export default function Roadmap() {
                 </MenuItem>
                 <MenuItem value="orange">
                   <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
-                  <span>(Aprendendo)</span>
+                  <span>(Em progresso)</span>
                 </MenuItem>
                 <MenuItem value="gray">
                   <span style={{ color: "gray" }}>Cinza</span>&nbsp;
@@ -393,9 +368,7 @@ export default function Roadmap() {
       <MaterialsModal
         isOpen={!!selectedNode}
         onClose={handleMenuClose}
-        title={
-          typeof selectedNode?.data.label === "string" ? selectedNode.data.label : ""
-        }
+        title={typeof selectedNode?.data.label === 'string' ? selectedNode.data.label : ""}
         videos={videosUrls}
         websites={websitesUrls}
       />
