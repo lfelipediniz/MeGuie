@@ -37,6 +37,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   switch (method) {
+    case 'GET':
+      try {
+        const userId = authenticateUser();
+        if (!userId) {
+          return res.status(401).json({ message: 'Token de autenticação inválido.' });
+        }
+        const user = await User.findById(userId)
+          .select('+admin -password') // Inclui o campo admin explicitamente e remove o password
+          .populate('favoriteRoadmaps', 'name')
+          .populate('seenContents.roadmapId', 'name');
+        if (!user) {
+          return res.status(404).json({ message: 'Usuário não encontrado.' });
+        }
+        res.status(200).json(user);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro interno do servidor.' });
+      }
+      break;
+
     case 'PUT':
       try {
         const userId = authenticateUser();

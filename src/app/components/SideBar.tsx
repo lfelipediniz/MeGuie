@@ -15,12 +15,9 @@ import AccessibilityModal from "./AccessibilityModal";
 import { RiRoadMapFill } from "react-icons/ri";
 import { MdAdminPanelSettings } from "react-icons/md";
 import axios from "axios";
+import { Types } from "mongoose";
+import { IUser } from "@/models/User";
 
-interface IUser {
-  name: string;
-  email: string;
-  admin?: boolean;
-}
 
 const Sidebar: React.FC = () => {
   const [expanded, setExpanded] = useState(false);
@@ -61,6 +58,8 @@ const Sidebar: React.FC = () => {
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
+
+    console.log(user)
   }, []);
 
   const handleMouseEnter = () => {

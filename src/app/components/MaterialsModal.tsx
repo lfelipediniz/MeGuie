@@ -23,9 +23,50 @@ const MaterialsModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   roadmapId?: string; // Novo campo
-}> = ({ title, videos, websites, isOpen, onClose, roadmapId }) => {
+  nodeId?: string;    // Novo campo
+}> = ({ title, videos, websites, isOpen, onClose, roadmapId, nodeId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+
+  // Função para buscar os conteúdos vistos do usuário
+  const fetchSeenContents = async () => {
+    if (!roadmapId || !nodeId) return;
+
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) return;
+
+    try {
+      const response = await axios.get('/api/user', {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+
+      const user = response.data;
+      const seenContents = user.seenContents || [];
+
+      const seenForRoadmap = seenContents.find((entry: any) => entry.roadmapId === roadmapId);
+      const seenForNode = seenForRoadmap?.nodes.find((node: any) => node.nodeId === nodeId);
+
+      const initialCheckedItems: Record<string, boolean> = {};
+
+      if (seenForNode) {
+        seenForNode.contentIds.forEach((contentId: string) => {
+          initialCheckedItems[`video-${contentId}`] = true;
+          initialCheckedItems[`website-${contentId}`] = true;
+        });
+      }
+
+      setCheckedItems(initialCheckedItems);
+    } catch (error) {
+      console.error("Erro ao buscar conteúdos vistos:", error);
+    }
+  };
+
+  // Chama a função de busca ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      fetchSeenContents();
+    }
+  }, [isOpen, roadmapId, nodeId]);
 
   // Função para alternar o checkbox
   const handleCheckboxChange = async (id: string, contentId: string, isChecked: boolean) => {
@@ -33,22 +74,20 @@ const MaterialsModal: React.FC<{
       ...prev,
       [id]: !prev[id],
     }));
-    
-    if (!roadmapId) return; // Caso não tenha roadmapId
+
+    if (!roadmapId || !nodeId) return;
 
     const authToken = localStorage.getItem("authToken");
-    if (!authToken) return; // Caso o usuário não esteja logado
+    if (!authToken) return;
 
     const action = isChecked ? 'remove' : 'add';
 
     try {
-      await axios.put('/api/user', {
-        action,
-        roadmapId,
-        contentId
-      }, {
-        headers: { Authorization: `Bearer ${authToken}` }
-      });
+      await axios.put(
+        '/api/user',
+        { action, roadmapId, nodeId, contentId },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
     } catch (error) {
       console.error("Erro ao atualizar conteúdos vistos:", error);
     }
@@ -108,7 +147,7 @@ const MaterialsModal: React.FC<{
         <div className="p-4">
           <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas no YouTube</h3>
           {videos?.length ? (
-            videos.map((video, index) => {
+            videos.map((video) => {
               const videoId = `video-${video._id}`;
               const isChecked = !!checkedItems[videoId];
               return (
@@ -130,10 +169,6 @@ const MaterialsModal: React.FC<{
                       className="w-6 h-6 cursor-pointer"
                       checked={isChecked}
                       onChange={() => handleCheckboxChange(videoId, video._id, isChecked)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleCheckboxChange(videoId, video._id, isChecked);
-                      }}
-                      aria-label={`Marcar vídeo ${video.name} como assistido`}
                     />
                   </div>
                 </div>
@@ -145,21 +180,12 @@ const MaterialsModal: React.FC<{
 
           <h3 className="text-[var(--dark-blue)] text-lg font-bold mt-6 mb-4">Sites para estudo</h3>
           {websites?.length ? (
-            websites.map((website, index) => {
+            websites.map((website) => {
               const websiteId = `website-${website._id}`;
               const isChecked = !!checkedItems[websiteId];
               return (
-                <div
-                  key={websiteId}
-                  className="p-4 flex justify-between items-center border-2 border-[var(--light-gray)] mb-4 hover:bg-[var(--dropdown)] transition"
-                >
-                  <a
-                    href={website.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Visitar site ${website.name}`}
-                    className="text-[var(--dark-blue)] text-lg"
-                  >
+                <div key={websiteId} className="p-4 flex justify-between items-center border-2 border-[var(--light-gray)] mb-4">
+                  <a href={website.url} target="_blank" rel="noopener noreferrer" className="text-[var(--dark-blue)] text-lg">
                     {website.name}
                   </a>
                   <input
@@ -167,10 +193,6 @@ const MaterialsModal: React.FC<{
                     className="w-6 h-6 cursor-pointer"
                     checked={isChecked}
                     onChange={() => handleCheckboxChange(websiteId, website._id, isChecked)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleCheckboxChange(websiteId, website._id, isChecked);
-                    }}
-                    aria-label={`Marcar site ${website.name} como visitado`}
                   />
                 </div>
               );
