@@ -30,6 +30,7 @@ interface IContent {
 
 
 interface INodeData {
+  _id: string;
   name: string;
   description: string;
   contents: IContent[];
