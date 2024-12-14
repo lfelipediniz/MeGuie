@@ -1,18 +1,30 @@
 "use client";
-import { useEffect, useState, useMemo, FormEvent } from "react";
+import { useEffect, useState, useMemo, FormEvent, useCallback } from "react";
 import { useRouter } from "@/src/navigation";
-import LoadingOverlay from "../../components/LoadingOverlay";
+// Removendo import do LoadingOverlay
+// import LoadingOverlay from "../../components/LoadingOverlay";
 import RoadmapCard from "../../components/RoadmapCard";
 import TopicsModal from "../../components/TopicsModal";
 import SearchBar from "../../components/SearchBar";
 import axios from "axios";
+
+import {
+  Background,
+  ReactFlow,
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Controls,
+  Handle,
+  Position,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
 
 type Topic = {
   title: string;
   description: string;
 };
 
-// Estrutura do node retornado pela API, agora com contents embutidos
 interface DBContent {
   type: 'vídeo' | 'website';
   title: string;
@@ -29,16 +41,21 @@ interface DBNode {
   };
 }
 
+interface DBEdge {
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+}
+
 interface DBRoadmap {
   _id: string;
   name: string;
+  nameSlug: string;
+  imageURL: string;
+  imageAlt: string;
   nodes: DBNode[];
-  edges: {
-    source: string;
-    target: string;
-    sourceHandle?: string;
-    targetHandle?: string;
-  }[];
+  edges: DBEdge[];
 }
 
 type RoadmapDisplay = {
@@ -56,69 +73,37 @@ export default function Admin() {
   const [localTopics, setLocalTopics] = useState<Topic[]>([]);
   const [roadmaps, setRoadmaps] = useState<RoadmapDisplay[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null); // null enquanto não sabemos
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null); 
 
-  // Estados para modal de criação de roadmap
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [roadmapJson, setRoadmapJson] = useState('');
 
-  useEffect(() => {
-    const authToken = localStorage.getItem("authToken");
-    if (!authToken) {
-      setIsAdmin(false);
-      setShowLoading(false);
-      return;
-    }
+  // Campos do roadmap
+  const [name, setName] = useState("");
+  const [nameSlug, setNameSlug] = useState("");
+  const [imageURL, setImageURL] = useState("");
+  const [imageAlt, setImageAlt] = useState("");
 
-    axios.get('/api/user', {
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
-    })
-    .then(response => {
-      const user = response.data;
-      setIsAdmin(!!user.admin);
+  // Estados do React Flow
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const onConnect = useCallback((params: any) => setEdges((eds: any[]) => addEdge(params, eds)), []);
 
-      if (user.admin) {
-        // Carregar roadmaps do backend
-        fetchRoadmaps(authToken);
-      } else {
-        setShowLoading(false);
-      }
-    })
-    .catch(error => {
-      console.error("Erro ao verificar admin:", error);
-      setIsAdmin(false); 
-      setShowLoading(false);
-    });
-  }, []);
-
-  const fetchRoadmaps = (authToken: string) => {
-    axios.get('/api/roadmap', {
-      headers: {
-        Authorization: `Bearer ${authToken}`
-      }
-    })
-    .then(response => {
-      const dbRoadmaps: DBRoadmap[] = response.data;
-      const converted = dbRoadmaps.map(db => convertDBRoadmapToDisplay(db));
-      setRoadmaps(converted);
-    })
-    .catch(error => {
-      console.error("Erro ao buscar roadmaps:", error);
-    })
-    .finally(() => setShowLoading(false));
-  };
+  // Campos para criação de nó
+  const [nodeName, setNodeName] = useState("");
+  const [nodeDescription, setNodeDescription] = useState("");
+  const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
+  const [contentType, setContentType] = useState<"vídeo" | "website">("vídeo");
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentUrl, setContentUrl] = useState("");
 
   const convertDBRoadmapToDisplay = (db: DBRoadmap): RoadmapDisplay => {
-    // Definimos imagem e progresso fixos, pois não temos lógica real
     const topics: Topic[] = db.nodes.map(node => ({
       title: node.name,
       description: node.description,
     }));
 
     return {
-      image: 'image_generic.png',
+      image: db.imageURL || 'image_generic.png',
       title: db.name,
       progress: 0,
       topics,
@@ -139,7 +124,7 @@ export default function Admin() {
   };
 
   function handleBack() {
-    router.back()
+    router.back();
   }
 
   const openTopicsModal = () => {
@@ -162,106 +147,370 @@ export default function Admin() {
     );
   }, [roadmaps, searchQuery]);
 
-  if (showLoading) {
+  const CustomNode = ({ id, data }: any) => {
+    const { label } = data;
     return (
-      <div className="transition-opacity duration-500 opacity-100 mx-auto max-w-screen-2xl">
-        <LoadingOverlay />
+      <div style={{ background: "white", padding: "10px", borderRadius: "4px", border: "1px solid gray" }}>
+        {label}
+        <Handle type="source" position={Position.Bottom} style={{ background: '#555' }} />
+        <Handle type="target" position={Position.Top} style={{ background: '#555' }} />
       </div>
     );
-  }
+  };
 
-  if (isAdmin === false) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-red-500 text-xl font-bold">Você não tem os privilégios para acessar o sistema</p>
-      </div>
-    );
-  }
+  const nodeTypes = useMemo(() => ({ custom: CustomNode }), []);
 
-  // Funções para criar Roadmap
-  const handleCreateRoadmap = async (e: FormEvent) => {
-    e.preventDefault();
+  const addContent = () => {
+    if (!contentTitle || !contentUrl) {
+      alert("Título e URL do conteúdo são obrigatórios.");
+      return;
+    }
+
+    const newContent: DBContent = {
+      type: contentType,
+      title: contentTitle,
+      url: contentUrl
+    };
+    setNodeContents((prev) => [...prev, newContent]);
+    setContentTitle("");
+    setContentUrl("");
+  };
+
+  const insertNode = () => {
+    if (!nodeName) {
+      alert("O nome do nó é obrigatório.");
+      return;
+    }
+    if (nodeContents.length === 0) {
+      alert("É necessário inserir pelo menos um conteúdo.");
+      return;
+    }
+
+    const newNode = {
+      id: `node_${nodes.length + 1}`,
+      type: "custom",
+      data: {
+        label: nodeName,
+        name: nodeName,
+        description: nodeDescription,
+        contents: nodeContents,
+      },
+      position: { x: Math.random() * 400, y: Math.random() * 300 },
+      style: { border: "1px solid gray", padding: "10px", borderRadius: "4px", background: "white" },
+    };
+    setNodes((nds) => nds.concat(newNode));
+
+    // Limpar campos do nó
+    setNodeName("");
+    setNodeDescription("");
+    setNodeContents([]);
+  };
+
+  const fetchRoadmaps = (authToken: string) => {
+    axios.get('/api/roadmap', {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    })
+    .then(response => {
+      const dbRoadmaps: DBRoadmap[] = response.data;
+      const converted = dbRoadmaps.map(db => convertDBRoadmapToDisplay(db));
+      setRoadmaps(converted);
+    })
+    .catch(error => {
+      console.error("Erro ao buscar roadmaps:", error);
+    })
+    .finally(() => setShowLoading(false));
+  };
+
+  const handleCreateRoadmap = async () => {
     const authToken = localStorage.getItem("authToken");
-    if (!authToken) return;
+    if (!authToken) {
+      alert("Token inválido.");
+      return;
+    }
+
+    if (!name || !nameSlug || !imageURL || !imageAlt) {
+      alert("Preencha todos os campos obrigatórios do roadmap.");
+      return;
+    }
+
+    const convertedNodes = nodes.map((n: any) => ({
+      name: n.data.name || n.id,
+      description: n.data.description || "",
+      contents: n.data.contents || [],
+      position: { x: n.position.x, y: n.position.y },
+    }));
+
+    const convertedEdges = edges.map((e: any) => ({
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle,
+      targetHandle: e.targetHandle,
+    }));
+
+    const body = {
+      name,
+      nameSlug,
+      imageURL,
+      imageAlt,
+      nodes: convertedNodes,
+      edges: convertedEdges,
+    };
+
     try {
-      const parsedJson = JSON.parse(roadmapJson);
-      await axios.post('/api/roadmap', parsedJson, {
+      await axios.post('/api/roadmap', body, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
       });
+      
       // Se criar com sucesso, recarrega a lista de roadmaps
       fetchRoadmaps(authToken);
       setIsCreateModalOpen(false);
-      setRoadmapJson('');
+      
+      // Resetar campos
+      setName("");
+      setNameSlug("");
+      setImageURL("");
+      setImageAlt("");
+      setNodes([]);
+      setEdges([]);
     } catch (error: any) {
       console.error("Erro ao criar roadmap:", error);
       alert('Erro ao criar roadmap: ' + (error.response?.data?.message || error.message));
     }
   };
 
+  useEffect(() => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      setIsAdmin(false);
+      setShowLoading(false);
+      return;
+    }
+
+    axios.get('/api/user', {
+      headers: {
+        Authorization: `Bearer ${authToken}`
+      }
+    })
+    .then(response => {
+      const user = response.data || {};
+      setIsAdmin(!!user.admin);
+
+      if (user.admin) {
+        fetchRoadmaps(authToken);
+      } else {
+        setShowLoading(false);
+      }
+    })
+    .catch(error => {
+      console.error("Erro ao verificar admin:", error);
+      setIsAdmin(false); 
+      setShowLoading(false);
+    });
+  }, []);
+
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
-      <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
-        <SearchBar onSearch={(query) => {setSearchQuery(query)}} onBack={handleBack} />
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 rounded-lg bg-[var(--action)] text-[var(--background)] hover:opacity-90"
-        >
-          Criar Roadmap
-        </button>
-      </div>
-      <div className="w-full flex flex-col gap-4">
-        <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps Criados</h2>
-        <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredRoadmaps.map((m, index) => (
-            <RoadmapCard 
-              key={m.title + index}
-              image={m.image}
-              title={m.title}
-              progress={m.progress}
-              isFavorite={m.isFavorite}
-              toggleFavorite={() => toggleFavorite(index)}
-              topics={m.topics}
-              handleOpenTopics={handleOpenTopics} />
-          ))}
+      {/* Removemos o if(showLoading) para exibir sempre a página */}
+      
+      {isAdmin === false && (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-red-500 text-xl font-bold">Você não tem os privilégios para acessar o sistema</p>
         </div>
-      </div>
-      <TopicsModal
-        topics={localTopics}
-        isOpen={isTopicsModalOpen}
-        onClose={closeTopicsModal}
-      />
+      )}
 
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
-          <div className="bg-white p-5 rounded shadow w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Criar Roadmap</h2>
-            <form onSubmit={handleCreateRoadmap} className="flex flex-col gap-4">
-              <textarea
-                className="border p-2 rounded w-full h-40"
-                placeholder='Cole aqui o JSON do roadmap...'
-                value={roadmapJson}
-                onChange={(e) => setRoadmapJson(e.target.value)}
-              ></textarea>
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsCreateModalOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg bg-[var(--action)] text-white hover:opacity-90"
-                >
-                  Criar
-                </button>
-              </div>
-            </form>
+      {isAdmin && (
+        <>
+          <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
+            <SearchBar onSearch={(query) => {setSearchQuery(query)}} onBack={handleBack} />
+            <button
+              onClick={() => {
+                setIsCreateModalOpen(true);
+              }}
+              className="px-4 py-2 rounded-lg bg-[var(--action)] text-[var(--background)] hover:opacity-90"
+            >
+              Criar Roadmap
+            </button>
           </div>
-        </div>
+          <div className="w-full flex flex-col gap-4">
+            <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">Roadmaps Criados</h2>
+            <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
+              {filteredRoadmaps.map((m, index) => (
+                <RoadmapCard 
+                  key={m.title + index}
+                  image={m.image}
+                  title={m.title}
+                  progress={m.progress}
+                  isFavorite={m.isFavorite}
+                  toggleFavorite={() => toggleFavorite(index)}
+                  topics={m.topics}
+                  handleOpenTopics={handleOpenTopics} />
+              ))}
+            </div>
+          </div>
+
+          <TopicsModal
+            topics={localTopics}
+            isOpen={isTopicsModalOpen}
+            onClose={closeTopicsModal}
+          />
+
+          {isCreateModalOpen && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+              <div className="bg-white p-5 rounded shadow w-full max-w-4xl max-h-[90vh] overflow-auto">
+                <h2 className="text-xl font-bold mb-4">Criar Roadmap</h2>
+                
+                <h3 className="font-bold">Informações do Roadmap</h3>
+                <div className="flex flex-col gap-2 mb-4">
+                  <label>
+                    Nome*:
+                    <input 
+                      type="text" 
+                      className="border p-1 rounded w-full" 
+                      value={name} 
+                      onChange={(e) => setName(e.target.value)} 
+                    />
+                  </label>
+                  <label>
+                    NameSlug*:
+                    <input 
+                      type="text" 
+                      className="border p-1 rounded w-full" 
+                      value={nameSlug} 
+                      onChange={(e) => setNameSlug(e.target.value)} 
+                    />
+                  </label>
+                  <label>
+                    Image URL*:
+                    <input 
+                      type="text" 
+                      className="border p-1 rounded w-full" 
+                      value={imageURL} 
+                      onChange={(e) => setImageURL(e.target.value)} 
+                    />
+                  </label>
+                  <label>
+                    Image Alt*:
+                    <input 
+                      type="text" 
+                      className="border p-1 rounded w-full"
+                      value={imageAlt}
+                      onChange={(e) => setImageAlt(e.target.value)} 
+                    />
+                  </label>
+                </div>
+
+                <h3 className="font-bold mb-2">Criar Nó</h3>
+                <div className="border p-3 rounded mb-4">
+                  <label>
+                    Nome do Nó*:
+                    <input 
+                      type="text" 
+                      className="border p-1 rounded w-full" 
+                      value={nodeName} 
+                      onChange={(e) => setNodeName(e.target.value)} 
+                    />
+                  </label>
+                  <label>
+                    Descrição do Nó:
+                    <textarea
+                      className="border p-1 rounded w-full"
+                      value={nodeDescription}
+                      onChange={(e) => setNodeDescription(e.target.value)}
+                    />
+                  </label>
+
+                  <h4>Conteúdos do Nó</h4>
+                  {nodeContents.length > 0 && (
+                    <ul className="list-disc pl-5">
+                      {nodeContents.map((c, idx) => (
+                        <li key={idx}>{c.type}: {c.title} ({c.url})</li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <div className="flex gap-2 mt-2">
+                    <select 
+                      value={contentType} 
+                      onChange={(e) => setContentType(e.target.value as "vídeo" | "website")}
+                      className="border p-1 rounded"
+                    >
+                      <option value="vídeo">Vídeo</option>
+                      <option value="website">Website</option>
+                    </select>
+                    <input 
+                      type="text"
+                      placeholder="Título do conteúdo"
+                      className="border p-1 rounded"
+                      value={contentTitle}
+                      onChange={(e) => setContentTitle(e.target.value)}
+                    />
+                    <input 
+                      type="text"
+                      placeholder="URL do conteúdo"
+                      className="border p-1 rounded"
+                      value={contentUrl}
+                      onChange={(e) => setContentUrl(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={addContent}
+                      className="px-3 py-1 bg-green-500 text-white rounded"
+                    >
+                      +
+                    </button>
+                  </div>
+
+                  <div className="mt-4">
+                    <button
+                      type="button"
+                      onClick={insertNode}
+                      className="px-4 py-2 bg-blue-500 text-white rounded"
+                    >
+                      Inserir Nó
+                    </button>
+                  </div>
+                </div>
+
+                <h3 className="font-bold mb-2">Organize seus Nós e Conexões</h3>
+                <div style={{ width: "100%", height: "50vh", border: "1px solid #ccc", marginBottom: "20px" }}>
+                  <ReactFlow
+                    nodes={nodes}
+                    edges={edges}
+                    onNodesChange={onNodesChange}
+                    onEdgesChange={onEdgesChange}
+                    onConnect={onConnect}
+                    nodeTypes={nodeTypes}
+                    fitView
+                  >
+                    <Controls />
+                    <Background />
+                  </ReactFlow>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateModalOpen(false)}
+                    className="px-4 py-2 rounded-lg bg-gray-300 hover:bg-gray-400"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCreateRoadmap}
+                    className="px-4 py-2 rounded-lg bg-[var(--action)] text-white hover:opacity-90"
+                  >
+                    Concluir Roadmap
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
