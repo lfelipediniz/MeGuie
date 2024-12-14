@@ -38,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   switch (method) {
-    // GET: Lista todos ou um roadmap específico se for passado o slug na query
+    // GET: Lista todos os roadmaps ou um roadmap específico pelo slug na query
     case 'GET':
       try {
         const { name } = query;
@@ -62,17 +62,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // POST: Cria um novo roadmap
     case 'POST':
       try {
-        const { name, nameSlug, nodes, edges } = body;
+        const { name, nameSlug, imageURL, imageAlt, nodes, edges } = body;
 
-        if (!name || !nameSlug) {
-          return res.status(400).json({ message: 'O nome e o slug do nome são obrigatórios.' });
+        if (!name || !nameSlug || !imageURL || !imageAlt) {
+          return res.status(400).json({ message: 'Os campos nome, nameSlug, imageURL e imageAlt são obrigatórios.' });
         }
 
         if (!Array.isArray(nodes) || nodes.length === 0) {
           return res.status(400).json({ message: 'É necessário adicionar pelo menos um node.' });
         }
 
-        const newRoadmap = new Roadmap({ name, nameSlug, nodes, edges });
+        const newRoadmap = new Roadmap({ name, nameSlug, imageURL, imageAlt, nodes, edges });
         await newRoadmap.save();
 
         res.status(201).json({ message: 'Roadmap criado com sucesso.', roadmap: newRoadmap });
@@ -86,15 +86,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'PUT':
       try {
         const { id } = query;
-        const { name, nameSlug, nodes, edges } = body;
+        const { name, nameSlug, imageURL, imageAlt, nodes, edges } = body;
 
-        if (!name || !nameSlug) {
-          return res.status(400).json({ message: 'O nome e o slug do nome são obrigatórios.' });
+        if (!name || !nameSlug || !imageURL || !imageAlt) {
+          return res.status(400).json({ message: 'Os campos nome, nameSlug, imageURL e imageAlt são obrigatórios.' });
         }
 
         const updatedRoadmap = await Roadmap.findByIdAndUpdate(
           id,
-          { name, nameSlug, nodes, edges },
+          { name, nameSlug, imageURL, imageAlt, nodes, edges },
           { new: true, runValidators: true }
         );
 

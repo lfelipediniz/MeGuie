@@ -31,6 +31,8 @@ export interface IRoadmap extends Document {
   _id: Types.ObjectId;
   name: string;
   nameSlug: string;
+  imageURL: string;
+  imageAlt: string;
   nodes: INode[];
   edges: IEdge[];
 }
@@ -100,6 +102,14 @@ const RoadmapSchema: Schema<IRoadmap> = new Schema<IRoadmap>(
       type: String,
       required: [true, 'O slug do nome é obrigatório.'],
       unique: true,
+    },
+    imageURL: {
+      type: String,
+      required: [true, 'A URL da imagem é obrigatório.'],
+    },
+    imageAlt: {
+      type: String,
+      required: [true, 'O texto alternativo da imagem é obrigatório.'],
     },
     nodes: [NodeSchema],
     edges: [EdgeSchema],
