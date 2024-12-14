@@ -1,48 +1,58 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import dbConnect from '@/lib/mongodb';
+import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 import Roadmap, { IRoadmap } from '@/models/Roadmap';
+import dbConnect from '@/lib/mongodb';
 
-// Função auxiliar para converter o slug em um nome com acentos
-const slugToName = (slug: string): string => {
-  const mapSlugs: Record<string, string> = {
-    biologia: 'Biologia',
-    quimica: 'Química',
-    matematica: 'Matemática',
-    sociologia: 'Sociologia',
-    portugues: 'Português',
-  };
-
-  return mapSlugs[slug] || '';
-};
+interface JwtPayload {
+  userId: string;
+}
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { slug } = req.query;
-
-  if (typeof slug !== 'string') {
-    return res.status(400).json({ message: 'Slug inválido.' });
-  }
-
-  // Conectar ao banco de dados
   await dbConnect();
 
-  try {
-    // Converter o slug para o nome original com acentos
-    const roadmapName = slugToName(slug);
+  const { method, headers, query } = req;
+  const { slug } = query;
 
-    if (!roadmapName) {
-      return res.status(404).json({ message: 'Roadmap não encontrado.' });
+  // Função para autenticar o usuário
+  const authenticate = (): string | null => {
+    const authHeader = headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return null;
     }
-
-    // Buscar o roadmap pelo nome
-    const roadmap: IRoadmap | null = await Roadmap.findOne({ name: roadmapName });
-
-    if (!roadmap) {
-      return res.status(404).json({ message: 'Roadmap não encontrado no banco de dados.' });
+    const token = authHeader.split(' ')[1];
+    try {
+      const secret = process.env.JWT_SECRET as string;
+      const decoded = jwt.verify(token, secret) as JwtPayload;
+      return decoded.userId;
+    } catch {
+      return null;
     }
+  };
 
-    return res.status(200).json(roadmap);
-  } catch (error) {
-    console.error('Erro ao buscar o roadmap:', error);
-    return res.status(500).json({ message: 'Erro interno do servidor.' });
+  const userId = authenticate();
+  if (!userId) {
+    return res.status(401).json({ message: 'Token de autenticação inválido ou expirado.' });
+  }
+
+  switch (method) {
+    case 'GET':
+      try {
+        if (typeof slug !== 'string') {
+          return res.status(400).json({ message: 'Slug inválido.' });
+        }
+        const roadmap = await Roadmap.findOne({ nameSlug: slug });
+        if (!roadmap) {
+          return res.status(404).json({ message: 'Roadmap não encontrado.' });
+        }
+        return res.status(200).json(roadmap);
+      } catch (error) {
+        console.error('Erro ao buscar o roadmap:', error);
+        return res.status(500).json({ message: 'Erro interno do servidor.' });
+      }
+
+    default:
+      res.setHeader('Allow', ['GET']);
+      return res.status(405).end(`Método ${method} não permitido.`);
   }
 }

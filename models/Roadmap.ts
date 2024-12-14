@@ -1,5 +1,3 @@
-// /models/Roadmap.ts
-
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 export interface IPosition {
@@ -31,6 +29,7 @@ export interface IEdge {
 export interface IRoadmap extends Document {
   _id: Types.ObjectId;
   name: string;
+  nameSlug: string;
   nodes: INode[];
   edges: IEdge[];
 }
@@ -73,7 +72,6 @@ const NodeSchema = new Schema<INode>({
   },
 });
 
-
 const EdgeSchema = new Schema<IEdge>({
   source: {
     type: String,
@@ -97,6 +95,11 @@ const RoadmapSchema: Schema<IRoadmap> = new Schema<IRoadmap>(
       type: String,
       required: [true, 'Nome é obrigatório.'],
       trim: true,
+    },
+    nameSlug: {
+      type: String,
+      required: [true, 'O slug do nome é obrigatório.'],
+      unique: true,
     },
     nodes: [NodeSchema],
     edges: [EdgeSchema],

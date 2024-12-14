@@ -17,7 +17,6 @@ import LoadingOverlay from "../../../components/LoadingOverlay";
 import { FaArrowLeft } from "react-icons/fa6";
 import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
 import MaterialsModal from "../../../components/MaterialsModal";
-
 import "@xyflow/react/dist/style.css";
 import { usePathname, useRouter } from "@/src/navigation";
 import axios from "axios";
@@ -47,20 +46,12 @@ interface IEdgeData {
 
 interface IRoadmap {
   name: string;
+  nameSlug: string;
   nodes: INodeData[];
   edges: IEdgeData[];
 }
 
-const mapNames: Record<string, string> = {
-  biologia: "Biologia",
-  quimica: "Química",
-  matematica: "Matemática",
-  sociologia: "Sociologia",
-  portugues: "Português",
-  none: "Não encontrado",
-};
-
-export default function Roadmap() {
+export default function RoadmapPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [videosUrls, setVideosUrls] = useState<{ name: string; url: string }[]>([]);
@@ -69,11 +60,9 @@ export default function Roadmap() {
   const router = useRouter();
   const pathname = usePathname();
   const slug = pathname ? pathname.split("/").pop() || "none" : "none";
-  const originalName = mapNames[slug] || "Não encontrado";
 
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
-
   const [roadmapData, setRoadmapData] = useState<IRoadmap | null>(null);
 
   useEffect(() => {
@@ -83,13 +72,13 @@ export default function Roadmap() {
       return;
     }
 
-    if (originalName === "Não encontrado") {
-      // se o slug não estiver mapeado, exibir mensagem de erro ou redirecionar
+    if (!slug || slug === "none") {
+      // Se não tiver slug válido, tratar como erro
       setLoading(false);
       return;
     }
 
-    // Buscar dados do roadmap no backend
+    // Buscar dados do roadmap via slug
     axios.get(`/api/roadmap/${slug}`, {
       headers: { Authorization: `Bearer ${authToken}` }
     })
@@ -97,7 +86,6 @@ export default function Roadmap() {
       const data: IRoadmap = response.data;
       setRoadmapData(data);
 
-      // Converter IRoadmap em nodes e edges do React Flow
       const convertedEdges: Edge[] = data.edges.map((edgeData, index) => ({
         id: `${edgeData.source}-${edgeData.target}-${index}`,
         source: edgeData.source,
@@ -106,7 +94,6 @@ export default function Roadmap() {
         targetHandle: edgeData.targetHandle,
       }));
 
-      // Calcular handles usados
       const handleUsage = convertedEdges.reduce((acc: Record<string, string[]>, edge) => {
         if (edge.source && edge.sourceHandle) {
           acc[edge.source] = acc[edge.source] || [];
@@ -124,8 +111,6 @@ export default function Roadmap() {
       }, {});
 
       const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
-        // aqui você pode determinar a cor da borda com base no progresso do usuário, por exemplo.
-        // Por enquanto, a gente defini tudo como cinza.
         const borderColor = "gray";
         return {
           id: nodeData.name,
@@ -144,20 +129,17 @@ export default function Roadmap() {
     })
     .catch(error => {
       console.error("Erro ao carregar roadmap:", error);
-      // redirecionar para 404 caso não encontre o roadmap
+      // redirecionar para 404 caso não encontre
       // router.push('/404');
     })
     .finally(() => {
       setLoading(false);
     });
-  }, [slug, originalName]);
+  }, [slug]);
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
-
     if (!roadmapData) return;
-
-    // Encontrar o node no roadmapData
     const nodeData = roadmapData.nodes.find(n => n.name === node.data.label);
     if (nodeData) {
       const videos = nodeData.contents
@@ -293,76 +275,80 @@ export default function Roadmap() {
           <LoadingOverlay />
         </div>
       ) : (
-        <div className="flex flex-col gap-7" style={{ width: "100%", height: "100%" }}>
-          <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
-            <div className="flex items-center mb-5 xs:mb-0">
-              <button
-                className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500"
-                onClick={handleNavigation}
-                aria-label="Voltar para Roadmaps"
-              >
-                <FaArrowLeft size={24} color={"var(--action)"} />
-              </button>
-              <h2 className="ml-3">{originalName}</h2>
-            </div>
-            <FormControl sx={{ minWidth: "250px" }} size="small">
-              <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
-                Legenda de Cores
-              </InputLabel>
-              <Select
-                labelId="legenda-de-cores"
-                label="Legenda de Cores"
-                id="lista-cores"
-                value=""
-                aria-label="Legenda de Cores"
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "var(--primary) !important",
-                  },
-                  backgroundColor: "var(--background) !important",
-                  color: "var(--primary)",
-                  "& .MuiSvgIcon-root": {
+        roadmapData ? (
+          <div className="flex flex-col gap-7" style={{ width: "100%", height: "100%" }}>
+            <div className="flex flex-wrap xs:flex-nowrap justify-center xs:justify-between items-center text-center xs:text-left">
+              <div className="flex items-center mb-5 xs:mb-0">
+                <button
+                  className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500"
+                  onClick={handleNavigation}
+                  aria-label="Voltar para Roadmaps"
+                >
+                  <FaArrowLeft size={24} color={"var(--action)"} />
+                </button>
+                <h2 className="ml-3">{roadmapData.name}</h2>
+              </div>
+              <FormControl sx={{ minWidth: "250px" }} size="small">
+                <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
+                  Legenda de Cores
+                </InputLabel>
+                <Select
+                  labelId="legenda-de-cores"
+                  label="Legenda de Cores"
+                  id="lista-cores"
+                  value=""
+                  aria-label="Legenda de Cores"
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "var(--primary) !important",
+                    },
+                    backgroundColor: "var(--background) !important",
                     color: "var(--primary)",
-                  },
-                }}
-              >
-                <MenuItem value="green">
-                  <span style={{ color: "#42b48c" }}>Verde</span>&nbsp;
-                  <span>(Concluído)</span>
-                </MenuItem>
-                <MenuItem value="orange">
-                  <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
-                  <span>(Em progresso)</span>
-                </MenuItem>
-                <MenuItem value="gray">
-                  <span style={{ color: "gray" }}>Cinza</span>&nbsp;
-                  <span>(Não Iniciada)</span>
-                </MenuItem>
-              </Select>
-            </FormControl>
-          </div>
+                    "& .MuiSvgIcon-root": {
+                      color: "var(--primary)",
+                    },
+                  }}
+                >
+                  <MenuItem value="green">
+                    <span style={{ color: "#42b48c" }}>Verde</span>&nbsp;
+                    <span>(Concluído)</span>
+                  </MenuItem>
+                  <MenuItem value="orange">
+                    <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
+                    <span>(Em progresso)</span>
+                  </MenuItem>
+                  <MenuItem value="gray">
+                    <span style={{ color: "gray" }}>Cinza</span>&nbsp;
+                    <span>(Não Iniciada)</span>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </div>
 
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            nodesConnectable={false}
-            nodesDraggable={false}
-            onNodeClick={handleNodeClick}
-            nodeTypes={nodeTypes}
-            fitView
-          >
-            <Controls
-              showInteractive={false}
-              style={{
-                backgroundColor: "rgba(0, 0, 0, 0.1)",
-                borderRadius: "8px",
-              }}
-            />
-            <Background />
-          </ReactFlow>
-        </div>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={onNodesChange}
+              onEdgesChange={onEdgesChange}
+              nodesConnectable={false}
+              nodesDraggable={false}
+              onNodeClick={handleNodeClick}
+              nodeTypes={nodeTypes}
+              fitView
+            >
+              <Controls
+                showInteractive={false}
+                style={{
+                  backgroundColor: "rgba(0, 0, 0, 0.1)",
+                  borderRadius: "8px",
+                }}
+              />
+              <Background />
+            </ReactFlow>
+          </div>
+        ) : (
+          <p>Roadmap não encontrado.</p>
+        )
       )}
 
       <MaterialsModal

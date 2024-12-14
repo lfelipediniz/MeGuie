@@ -1,21 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import Roadmap, { IRoadmap } from '../../models/Roadmap';
-
-const connectDB = async () => {
-  if (mongoose.connections[0].readyState) {
-    return;
-  }
-  await mongoose.connect(process.env.MONGODB_URI as string);
-};
+import Roadmap, { IRoadmap } from '@/models/Roadmap';
+import dbConnect from '@/lib/mongodb';
 
 interface JwtPayload {
   userId: string;
 }
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  await connectDB();
+  await dbConnect();
 
   const { method, headers, body, query } = req;
 
@@ -44,21 +38,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   switch (method) {
-    // GET: Lista todos ou um roadmap específico se for passado nome na query
+    // GET: Lista todos ou um roadmap específico se for passado o slug na query
     case 'GET':
       try {
         const { name } = query;
 
         if (name) {
           // Buscar por nome específico
-          const roadmap = await Roadmap.findOne({ name: name.toString() });
+          const roadmap = await Roadmap.findOne({ nameSlug: name.toString().toLowerCase() });
           if (!roadmap) {
             return res.status(404).json({ message: 'Roadmap não encontrado.' });
           }
           return res.status(200).json(roadmap);
         }
 
-        // Se não for passado nome, retorna todos
+        // Se não for passado o nome, retorna todos os roadmaps
         const roadmaps = await Roadmap.find();
         res.status(200).json(roadmaps);
       } catch (error) {
@@ -67,13 +61,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    // POST: Cria um novo roadmap a partir de um JSON com name, nodes (com contents embutidos) e edges
+    // POST: Cria um novo roadmap a partir de um JSON com name, nameSlug, nodes (com contents embutidos) e edges
     case 'POST':
       try {
-        const { name, nodes, edges } = body;
+        const { name, nameSlug, nodes, edges } = body;
 
-        if (!name) {
-          return res.status(400).json({ message: 'O nome é obrigatório.' });
+        if (!name || !nameSlug) {
+          return res.status(400).json({ message: 'O nome e o slug do nome são obrigatórios.' });
         }
 
         if (!Array.isArray(nodes) || nodes.length === 0) {
@@ -101,7 +95,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ message: 'É necessário enviar o array de edges (mesmo que vazio).' });
         }
 
-        const newRoadmap = new Roadmap({ name, nodes, edges });
+        const newRoadmap = new Roadmap({ name, nameSlug, nodes, edges });
         await newRoadmap.save();
 
         res.status(201).json({ message: 'Roadmap criado com sucesso.', roadmap: newRoadmap });
@@ -115,12 +109,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'PUT':
       try {
         const { id } = query;
-        const { name, nodes, edges } = body;
+        const { name, nameSlug, nodes, edges } = body;
 
-        // Pode adicionar validações semelhantes às do POST se necessário
+        if (!name || !nameSlug) {
+          return res.status(400).json({ message: 'O nome e o slug do nome são obrigatórios.' });
+        }
+
         const updatedRoadmap = await Roadmap.findByIdAndUpdate(
           id,
-          { name, nodes, edges },
+          { name, nameSlug, nodes, edges },
           { new: true, runValidators: true }
         );
 
