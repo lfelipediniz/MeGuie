@@ -67,6 +67,8 @@ export default function RoadmapPage() {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [roadmapData, setRoadmapData] = useState<IRoadmap | null>(null);
+  const [selectedNodeData, setSelectedNodeData] = useState<INodeData | null>(null);
+
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -141,28 +143,36 @@ export default function RoadmapPage() {
   }, [slug]);
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
-    setSelectedNode(node);
     if (!roadmapData) return;
-    const nodeData = roadmapData.nodes.find(n => n.name === node.data.label);
+  
+    const nodeData = roadmapData.nodes.find((n) => n.name === node.data.label);
     if (nodeData) {
+      setSelectedNode(node);
+      setSelectedNodeData(nodeData);  // Armazena o nodeData corretamente
+  
       const videos = nodeData.contents
-        .filter(c => c.type === 'vídeo')
-        .map(c => ({ _id: c._id, name: c.title, url: c.url }));
+        .filter((c) => c.type === "vídeo")
+        .map((c) => ({ _id: c._id.toString(), name: c.title, url: c.url }));
+  
       const websites = nodeData.contents
-        .filter(c => c.type === 'website')
-        .map(c => ({ _id: c._id, name: c.title, url: c.url }));
-    
+        .filter((c) => c.type === "website")
+        .map((c) => ({ _id: c._id.toString(), name: c.title, url: c.url }));
+  
       setVideosUrls(videos);
       setWebsitesUrls(websites);
     } else {
+      setSelectedNodeData(null);
       setVideosUrls([]);
       setWebsitesUrls([]);
-    } 
+    }
   };
+  
+  
 
   const handleMenuClose = () => {
     setSelectedNode(null);
-  };
+    setSelectedNodeData(null);
+  };  
 
   const handleNavigation = () => {
     router.back();
@@ -361,6 +371,7 @@ export default function RoadmapPage() {
         videos={videosUrls}
         websites={websitesUrls}
         roadmapId={roadmapData?._id}  // Passe o ID do roadmap
+        nodeId={selectedNodeData?._id}
       />
 
     </div>

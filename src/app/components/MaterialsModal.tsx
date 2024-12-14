@@ -41,6 +41,7 @@ const MaterialsModal: React.FC<{
       });
 
       const user = response.data;
+      console.log("user: " + user)
       const seenContents = user.seenContents || [];
 
       const seenForRoadmap = seenContents.find((entry: any) => entry.roadmapId === roadmapId);
@@ -74,24 +75,34 @@ const MaterialsModal: React.FC<{
       ...prev,
       [id]: !prev[id],
     }));
-
-    if (!roadmapId || !nodeId) return;
-
+  
+    if (!roadmapId || !nodeId) {
+      console.error("roadmapId ou nodeId não definido.");
+      return;
+    }
+  
     const authToken = localStorage.getItem("authToken");
-    if (!authToken) return;
-
+    if (!authToken) {
+      console.error("Token de autenticação não encontrado.");
+      return;
+    }
+  
     const action = isChecked ? 'remove' : 'add';
-
+  
+    console.log("Enviando requisição PUT com:", { action, roadmapId, nodeId, contentId });
+  
     try {
-      await axios.put(
+      const response = await axios.put(
         '/api/user',
         { action, roadmapId, nodeId, contentId },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
+  
+      console.log("Resposta do backend:", response.data);
     } catch (error) {
       console.error("Erro ao atualizar conteúdos vistos:", error);
     }
-  };
+  };  
 
   // Função para prender o foco dentro do modal
   const trapFocus = (e: KeyboardEvent) => {

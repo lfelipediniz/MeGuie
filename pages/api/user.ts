@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
-import User, { IUser } from '../../models/User';
+import User from '../../models/User';
 import jwt from 'jsonwebtoken';
 import Roadmap from '../../models/Roadmap';
 

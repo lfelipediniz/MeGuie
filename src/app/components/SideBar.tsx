@@ -59,7 +59,6 @@ const Sidebar: React.FC = () => {
       window.removeEventListener("storage", handleStorageChange);
     };
 
-    console.log(user)
   }, []);
 
   const handleMouseEnter = () => {
