@@ -58,10 +58,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // POST: Cria um novo conteúdo
     case 'POST':
       try {
-        const { type, title, url, seen } = body;
+        const { type, title, url } = body;
 
-        if (!type || !title || !url || seen === undefined) {
-          return res.status(400).json({ message: 'Todos os campos são obrigatórios (type, title, url, seen).' });
+        if (!type || !title || !url) {
+          return res.status(400).json({ message: 'Todos os campos são obrigatórios (type, title, url).' });
         }
 
         // Verifica se o tipo de conteúdo é válido
@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ message: 'Tipo de conteúdo inválido. Deve ser "vídeo" ou "website".' });
         }
 
-        const newContent = new Content({ type, title, url, seen });
+        const newContent = new Content({ type, title, url });
         await newContent.save();
 
         res.status(201).json({ message: 'Conteúdo criado com sucesso.', content: newContent });
@@ -83,12 +83,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'PUT':
       try {
         const { id } = query;
-        const { type, title, url, seen } = body;
+        const { type, title, url } = body;
 
         // Verifica se o conteúdo foi encontrado
         const updatedContent = await Content.findByIdAndUpdate(
           id,
-          { type, title, url, seen },
+          { type, title, url },
           { new: true, runValidators: true }
         );
 

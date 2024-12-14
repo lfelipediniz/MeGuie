@@ -6,7 +6,6 @@ export interface IContent extends Document {
   type: 'vídeo' | 'website';
   title: string;
   url: string;
-  seen: boolean;
 }
 
 // Definição do esquema do conteúdo
@@ -25,11 +24,6 @@ const ContentSchema: Schema<IContent> = new Schema<IContent>(
       type: String,
       required: [true, 'URL do conteúdo é obrigatória.'],
     },
-    seen: {
-      type: Boolean,
-      required: [true, 'Parâmetro seen é obrigatório.'],
-      default: false,
-    }
   },
   {
     timestamps: true,
