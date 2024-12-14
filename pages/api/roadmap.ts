@@ -44,13 +44,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   switch (method) {
-    // GET: Lista todos os roadmaps com os nodes e conteúdos populados
+    // GET: Lista todos ou um roadmap específico se for passado nome na query
     case 'GET':
       try {
-        const roadmaps = await Roadmap.find().populate({
-          path: 'nodes.contents',
-          model: 'Content',
-        });
+        const { name } = query;
+
+        if (name) {
+          // Buscar por nome específico
+          const roadmap = await Roadmap.findOne({ name: name.toString() });
+          if (!roadmap) {
+            return res.status(404).json({ message: 'Roadmap não encontrado.' });
+          }
+          return res.status(200).json(roadmap);
+        }
+
+        // Se não for passado nome, retorna todos
+        const roadmaps = await Roadmap.find();
         res.status(200).json(roadmaps);
       } catch (error) {
         console.error(error);
@@ -58,22 +67,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    // POST: Cria um novo roadmap
+    // POST: Cria um novo roadmap a partir de um JSON com name, nodes (com contents embutidos) e edges
     case 'POST':
       try {
-        const { name, nodes } = body;
+        const { name, nodes, edges } = body;
 
         if (!name) {
           return res.status(400).json({ message: 'O nome é obrigatório.' });
         }
 
-        // Valida que os nodes estão sendo passados corretamente
         if (!Array.isArray(nodes) || nodes.length === 0) {
           return res.status(400).json({ message: 'É necessário adicionar pelo menos um node.' });
         }
 
-        // Cria o novo roadmap
-        const newRoadmap = new Roadmap({ name, nodes });
+        // Valida cada node
+        for (const node of nodes) {
+          if (!node.name || !node.description || !node.contents || !node.position) {
+            return res.status(400).json({ message: 'Cada node deve conter name, description, contents e position.' });
+          }
+
+          if (!Array.isArray(node.contents) || node.contents.length === 0) {
+            return res.status(400).json({ message: `O node ${node.name} deve conter ao menos um conteúdo.` });
+          }
+
+          for (const content of node.contents) {
+            if (!content.type || !content.title || !content.url) {
+              return res.status(400).json({ message: `Cada conteúdo do node ${node.name} deve ter type, title e url.` });
+            }
+          }
+        }
+
+        if (!Array.isArray(edges)) {
+          return res.status(400).json({ message: 'É necessário enviar o array de edges (mesmo que vazio).' });
+        }
+
+        const newRoadmap = new Roadmap({ name, nodes, edges });
         await newRoadmap.save();
 
         res.status(201).json({ message: 'Roadmap criado com sucesso.', roadmap: newRoadmap });
@@ -87,17 +115,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'PUT':
       try {
         const { id } = query;
-        const { name, nodes } = body;
+        const { name, nodes, edges } = body;
 
-        // Verifica se o roadmap existe
+        // Pode adicionar validações semelhantes às do POST se necessário
         const updatedRoadmap = await Roadmap.findByIdAndUpdate(
           id,
-          { name, nodes },
+          { name, nodes, edges },
           { new: true, runValidators: true }
-        ).populate({
-          path: 'nodes.contents',
-          model: 'Content',
-        });
+        );
 
         if (!updatedRoadmap) {
           return res.status(404).json({ message: 'Roadmap não encontrado.' });

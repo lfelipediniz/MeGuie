@@ -1,18 +1,96 @@
+// /models/Roadmap.ts
+
 import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
-// Interface para o documento do roadmap
+export interface IPosition {
+  x: number;
+  y: number;
+}
+
+export interface IContent {
+  type: 'vídeo' | 'website';
+  title: string;
+  url: string;
+}
+
+export interface INode {
+  _id: Types.ObjectId;
+  name: string;
+  description: string;
+  contents: IContent[];
+  position: IPosition;
+}
+
+export interface IEdge {
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
+}
+
 export interface IRoadmap extends Document {
   _id: Types.ObjectId;
   name: string;
-  nodes: Types.Array<{
-    _id: Types.ObjectId;
-    name: string;
-    description: string;
-    contents: Types.Array<Types.ObjectId>; // Array de referências ao modelo Conteudo
-  }>;
+  nodes: INode[];
+  edges: IEdge[];
 }
 
-// Definição do esquema do roadmap
+const PositionSchema = new Schema<IPosition>({
+  x: { type: Number, required: true },
+  y: { type: Number, required: true },
+});
+
+const ContentSchema = new Schema<IContent>({
+  type: {
+    type: String,
+    enum: ['vídeo', 'website'],
+    required: [true, 'Tipo de conteúdo é obrigatório.'],
+  },
+  title: {
+    type: String,
+    required: [true, 'Título do conteúdo é obrigatório.'],
+  },
+  url: {
+    type: String,
+    required: [true, 'URL do conteúdo é obrigatória.'],
+  },
+});
+
+const NodeSchema = new Schema<INode>({
+  name: { type: String, required: true },
+  description: { type: String, required: true, trim: true },
+  contents: {
+    type: [ContentSchema],
+    validate: {
+      validator: (v: IContent[]) => v.length > 0,
+      message: 'Pelo menos um conteúdo é obrigatório.'
+    },
+    required: true,
+  },
+  position: {
+    x: { type: Number, required: true },
+    y: { type: Number, required: true },
+  },
+});
+
+
+const EdgeSchema = new Schema<IEdge>({
+  source: {
+    type: String,
+    required: [true, 'A fonte da aresta é obrigatória.'],
+  },
+  target: {
+    type: String,
+    required: [true, 'O destino da aresta é obrigatório.'],
+  },
+  sourceHandle: {
+    type: String,
+  },
+  targetHandle: {
+    type: String,
+  },
+});
+
 const RoadmapSchema: Schema<IRoadmap> = new Schema<IRoadmap>(
   {
     name: {
@@ -20,33 +98,14 @@ const RoadmapSchema: Schema<IRoadmap> = new Schema<IRoadmap>(
       required: [true, 'Nome é obrigatório.'],
       trim: true,
     },
-    nodes: [
-      {
-        name: {
-          type: String,
-          required: [true, 'Nome do node é obrigatório.'],
-        },
-        description: {
-          type: String,
-          required: [true, 'Descrição é obrigatória.'],
-          trim: true,
-        },
-        contents: [
-          {
-            type: Types.ObjectId,
-            ref: 'Content', // Referência ao modelo Conteudo
-            required: [true, 'Conteúdo é obrigatório.'],
-          },
-        ],
-      },
-    ],
+    nodes: [NodeSchema],
+    edges: [EdgeSchema],
   },
   {
-    timestamps: true, // Adiciona campos de criação e atualização automaticamente
+    timestamps: true,
   }
 );
 
-// Verifica se o modelo já foi compilado para evitar recompilações
 const Roadmap: Model<IRoadmap> = mongoose.models.Roadmap || mongoose.model<IRoadmap>('Roadmap', RoadmapSchema);
 
 export default Roadmap;

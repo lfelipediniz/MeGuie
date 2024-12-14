@@ -15,5 +15,6 @@
     "/pages/home": "Roadmaps",
     "/pages/howtouse": "Como usar a plataforma",
     "/pages/youtubevideo": "Conteúdo em vídeo",
-    "/pages/savedroads": "Roadmaps favoritos"
+    "/pages/savedroads": "Roadmaps favoritos",
+    "/pages/admin": "Administração"
 }
