@@ -37,29 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   };
 
   switch (method) {
-    case 'GET':
-      try {
-        const userId = authenticateUser();
-        if (!userId) {
-          return res.status(401).json({ message: 'Token de autenticação inválido.' });
-        }
-
-        const user = await User.findById(userId)
-          .select('+admin -password') // Inclui o campo admin explicitamente e remove o password
-          .populate('favoriteRoadmaps', 'name')
-          .populate('seenContents.roadmapId', 'name');
-
-        if (!user) {
-          return res.status(404).json({ message: 'Usuário não encontrado.' });
-        }
-
-        res.status(200).json(user);
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro interno do servidor.' });
-      }
-      break;
-
     case 'PUT':
       try {
         const userId = authenticateUser();
@@ -67,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(401).json({ message: 'Token de autenticação inválido.' });
         }
 
-        const { action, roadmapId, contentId, favoriteRoadmaps } = req.body;
+        const { action, roadmapId, nodeId, contentId, favoriteRoadmaps } = req.body;
 
         const user = await User.findById(userId);
         if (!user) {
@@ -80,36 +57,64 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           user.favoriteRoadmaps = validRoadmaps.map((r) => r._id);
         }
 
-        // Lógica para seenContents
-        if (action && roadmapId && contentId) {
+        // Lógica para toggle de seenContents
+        if (action && roadmapId && nodeId && contentId) {
           const rid = new mongoose.Types.ObjectId(roadmapId);
+          const nid = new mongoose.Types.ObjectId(nodeId);
           const cid = new mongoose.Types.ObjectId(contentId);
 
-          const idx = user.seenContents.findIndex(entry => entry.roadmapId.equals(rid));
+          // Encontra o índice do roadmap na lista de seenContents
+          const roadmapIndex = user.seenContents.findIndex((entry) => entry.roadmapId.equals(rid));
 
           if (action === 'add') {
-            if (idx === -1) {
-              // Adiciona um novo roadmapId
+            if (roadmapIndex === -1) {
+              // Adiciona um novo roadmapId e nodeId
               user.seenContents.push({
                 roadmapId: rid,
-                contentIds: [cid],
+                nodes: [{ nodeId: nid, contentIds: [cid] }],
               });
             } else {
-              // Adiciona o conteúdo sem duplicar
-              const currentContentIds = user.seenContents[idx].contentIds.map(id => id.toString());
-              if (!currentContentIds.includes(cid.toString())) {
-                user.seenContents[idx].contentIds.push(cid);
+              const nodeIndex = user.seenContents[roadmapIndex].nodes.findIndex((node) =>
+                node.nodeId.equals(nid)
+              );
+
+              if (nodeIndex === -1) {
+                // Adiciona um novo nodeId com o contentId
+                user.seenContents[roadmapIndex].nodes.push({
+                  nodeId: nid,
+                  contentIds: [cid],
+                });
+              } else {
+                // Adiciona o contentId sem duplicar
+                const currentContentIds = user.seenContents[roadmapIndex].nodes[nodeIndex].contentIds.map((id) =>
+                  id.toString()
+                );
+                if (!currentContentIds.includes(cid.toString())) {
+                  user.seenContents[roadmapIndex].nodes[nodeIndex].contentIds.push(cid);
+                }
               }
             }
           } else if (action === 'remove') {
-            if (idx > -1) {
-              // Remove o conteúdo
-              user.seenContents[idx].contentIds = user.seenContents[idx].contentIds.filter(
-                id => !id.equals(cid)
+            if (roadmapIndex > -1) {
+              const nodeIndex = user.seenContents[roadmapIndex].nodes.findIndex((node) =>
+                node.nodeId.equals(nid)
               );
-              // Se não houver mais conteúdos, remover a entrada do roadmap
-              if (user.seenContents[idx].contentIds.length === 0) {
-                user.seenContents.splice(idx, 1);
+
+              if (nodeIndex > -1) {
+                // Remove o conteúdo específico do node
+                user.seenContents[roadmapIndex].nodes[nodeIndex].contentIds = user.seenContents[
+                  roadmapIndex
+                ].nodes[nodeIndex].contentIds.filter((id) => !id.equals(cid));
+
+                // Se o node não tiver mais conteúdos, remove o node
+                if (user.seenContents[roadmapIndex].nodes[nodeIndex].contentIds.length === 0) {
+                  user.seenContents[roadmapIndex].nodes.splice(nodeIndex, 1);
+                }
+
+                // Se o roadmap não tiver mais nodes, remove o roadmap
+                if (user.seenContents[roadmapIndex].nodes.length === 0) {
+                  user.seenContents.splice(roadmapIndex, 1);
+                }
               }
             }
           }
@@ -124,7 +129,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       break;
 
     default:
-      res.setHeader('Allow', ['GET', 'PUT']);
+      res.setHeader('Allow', ['PUT']);
       res.status(405).end(`Método ${method} não permitido.`);
       break;
   }
