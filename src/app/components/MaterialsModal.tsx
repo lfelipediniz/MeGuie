@@ -22,18 +22,88 @@ const MaterialsModal: React.FC<{
   websites?: WebsiteContent[];
   isOpen: boolean;
   onClose: () => void;
-  roadmapId?: string;
-  nodeId?: string;
+  roadmapId?: string; // Novo campo
+  nodeId?: string;    // Novo campo
 }> = ({ title, videos, websites, isOpen, onClose, roadmapId, nodeId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
 
+  // Função para buscar os conteúdos vistos do usuário
+  const fetchSeenContents = async () => {
+    if (!roadmapId || !nodeId) return;
+  
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) return;
+  
+    try {
+      const response = await axios.get('/api/user', {
+        headers: { Authorization: `Bearer ${authToken}` },
+      });
+  
+      const user = response.data;
+      console.log("Dados do usuário:", user);
+  
+      const seenContents = user.seenContents || [];
+  
+      const seenForRoadmap = seenContents.find((entry: any) => entry.roadmapId.toString() === roadmapId);
+      const seenForNode = seenForRoadmap?.nodes.find((node: any) => node.nodeId.toString() === nodeId);
+  
+      const initialCheckedItems: Record<string, boolean> = {};
+  
+      if (seenForNode) {
+        seenForNode.contentIds.forEach((contentId: string) => {
+          initialCheckedItems[`video-${contentId}`] = true;
+          initialCheckedItems[`website-${contentId}`] = true;
+        });
+      }
+  
+      setCheckedItems(initialCheckedItems);
+    } catch (error) {
+      console.error("Erro ao buscar conteúdos vistos:", error);
+    }
+  };  
+
+  // Chama a função de busca ao abrir o modal
+  useEffect(() => {
+    if (isOpen) {
+      fetchSeenContents();
+    }
+  }, [isOpen, roadmapId, nodeId]);
+
+  // Função para alternar o checkbox
   const handleCheckboxChange = async (id: string, contentId: string, isChecked: boolean) => {
     setCheckedItems((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
-  };
+  
+    if (!roadmapId || !nodeId) {
+      console.error("roadmapId ou nodeId não definido.");
+      return;
+    }
+  
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      console.error("Token de autenticação não encontrado.");
+      return;
+    }
+  
+    const action = isChecked ? 'remove' : 'add';
+  
+    console.log("Enviando requisição PUT com:", { action, roadmapId, nodeId, contentId });
+  
+    try {
+      const response = await axios.put(
+        '/api/user',
+        { action, roadmapId, nodeId, contentId },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+  
+      console.log("Resposta do backend:", response.data);
+    } catch (error) {
+      console.error("Erro ao atualizar conteúdos vistos:", error);
+    }
+  };  
 
   // Função para converter YouTube URL para embed URL
   const getEmbedUrl = (url: string) => {
@@ -46,6 +116,41 @@ const MaterialsModal: React.FC<{
     }
     return url;
   };
+
+  // Função para verificar se a URL é de um vídeo local suportado
+  const isLocalVideo = (url: string) => {
+    return url.match(/\.(mp4|webm|ogg)$/);
+  };
+
+  // Função para prender o foco dentro do modal
+  const trapFocus = (e: KeyboardEvent) => {
+    if (e.key === 'Tab' && modalRef.current) {
+      const focusableElements = modalRef.current.querySelectorAll(
+        'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0] as HTMLElement;
+      const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+      if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      } else if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      modalRef.current?.focus();
+      document.addEventListener('keydown', trapFocus);
+    } else {
+      document.removeEventListener('keydown', trapFocus);
+    }
+
+    return () => document.removeEventListener('keydown', trapFocus);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -75,10 +180,11 @@ const MaterialsModal: React.FC<{
               const videoId = `video-${video._id}`;
               const isChecked = !!checkedItems[videoId];
               const embedUrl = getEmbedUrl(video.url);
+              const localVideo = isLocalVideo(embedUrl);
 
               return (
                 <div key={videoId} className="shadow-lg rounded-md overflow-hidden mb-4">
-                  {embedUrl.match(/\.(mp4|webm|ogg)$/) ? (
+                  {localVideo ? (
                     <video controls className="w-full" height={200}>
                       <source src={embedUrl} type={`video/${embedUrl.split('.').pop()}`} />
                       Seu navegador não suporta o elemento de vídeo.
@@ -88,7 +194,8 @@ const MaterialsModal: React.FC<{
                       src={embedUrl}
                       title={video.name}
                       frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
                       allowFullScreen
                       height={200}
                       className="w-full"
