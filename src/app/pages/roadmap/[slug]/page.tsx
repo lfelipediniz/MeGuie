@@ -28,7 +28,6 @@ interface IContent {
   url: string;
 }
 
-
 interface INodeData {
   name: string;
   description: string;
@@ -93,36 +92,19 @@ export default function RoadmapPage() {
 
       const convertedEdges: Edge[] = data.edges.map((edgeData, index) => ({
         id: `${edgeData.source}-${edgeData.target}-${index}`,
-        source: edgeData.source,
-        target: edgeData.target,
+        source: edgeData.source, // Deve ser nodeName
+        target: edgeData.target, // Deve ser nodeName
         sourceHandle: edgeData.sourceHandle,
         targetHandle: edgeData.targetHandle,
       }));
 
-      const handleUsage = convertedEdges.reduce((acc: Record<string, string[]>, edge) => {
-        if (edge.source && edge.sourceHandle) {
-          acc[edge.source] = acc[edge.source] || [];
-          if (!acc[edge.source].includes(edge.sourceHandle)) {
-            acc[edge.source].push(edge.sourceHandle);
-          }
-        }
-        if (edge.target && edge.targetHandle) {
-          acc[edge.target] = acc[edge.target] || [];
-          if (!acc[edge.target].includes(edge.targetHandle)) {
-            acc[edge.target].push(edge.targetHandle);
-          }
-        }
-        return acc;
-      }, {});
-
       const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
         const borderColor = "gray";
         return {
-          id: nodeData.name,
+          id: nodeData.name, // Usando nodeName como ID
           type: "custom",
           data: {
             label: nodeData.name,
-            usedHandles: handleUsage[nodeData.name] || [],
           },
           position: { x: nodeData.position.x, y: nodeData.position.y },
           style: { border: `1px solid ${borderColor}` },
@@ -166,8 +148,7 @@ export default function RoadmapPage() {
       setWebsitesUrls([]);
     }
   };
-  
-  
+
 
   const handleMenuClose = () => {
     setSelectedNode(null);
@@ -179,11 +160,11 @@ export default function RoadmapPage() {
   };
 
   const CustomNode = ({ id, data }: NodeProps) => {
-    const { label, style, usedHandles = [] } = data as {
+    const { label, style } = data as {
       label: string;
       style?: React.CSSProperties;
-      usedHandles: string[];
     };
+  
 
     return (
       <div
@@ -210,71 +191,17 @@ export default function RoadmapPage() {
         }}
       >
         {label}
-        {usedHandles.includes("topSource") && (
-          <Handle
-            type="source"
-            position={Position.Top}
-            id="topSource"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("bottomSource") && (
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id="bottomSource"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("leftSource") && (
-          <Handle
-            type="source"
-            position={Position.Left}
-            id="leftSource"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("rightSource") && (
-          <Handle
-            type="source"
-            position={Position.Right}
-            id="rightSource"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
-
-        {usedHandles.includes("topTarget") && (
-          <Handle
-            type="target"
-            position={Position.Top}
-            id="topTarget"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("bottomTarget") && (
-          <Handle
-            type="target"
-            position={Position.Bottom}
-            id="bottomTarget"
-            style={{ left: "50%", transform: "translateX(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("leftTarget") && (
-          <Handle
-            type="target"
-            position={Position.Left}
-            id="leftTarget"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
-        {usedHandles.includes("rightTarget") && (
-          <Handle
-            type="target"
-            position={Position.Right}
-            id="rightTarget"
-            style={{ top: "50%", transform: "translateY(-50%)" }}
-          />
-        )}
+        {/* Sempre exibir ao menos um handle de target no topo e um de source embaixo */}
+        <Handle
+          type="target"
+          position={Position.Top}
+          style={{ left: "50%", transform: "translateX(-50%)" }}
+        />
+        <Handle
+          type="source"
+          position={Position.Bottom}
+          style={{ left: "50%", transform: "translateX(-50%)" }}
+        />
       </div>
     );
   };
@@ -371,7 +298,7 @@ export default function RoadmapPage() {
         videos={videosUrls}
         websites={websitesUrls}
         roadmapId={roadmapData?._id}  // Passe o ID do roadmap
-        nodeId={selectedNodeData?._id}
+        nodeId={selectedNodeData?.name} // Atualizado para nodeName
       />
 
     </div>
