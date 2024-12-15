@@ -1,3 +1,5 @@
+// src/pages/api/user.ts
+
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import User from '../../models/User';
@@ -20,7 +22,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const { method } = req;
 
-  // Função auxiliar para autenticar o usuário
   // Função auxiliar para autenticar o usuário
   const authenticateUser = (): string | null => {
     const authHeader = req.headers.authorization;
@@ -46,7 +47,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
         const user = await User.findById(userId)
           .select('+admin -password') // Inclui o campo admin explicitamente e remove o password
-          .populate('favoriteRoadmaps', 'name')
+          .populate('favoriteRoadmaps', '_id name')
           .populate('seenContents.roadmapId', 'name'); // Verifique se 'roadmapId' está sendo populado corretamente
         if (!user) {
           return res.status(404).json({ message: 'Usuário não encontrado.' });
@@ -72,7 +73,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(404).json({ message: 'Usuário não encontrado.' });
         }
 
-        // Atualizar favoriteRoadmaps se fornecido
+        // Atualizar favoriteRoadmaps se fornecido diretamente
         if (favoriteRoadmaps) {
           const validRoadmaps = await Roadmap.find({ _id: { $in: favoriteRoadmaps } });
           user.favoriteRoadmaps = validRoadmaps.map((r) => r._id);
@@ -143,6 +144,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 }
               }
             }
+          }
+        }
+
+        // Lógica para adicionar/remover favoritos
+        if (action && roadmapId) {
+          if (action === 'favorite_add') {
+            if (!user.favoriteRoadmaps.includes(roadmapId)) {
+              user.favoriteRoadmaps.push(roadmapId);
+            }
+          } else if (action === 'favorite_remove') {
+            user.favoriteRoadmaps = user.favoriteRoadmaps.filter((id) => id.toString() !== roadmapId);
           }
         }
 

@@ -13,9 +13,9 @@ import axios from "axios";
 type DBRoadmap = {
   _id: string;
   imageURL: string;
+  imageAlt: string;
   name: string;
   nameSlug: string;
-  imageAlt: string;
   nodes: DBNode[];
   edges: DBEdge[];
 };
@@ -53,12 +53,20 @@ type Topic = {
 
 type RoadmapDisplay = {
   _id: string;
-  image: string;
+  imageURL: string;
+  imageAlt: string;
   title: string;
   progress: number;
   topics: Topic[];
   isFavorite: boolean;
   nameSlug: string;
+};
+
+type IUser = {
+  _id: string;
+  admin: boolean;
+  favoriteRoadmaps: string[]; // IDs dos roadmaps favoritos
+  seenContents: any[]; // Ajuste conforme a estrutura real
 };
 
 export default function Admin() {
@@ -76,6 +84,9 @@ export default function Admin() {
   const [isEditMode, setIsEditMode] = useState(false);
   const [roadmapToEdit, setRoadmapToEdit] = useState<DBRoadmap | null>(null);
 
+  // Estado para armazenar os dados do usuário
+  const [userData, setUserData] = useState<IUser | null>(null);
+
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -90,12 +101,13 @@ export default function Admin() {
         },
       })
       .then((response) => {
-        const user = response.data;
+        const user: IUser = response.data;
+        setUserData(user);
         setIsAdmin(!!user.admin);
 
         if (user.admin) {
           // Carregar roadmaps do backend
-          fetchRoadmaps(authToken);
+          fetchRoadmaps(authToken, user);
         }
       })
       .catch((error) => {
@@ -104,48 +116,43 @@ export default function Admin() {
       });
   }, []);
 
-  const fetchRoadmaps = (authToken: string) => {
-    axios
-      .get("/api/roadmap", {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      })
-      .then((response) => {
-        const dbRoadmaps: DBRoadmap[] = response.data;
-        const converted = dbRoadmaps.map((db) =>
-          convertDBRoadmapToDisplay(db)
-        );
-        setRoadmaps(converted);
-      })
-      .catch((error) => {
-        console.error("Erro ao buscar roadmaps:", error);
+  const fetchRoadmaps = async (authToken: string, user: IUser) => {
+    try {
+      const response = await axios.get("/api/roadmap", {
+        headers: { Authorization: `Bearer ${authToken}` },
       });
+
+      const dbRoadmaps: DBRoadmap[] = response.data;
+      const converted = dbRoadmaps.map((db) =>
+        convertDBRoadmapToDisplay(db, user)
+      );
+      setRoadmaps(converted);
+    } catch (error) {
+      console.error("Erro ao buscar roadmaps:", error);
+    }
   };
 
-  const convertDBRoadmapToDisplay = (db: DBRoadmap): RoadmapDisplay => {
+  const convertDBRoadmapToDisplay = (
+    db: DBRoadmap,
+    user: IUser
+  ): RoadmapDisplay => {
     const topics: Topic[] = db.nodes.map((node) => ({
       title: node.name,
       description: node.description,
     }));
 
+    // Calcular o progresso (se necessário)
+    // Aqui, progress está sendo setado como 0, já que o cálculo está sendo feito no RoadmapCard
     return {
       _id: db._id,
-      image: db.imageURL || "image_generic.png",
+      imageURL: db.imageURL || "/image_generic.png",
+      imageAlt: db.imageAlt || "Imagem de uma matéria",
       title: db.name,
-      progress: 0, // Você pode calcular isso com base nos nós ou outro critério
+      progress: 0, // Pode ser removido se não for mais utilizado
       topics,
-      isFavorite: false,
+      isFavorite: user.favoriteRoadmaps.includes(db._id),
       nameSlug: db.nameSlug,
     };
-  };
-
-  const toggleFavorite = (index: number) => {
-    setRoadmaps((prevRoadmaps) => {
-      const newRoadmaps = [...prevRoadmaps];
-      newRoadmaps[index].isFavorite = !newRoadmaps[index].isFavorite;
-      return newRoadmaps;
-    });
   };
 
   function handleBack() {
@@ -191,7 +198,7 @@ export default function Admin() {
       setRoadmapToEdit(fullRoadmap);
     } catch (error: any) {
       console.error("Erro ao buscar roadmap completo:", error);
-      
+
       // Melhorar o feedback de erro para o usuário
       if (error.response) {
         // A requisição foi feita e o servidor respondeu com um status diferente de 2xx
@@ -255,12 +262,11 @@ export default function Admin() {
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
           {filteredRoadmaps.map((roadmap, index) => (
             <RoadmapCard
-              key={m._id} // Usando _id como key único
-              _id={m._id} // Passando _id
-              image={m.image}
-              title={m.title}
-              isFavorite={m.isFavorite}
-              toggleFavorite={() => toggleFavorite(index)}
+              key={roadmap._id} // Usando _id como key único
+              _id={roadmap._id} // Passando _id
+              imageURL={roadmap.imageURL}
+              imageAlt={roadmap.imageAlt}
+              title={roadmap.title}
               topics={roadmap.topics}
               handleOpenTopics={handleOpenTopics}
               nameSlug={roadmap.nameSlug}
@@ -280,7 +286,9 @@ export default function Admin() {
       <CreateRoadmapModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-        onRoadmapCreated={() => fetchRoadmaps(localStorage.getItem("authToken") || "")}
+        onRoadmapCreated={() =>
+          fetchRoadmaps(localStorage.getItem("authToken") || "", userData!)
+        }
       />
 
       {/* Modal de Edição */}
@@ -288,7 +296,7 @@ export default function Admin() {
         <EditRoadmapModal
           roadmap={roadmapToEdit}
           onClose={closeEditModal}
-          onSave={() => fetchRoadmaps(localStorage.getItem("authToken") || "")}
+          onSave={() => fetchRoadmaps(localStorage.getItem("authToken") || "", userData!)}
         />
       )}
     </div>

@@ -13,24 +13,22 @@ type Topic = {
 };
 
 interface RoadmapCardProps {
-  _id: string;
-  image: string;
+  _id: string; // ID único do roadmap
+  imageURL: string;
+  imageAlt: string;
   title: string;
-  isFavorite: boolean;
-  toggleFavorite: () => void;
   topics: Topic[];
   handleOpenTopics: (topics: Topic[], event: React.SyntheticEvent) => void;
-  isEditMode?: boolean;
-  onEdit?: () => void;
-  nameSlug: string;
+  isEditMode?: boolean; // Prop para controlar o Modo Edição
+  onEdit?: () => void; // Função para abrir o modal de edição
+  nameSlug: string; // Slug do nome do roadmap
 }
 
 const RoadmapCard: React.FC<RoadmapCardProps> = ({
   _id,
-  image,
+  imageURL,
+  imageAlt,
   title,
-  isFavorite,
-  toggleFavorite,
   topics,
   handleOpenTopics,
   isEditMode = false,
@@ -39,25 +37,40 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
 }) => {
   const router = useRouter();
   const [progress, setProgress] = useState<number>(0);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const [loadingFavorite, setLoadingFavorite] = useState<boolean>(false);
+  const [errorFavorite, setErrorFavorite] = useState<string | null>(null);
+  const [loadingProgress, setLoadingProgress] = useState<boolean>(true);
+  const [errorProgress, setErrorProgress] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchProgress = async () => {
+    const fetchInitialData = async () => {
       const authToken = localStorage.getItem("authToken");
       if (!authToken) return;
-
+  
       try {
         // Buscar dados do roadmap
         const roadmapResponse = await axios.get(`/api/roadmap/${nameSlug}`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const roadmap = roadmapResponse.data;
-
+  
         // Buscar dados do usuário
         const userResponse = await axios.get("/api/user", {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const user = userResponse.data;
-
+  
+        console.log("Roadmap ID:", _id);
+        console.log("Favorite Roadmaps:", user.favoriteRoadmaps);
+  
+        // Verificar se o roadmap está nos favoritos do usuário
+        const favorite = user.favoriteRoadmaps.some(
+          (fav: { _id: string }) => fav._id.toString() === _id.toString()
+        );
+        setIsFavorite(favorite);
+               
+  
         // Calcular o total de conteúdos
         let totalContents = 0;
         roadmap.nodes.forEach((node: any) => {
@@ -65,7 +78,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             totalContents += node.contents.length;
           }
         });
-
+  
         // Calcular os conteúdos vistos pelo usuário
         let viewedContents = 0;
         if (user.seenContents) {
@@ -78,30 +91,61 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             });
           }
         }
-
+  
         // Calcular o progresso
         const calculatedProgress =
           totalContents > 0
             ? Math.round((viewedContents / totalContents) * 100)
             : 0;
         setProgress(calculatedProgress);
-      } catch (error) {
-        console.error("Erro ao calcular progresso:", error);
+      } catch (error: any) {
+        console.error("Erro ao buscar dados iniciais:", error);
+        if (error.response && error.response.data && error.response.data.message) {
+          setErrorProgress(error.response.data.message);
+        } else {
+          setErrorProgress("Falha ao carregar dados.");
+        }
+      } finally {
+        setLoadingProgress(false);
       }
     };
-
-    fetchProgress();
+  
+    fetchInitialData();
   }, [_id, nameSlug]);
+
+  const handleFavorite = async (event: React.MouseEvent | React.KeyboardEvent) => {
+    event.stopPropagation();
+    setLoadingFavorite(true);
+    setErrorFavorite(null);
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      setErrorFavorite("Token de autenticação inválido.");
+      setLoadingFavorite(false);
+      return;
+    }
+  
+    const action = isFavorite ? "favorite_remove" : "favorite_add";
+    try {
+      await axios.put(
+        "/api/user",
+        { userId: 'userIdHere', action, roadmapId: _id },
+        { headers: { Authorization: `Bearer ${authToken}` } }
+      );
+  
+      // Atualizar estado baseado na ação realizada
+      setIsFavorite(!isFavorite);
+    } catch (error) {
+      console.error("Erro ao atualizar favorito:", error);
+      setErrorFavorite("Falha ao atualizar favorito.");
+    } finally {
+      setLoadingFavorite(false);
+    }
+  };  
 
   function handleClick() {
     if (!isEditMode && nameSlug) {
-      router.push(`/pages/roadmap/${nameSlug}`);
+      router.push(`/pages/roadmap/${nameSlug}`); // Corrigido para a rota correta
     }
-  }
-
-  function handleFavorite(event: React.MouseEvent | React.KeyboardEvent) {
-    event.stopPropagation();
-    toggleFavorite();
   }
 
   return (
@@ -114,7 +158,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
       }}
       className="bg-white rounded-3xl shadow-xl overflow-hidden h-auto max-w-full cursor-pointer relative"
       aria-label={`Card de ${title}`}
-      tabIndex={0}
+      tabIndex={0} // Acessível por teclado
     >
       {/* Ícone de Edição */}
       {isEditMode && onEdit && (
@@ -131,8 +175,9 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
       )}
 
       <Image
-        src={`/images/cards/${image}`}
-        alt={`Imagem representativa de ${title}`}
+        src={imageURL}
+        alt={imageAlt}
+        unoptimized
         width={1000}
         height={1000}
         className="w-full h-30 md:h-36 object-cover"
@@ -145,12 +190,22 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
           className="h-2 w-full bg-gray-300 rounded-full"
           aria-label={`Progresso de ${progress}%`}
         >
-          <div
-            className={`h-full rounded-full bg-green-500`}
-            style={{ width: `${progress}%` }}
-          ></div>
+          {loadingProgress ? (
+            <div className="h-full w-full bg-gray-200 animate-pulse rounded-full"></div>
+          ) : errorProgress ? (
+            <div className="h-full w-full bg-red-200 rounded-full flex items-center justify-center">
+              <span className="text-xs text-red-600">Erro</span>
+            </div>
+          ) : (
+            <div
+              className={`h-full rounded-full bg-green-500`}
+              style={{ width: `${progress}%` }}
+            ></div>
+          )}
         </div>
-        <p className="text-sm text-gray-600">{progress}% completado</p>
+        {!loadingProgress && !errorProgress && (
+          <p className="text-sm text-gray-600">{progress}% completado</p>
+        )}
         <div className="flex justify-between items-center">
           <button
             onClick={(event) =>
@@ -170,10 +225,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
           </button>
 
           <button
-            onClick={(event) => {
-              event.stopPropagation();
-              handleFavorite(event);
-            }}
+            onClick={handleFavorite}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -182,7 +234,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
               }
             }}
             role="button"
-            className="pointer-events-auto"
+            className="pointer-events-auto focus:outline-none"
             aria-label={
               isFavorite
                 ? "Remover dos favoritos"
@@ -190,13 +242,19 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             }
             tabIndex={0}
           >
-            {isFavorite ? (
+            {loadingFavorite ? (
+              <FaRegHeart size={24} color={"gray"} className="animate-pulse" />
+            ) : isFavorite ? (
               <FaHeart size={24} color={"red"} />
             ) : (
               <FaRegHeart size={24} color={"gray"} />
             )}
           </button>
         </div>
+        {/* Exibir mensagem de erro ao atualizar favorito */}
+        {errorFavorite && (
+          <p className="text-xs text-red-500 mt-1">{errorFavorite}</p>
+        )}
       </div>
     </div>
   );
