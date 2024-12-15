@@ -1,9 +1,9 @@
-// src/pages/admin.tsx
+// src/pages/Admin.tsx
 
 "use client";
-
 import { useEffect, useState, useMemo, FormEvent, useCallback } from "react";
 import { useRouter } from "@/src/navigation";
+// Removido import do LoadingOverlay
 import RoadmapCard from "../../components/RoadmapCard";
 import TopicsModal from "../../components/TopicsModal";
 import SearchBar from "../../components/SearchBar";
@@ -18,11 +18,8 @@ import {
   Controls,
   Handle,
   Position,
-  Connection,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { FaEdit } from "react-icons/fa"; // Import do ícone de edição
-import EditRoadmapModal from "../../components/EditRoadmapModal"; // Import do modal de edição
 
 type Topic = {
   title: string;
@@ -63,13 +60,13 @@ interface DBRoadmap {
 }
 
 type RoadmapDisplay = {
-  _id: string; // Adicionado para identificação única
+  _id: string; // Adicionado para manter a consistência
   image: string;
   title: string;
   progress: number;
   topics: Topic[];
   isFavorite: boolean;
-  nameSlug: string; // Necessário para requisições futuras
+  nameSlug: string; // Adicionado
 };
 
 export default function Admin() {
@@ -84,20 +81,25 @@ export default function Admin() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
-  // State for nodes and edges
-  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-
   // Campos da etapa 1
   const [name, setName] = useState("");
   const [nameSlug, setNameSlug] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [imageAlt, setImageAlt] = useState("");
 
-  // Estados para o Modo Edição
-  const [isEditMode, setIsEditMode] = useState(false); // Estado para controlar o Modo Edição
-  const [roadmapToEdit, setRoadmapToEdit] = useState<DBRoadmap | null>(null); // Estado para armazenar o roadmap selecionado para edição
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para controlar a abertura do modal de edição
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const onConnect = useCallback(
+    (params: any) => setEdges((eds: any[]) => addEdge(params, eds)),
+    []
+  );
+
+  const [nodeName, setNodeName] = useState("");
+  const [nodeDescription, setNodeDescription] = useState("");
+  const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
+  const [contentType, setContentType] = useState<"vídeo" | "website">("vídeo");
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentUrl, setContentUrl] = useState("");
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -136,7 +138,9 @@ export default function Admin() {
       })
       .then((response) => {
         const dbRoadmaps: DBRoadmap[] = response.data;
-        const converted = dbRoadmaps.map((db) => convertDBRoadmapToDisplay(db));
+        const converted = dbRoadmaps.map((db) =>
+          convertDBRoadmapToDisplay(db)
+        );
         setRoadmaps(converted);
       })
       .catch((error) => {
@@ -151,13 +155,13 @@ export default function Admin() {
     }));
 
     return {
-      _id: db._id, // Incluído
+      _id: db._id, // Adicionado para manter a consistência
       image: db.imageURL || "image_generic.png",
       title: db.name,
       progress: 0,
       topics,
       isFavorite: false,
-      nameSlug: db.nameSlug, // Incluído
+      nameSlug: db.nameSlug, // Adicionado
     };
   };
 
@@ -197,28 +201,6 @@ export default function Admin() {
     );
   }, [roadmaps, searchQuery]);
 
-  // Função para lidar com a abertura do modal de edição
-  const handleEditRoadmap = async (roadmap: RoadmapDisplay) => {
-    const authToken = localStorage.getItem("authToken");
-    if (!authToken) {
-      alert("Token inválido.");
-      return;
-    }
-
-    try {
-      const response = await axios.get(`/api/roadmap/${roadmap.nameSlug}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      setRoadmapToEdit(response.data);
-      setIsEditModalOpen(true);
-    } catch (error) {
-      console.error("Erro ao buscar roadmap para editar:", error);
-      alert("Erro ao buscar roadmap para editar.");
-    }
-  };
-
   if (isAdmin === false) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -229,7 +211,6 @@ export default function Admin() {
     );
   }
 
-  // Função personalizada para renderizar os nós no ReactFlow
   const CustomNode = ({ id, data }: any) => {
     const { label } = data;
     return (
@@ -268,16 +249,6 @@ export default function Admin() {
     }
     setCurrentStep(2);
   };
-
-  // State variables for content title, URL, and type
-  const [contentTitle, setContentTitle] = useState("");
-  const [contentUrl, setContentUrl] = useState("");
-  const [contentType, setContentType] = useState<"vídeo" | "website">("vídeo");
-
-  // State variables for node name, description, and contents
-  const [nodeName, setNodeName] = useState("");
-  const [nodeDescription, setNodeDescription] = useState("");
-  const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
 
   // Adicionar um conteúdo ao array de conteúdos do nó
   const addContent = () => {
@@ -324,7 +295,7 @@ export default function Admin() {
         background: "white",
       },
     };
-    setNodes((nds: any[]) => nds.concat(newNode));
+    setNodes((nds) => nds.concat(newNode));
 
     // Limpar campos do nó
     setNodeName("");
@@ -389,10 +360,6 @@ export default function Admin() {
     }
   };
 
-  function onConnect(connection: Connection): void {
-    throw new Error("Function not implemented.");
-  }
-
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
       <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
@@ -411,37 +378,24 @@ export default function Admin() {
         >
           Criar
         </button>
-        {/* Botão "Modo Edição" */}
-        <button
-          onClick={() => setIsEditMode(!isEditMode)}
-          className={`px-4 py-2 mt-3 rounded-2xl ${
-            isEditMode
-              ? "bg-red-500 text-white"
-              : "bg-[var(--action)] text-[var(--background)]"
-          } hover:opacity-90`}
-        >
-          {isEditMode ? "Cancelar Edição" : "Modo Edição"}
-        </button>
       </div>
       <div className="w-full flex flex-col gap-4">
         <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">
           Roadmaps Criados
         </h2>
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredRoadmaps.map((roadmap, index) => (
+          {filteredRoadmaps.map((m, index) => (
             <RoadmapCard
-              key={roadmap._id} // Use _id como chave única
-              _id={roadmap._id} // Passa o _id para o componente
-              image={roadmap.image}
-              title={roadmap.title}
-              progress={roadmap.progress}
-              isFavorite={roadmap.isFavorite}
+              key={m._id} // Usando _id como key único
+              _id={m._id} // Passando _id
+              image={m.image}
+              title={m.title}
+              progress={m.progress}
+              isFavorite={m.isFavorite}
               toggleFavorite={() => toggleFavorite(index)}
-              topics={roadmap.topics}
+              topics={m.topics}
               handleOpenTopics={handleOpenTopics}
-              isEditMode={isEditMode} // Passa o estado de edição
-              onEdit={() => handleEditRoadmap(roadmap)} // Passa a função de edição
-              nameSlug={roadmap.nameSlug} // Passa o nameSlug
+              nameSlug={m.nameSlug} // Adicionado
             />
           ))}
         </div>
@@ -452,22 +406,6 @@ export default function Admin() {
         onClose={closeTopicsModal}
       />
 
-      {/* Modal de Edição */}
-      {isEditModalOpen && roadmapToEdit && (
-        <EditRoadmapModal
-          roadmap={roadmapToEdit}
-          onClose={() => setIsEditModalOpen(false)}
-          onSave={() => {
-            // Recarregar os roadmaps após a edição
-            const authToken = localStorage.getItem("authToken");
-            if (authToken) {
-              fetchRoadmaps(authToken);
-            }
-          }}
-        />
-      )}
-
-      {/* Modal de Criação */}
       {isCreateModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50">
           <div className="bg-white p-5 rounded shadow w-full max-w-4xl max-h-[90vh] overflow-auto">
@@ -564,9 +502,9 @@ export default function Admin() {
                   <h4>Conteúdos do Nó</h4>
                   {nodeContents.length > 0 && (
                     <ul className="list-disc pl-5">
-                      {nodeContents.map((content, idx) => (
+                      {nodeContents.map((c, idx) => (
                         <li key={idx}>
-                          {content.type}: {content.title} ({content.url})
+                          {c.type}: {c.title} ({c.url})
                         </li>
                       ))}
                     </ul>
@@ -576,9 +514,7 @@ export default function Admin() {
                     <select
                       value={contentType}
                       onChange={(e) =>
-                        setContentType(
-                          e.target.value as "vídeo" | "website"
-                        )
+                        setContentType(e.target.value as "vídeo" | "website")
                       }
                       className="border p-1 rounded"
                     >
@@ -664,11 +600,3 @@ export default function Admin() {
     </div>
   );
 }
-function setNodeContents(arg0: (prev: any) => any[]) {
-  throw new Error("Function not implemented.");
-}
-
-function setNodes(arg0: (nds: any) => any) {
-  throw new Error("Function not implemented.");
-}
-

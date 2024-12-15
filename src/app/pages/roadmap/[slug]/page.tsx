@@ -29,7 +29,6 @@ interface IContent {
 }
 
 interface INodeData {
-  _id: string;
   name: string;
   description: string;
   contents: IContent[];
@@ -102,14 +101,15 @@ export default function RoadmapPage() {
         const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
           const borderColor = "gray";
           return {
-            id: nodeData._id.toString(), // Usando _id como ID
+            id: nodeData.name, // Usando nodeName como ID
             type: "custom",
-            data: { label: nodeData.name },
+            data: {
+              label: nodeData.name,
+            },
             position: { x: nodeData.position.x, y: nodeData.position.y },
             style: { border: `1px solid ${borderColor}` },
           };
         });
-        
 
         setNodes(convertedNodes);
         setEdges(convertedEdges);
@@ -126,20 +126,20 @@ export default function RoadmapPage() {
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     if (!roadmapData) return;
-  
-    const nodeData = roadmapData.nodes.find((n) => n._id.toString() === node.id); // Usando _id
+
+    const nodeData = roadmapData.nodes.find((n) => n.name === node.data.label);
     if (nodeData) {
       setSelectedNode(node);
-      setSelectedNodeData(nodeData); // Armazena o nodeData 
-  
+      setSelectedNodeData(nodeData); // armazena o nodeData 
+
       const videos = nodeData.contents
         .filter((c) => c.type === "vídeo")
         .map((c) => ({ _id: c._id.toString(), name: c.title, url: c.url }));
-  
+
       const websites = nodeData.contents
         .filter((c) => c.type === "website")
         .map((c) => ({ _id: c._id.toString(), name: c.title, url: c.url }));
-  
+
       setVideosUrls(videos);
       setWebsitesUrls(websites);
     } else {
@@ -147,7 +147,7 @@ export default function RoadmapPage() {
       setVideosUrls([]);
       setWebsitesUrls([]);
     }
-  };  
+  };
 
   const handleMenuClose = () => {
     setSelectedNode(null);
@@ -299,15 +299,15 @@ export default function RoadmapPage() {
         <p>Roadmap não encontrado.</p>
       )}
 
-    <MaterialsModal
-      isOpen={!!selectedNode}
-      onClose={handleMenuClose}
-      title={typeof selectedNode?.data.label === "string" ? selectedNode.data.label : ""}
-      videos={videosUrls}
-      websites={websitesUrls}
-      roadmapId={roadmapData?._id}
-      nodeId={selectedNodeData?._id}
-    />
+      <MaterialsModal
+        isOpen={!!selectedNode}
+        onClose={handleMenuClose}
+        title={typeof selectedNode?.data.label === "string" ? selectedNode.data.label : ""}
+        videos={videosUrls}
+        websites={websitesUrls}
+        roadmapId={roadmapData?._id} // Passe o ID do roadmap
+        nodeId={selectedNodeData?.name} // Atualizado para nodeName
+      />
     </div>
   );
 }

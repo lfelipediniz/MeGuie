@@ -41,7 +41,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
   const router = useRouter();
 
   function handleClick() {
-    if (!isEditMode) {
+    if (!isEditMode && nameSlug) { // Verifica se nameSlug existe
       router.push(`/pages/roadmap/${nameSlug}`);
     }
   }
