@@ -186,32 +186,20 @@ export default function Admin() {
       alert("Token inválido.");
       return;
     }
-
+  
     try {
-      // Use nameSlug em vez de _id
       const response = await axios.get(`/api/roadmap/${roadmap.nameSlug}`, {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
+        headers: { Authorization: `Bearer ${authToken}` },
       });
+  
       const fullRoadmap: DBRoadmap = response.data;
       setRoadmapToEdit(fullRoadmap);
-    } catch (error: any) {
-      console.error("Erro ao buscar roadmap completo:", error);
-
-      // Melhorar o feedback de erro para o usuário
-      if (error.response) {
-        // A requisição foi feita e o servidor respondeu com um status diferente de 2xx
-        alert(`Erro: ${error.response.data.message || "Falha na requisição."}`);
-      } else if (error.request) {
-        // A requisição foi feita mas nenhuma resposta foi recebida
-        alert("Erro: Nenhuma resposta do servidor.");
-      } else {
-        // Algo aconteceu ao configurar a requisição que acionou um erro
-        alert(`Erro: ${error.message}`);
-      }
+    } catch (error) {
+      console.error("Erro ao buscar roadmap para edição:", error);
+      alert("Erro ao carregar o roadmap para edição.");
     }
   };
+  
 
   const closeEditModal = () => {
     setRoadmapToEdit(null);
