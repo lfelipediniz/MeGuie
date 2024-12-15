@@ -12,7 +12,7 @@ type Topic = {
 };
 
 interface RoadmapCardProps {
-  _id: string; // ID único do roadmap
+  _id: string;
   image: string;
   title: string;
   progress: number;
@@ -20,9 +20,9 @@ interface RoadmapCardProps {
   toggleFavorite: () => void;
   topics: Topic[];
   handleOpenTopics: (topics: Topic[], event: React.SyntheticEvent) => void;
-  isEditMode?: boolean; // Prop para controlar o Modo Edição
-  onEdit?: () => void; // Função para abrir o modal de edição
-  nameSlug: string; // Slug do nome do roadmap
+  isEditMode?: boolean;
+  onEdit?: () => void;
+  nameSlug: string;
 }
 
 const RoadmapCard: React.FC<RoadmapCardProps> = ({
@@ -41,7 +41,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
   const router = useRouter();
 
   function handleClick() {
-    if (!isEditMode && nameSlug) { // Verifica se nameSlug existe
+    if (!isEditMode && nameSlug) {
       router.push(`/pages/roadmap/${nameSlug}`);
     }
   }
@@ -61,7 +61,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
       }}
       className="bg-white rounded-3xl shadow-xl overflow-hidden h-auto max-w-full cursor-pointer relative"
       aria-label={`Card de ${title}`}
-      tabIndex={0} // Acessível por teclado
+      tabIndex={0}
     >
       {/* Ícone de Edição */}
       {isEditMode && onEdit && (
@@ -122,9 +122,9 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault(); // Previne comportamentos padrão, como rolar a página
-                e.stopPropagation(); // Evita que o evento suba para o pai
-                handleFavorite(e); // Executa a lógica do botão
+                e.preventDefault();
+                e.stopPropagation();
+                handleFavorite(e);
               }
             }}
             role="button"
