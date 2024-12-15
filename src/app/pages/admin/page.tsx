@@ -3,11 +3,11 @@
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/src/navigation";
-// Removido import do LoadingOverlay
 import RoadmapCard from "../../components/RoadmapCard";
 import TopicsModal from "../../components/TopicsModal";
 import SearchBar from "../../components/SearchBar";
 import CreateRoadmapModal from "../../components/CreateRoadmapModal";
+import EditRoadmapModal from "../../components/EditRoadmapModal"; // Import do modal de edição
 import axios from "axios";
 
 type DBRoadmap = {
@@ -15,7 +15,35 @@ type DBRoadmap = {
   imageURL: string;
   name: string;
   nameSlug: string;
-  nodes: { name: string; description: string }[];
+  imageAlt: string;
+  nodes: DBNode[];
+  edges: DBEdge[];
+};
+
+type DBNode = {
+  _id: string;
+  name: string;
+  description: string;
+  contents: DBContent[];
+  position: {
+    x: number;
+    y: number;
+  };
+};
+
+type DBContent = {
+  _id: string;
+  type: "vídeo" | "website";
+  title: string;
+  url: string;
+};
+
+type DBEdge = {
+  _id: string;
+  source: string;
+  target: string;
+  sourceHandle?: string;
+  targetHandle?: string;
 };
 
 type Topic = {
@@ -24,13 +52,13 @@ type Topic = {
 };
 
 type RoadmapDisplay = {
-  _id: string; // Adicionado para manter a consistência
+  _id: string;
   image: string;
   title: string;
   progress: number;
   topics: Topic[];
   isFavorite: boolean;
-  nameSlug: string; // Adicionado
+  nameSlug: string;
 };
 
 export default function Admin() {
@@ -43,6 +71,10 @@ export default function Admin() {
 
   // Modal de criação com etapas
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
+  // Estados para o modo edição
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [roadmapToEdit, setRoadmapToEdit] = useState<DBRoadmap | null>(null);
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
@@ -98,24 +130,20 @@ export default function Admin() {
     }));
 
     return {
-      _id: db._id, // Adicionado para manter a consistência
+      _id: db._id,
       image: db.imageURL || "image_generic.png",
       title: db.name,
-      progress: 0,
+      progress: 0, // Você pode calcular isso com base nos nós ou outro critério
       topics,
       isFavorite: false,
-      nameSlug: db.nameSlug, // Adicionado
+      nameSlug: db.nameSlug,
     };
   };
 
   const toggleFavorite = (index: number) => {
     setRoadmaps((prevRoadmaps) => {
-      const newRoadmaps = prevRoadmaps.map((roadmap, i) => {
-        if (i === index) {
-          return { ...roadmap, isFavorite: !roadmap.isFavorite };
-        }
-        return roadmap;
-      });
+      const newRoadmaps = [...prevRoadmaps];
+      newRoadmaps[index].isFavorite = !newRoadmaps[index].isFavorite;
       return newRoadmaps;
     });
   };
@@ -144,6 +172,44 @@ export default function Admin() {
     );
   }, [roadmaps, searchQuery]);
 
+  // Função para abrir o modal de edição e buscar o roadmap completo
+  const openEditModal = async (roadmap: RoadmapDisplay) => {
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      alert("Token inválido.");
+      return;
+    }
+
+    try {
+      // Use nameSlug em vez de _id
+      const response = await axios.get(`/api/roadmap/${roadmap.nameSlug}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const fullRoadmap: DBRoadmap = response.data;
+      setRoadmapToEdit(fullRoadmap);
+    } catch (error: any) {
+      console.error("Erro ao buscar roadmap completo:", error);
+      
+      // Melhorar o feedback de erro para o usuário
+      if (error.response) {
+        // A requisição foi feita e o servidor respondeu com um status diferente de 2xx
+        alert(`Erro: ${error.response.data.message || "Falha na requisição."}`);
+      } else if (error.request) {
+        // A requisição foi feita mas nenhuma resposta foi recebida
+        alert("Erro: Nenhuma resposta do servidor.");
+      } else {
+        // Algo aconteceu ao configurar a requisição que acionou um erro
+        alert(`Erro: ${error.message}`);
+      }
+    }
+  };
+
+  const closeEditModal = () => {
+    setRoadmapToEdit(null);
+  };
+
   if (isAdmin === false) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -163,19 +229,31 @@ export default function Admin() {
           }}
           onBack={handleBack}
         />
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 mt-3 rounded-2xl bg-[var(--action)] text-[var(--background)] hover:opacity-90"
-        >
-          Criar
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsEditMode((prev) => !prev)}
+            className={`px-4 py-2 mt-3 rounded-2xl ${
+              isEditMode
+                ? "bg-red-500 text-white hover:bg-red-600"
+                : "bg-[var(--action)] text-[var(--background)] hover:opacity-90"
+            }`}
+          >
+            {isEditMode ? "Sair do Modo Edição" : "Modo Edição"}
+          </button>
+          <button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="px-4 py-2 mt-3 rounded-2xl bg-[var(--action)] text-[var(--background)] hover:opacity-90"
+          >
+            Criar
+          </button>
+        </div>
       </div>
       <div className="w-full flex flex-col gap-4">
         <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">
           Roadmaps Criados
         </h2>
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredRoadmaps.map((m, index) => (
+          {filteredRoadmaps.map((roadmap, index) => (
             <RoadmapCard
               key={m._id} // Usando _id como key único
               _id={m._id} // Passando _id
@@ -183,9 +261,11 @@ export default function Admin() {
               title={m.title}
               isFavorite={m.isFavorite}
               toggleFavorite={() => toggleFavorite(index)}
-              topics={m.topics}
+              topics={roadmap.topics}
               handleOpenTopics={handleOpenTopics}
-              nameSlug={m.nameSlug} // Adicionado
+              nameSlug={roadmap.nameSlug}
+              isEditMode={isEditMode}
+              onEdit={() => openEditModal(roadmap)}
             />
           ))}
         </div>
@@ -202,6 +282,15 @@ export default function Admin() {
         onClose={() => setIsCreateModalOpen(false)}
         onRoadmapCreated={() => fetchRoadmaps(localStorage.getItem("authToken") || "")}
       />
+
+      {/* Modal de Edição */}
+      {roadmapToEdit && (
+        <EditRoadmapModal
+          roadmap={roadmapToEdit}
+          onClose={closeEditModal}
+          onSave={() => fetchRoadmaps(localStorage.getItem("authToken") || "")}
+        />
+      )}
     </div>
   );
 }

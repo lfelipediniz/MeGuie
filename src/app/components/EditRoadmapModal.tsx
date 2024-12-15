@@ -144,6 +144,11 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
 
   // Inicializar os nós e edges com os dados do roadmap
   useEffect(() => {
+    if (!roadmap.nodes || !roadmap.edges) {
+      console.error("roadmap.nodes ou roadmap.edges estão indefinidos.");
+      return;
+    }
+
     const initializedNodes = roadmap.nodes.map((node) => ({
       id: node._id, // Usando node._id como ID
       type: "custom",
@@ -177,7 +182,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
 
   // Handler para seleção de nó (não mais necessário se usamos o ícone de edição)
   const onNodeClick = (_event: React.MouseEvent, node: Node) => {
-    // Opcional: você pode usar isso para selecionar o nó ao clicar no nó, não apenas no ícone
+    // Opcional: você pode usar isso para selecionar o nó ao clicar no nó inteiro
     // const nodeData = roadmap.nodes.find((n) => n._id === node.id);
     // if (nodeData) {
     //   setSelectedNode(nodeData);
