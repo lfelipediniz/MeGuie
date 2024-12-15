@@ -181,7 +181,6 @@ export default function Admin() {
               _id={m._id} // Passando _id
               image={m.image}
               title={m.title}
-              progress={m.progress}
               isFavorite={m.isFavorite}
               toggleFavorite={() => toggleFavorite(index)}
               topics={m.topics}

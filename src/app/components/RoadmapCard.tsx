@@ -1,10 +1,11 @@
 // src/components/RoadmapCard.tsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { FaRegHeart, FaHeart, FaEdit } from "react-icons/fa"; // Import dos ícones de coração e edição
 import { IoChevronForward } from "react-icons/io5";
 import { useRouter } from "@/src/navigation";
+import axios from "axios";
 
 type Topic = {
   title: string;
@@ -15,7 +16,6 @@ interface RoadmapCardProps {
   _id: string; // ID único do roadmap
   image: string;
   title: string;
-  progress: number;
   isFavorite: boolean;
   toggleFavorite: () => void;
   topics: Topic[];
@@ -29,7 +29,6 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
   _id,
   image,
   title,
-  progress,
   isFavorite,
   toggleFavorite,
   topics,
@@ -39,6 +38,60 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
   nameSlug,
 }) => {
   const router = useRouter();
+  const [progress, setProgress] = useState<number>(0);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      const authToken = localStorage.getItem("authToken");
+      if (!authToken) return;
+
+      try {
+        // Buscar dados do roadmap
+        const roadmapResponse = await axios.get(`/api/roadmap/${nameSlug}`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        const roadmap = roadmapResponse.data;
+
+        // Buscar dados do usuário
+        const userResponse = await axios.get("/api/user", {
+          headers: { Authorization: `Bearer ${authToken}` },
+        });
+        const user = userResponse.data;
+
+        // Calcular o total de conteúdos
+        let totalContents = 0;
+        roadmap.nodes.forEach((node: any) => {
+          if (node.contents) {
+            totalContents += node.contents.length;
+          }
+        });
+
+        // Calcular os conteúdos vistos pelo usuário
+        let viewedContents = 0;
+        if (user.seenContents) {
+          const roadmapSeen = user.seenContents.find(
+            (entry: any) => entry.roadmapId._id === _id
+          );
+          if (roadmapSeen && roadmapSeen.nodes) {
+            roadmapSeen.nodes.forEach((node: any) => {
+              viewedContents += node.contentIds.length;
+            });
+          }
+        }
+
+        // Calcular o progresso
+        const calculatedProgress =
+          totalContents > 0
+            ? Math.round((viewedContents / totalContents) * 100)
+            : 0;
+        setProgress(calculatedProgress);
+      } catch (error) {
+        console.error("Erro ao calcular progresso:", error);
+      }
+    };
+
+    fetchProgress();
+  }, [_id, nameSlug]);
 
   function handleClick() {
     if (!isEditMode && nameSlug) { // Verifica se nameSlug existe
@@ -93,10 +146,11 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
           aria-label={`Progresso de ${progress}%`}
         >
           <div
-            className="h-full rounded-full bg-green-500"
+            className={`h-full rounded-full bg-green-500`}
             style={{ width: `${progress}%` }}
           ></div>
         </div>
+        <p className="text-sm text-gray-600">{progress}% completado</p>
         <div className="flex justify-between items-center">
           <button
             onClick={(event) =>
@@ -137,9 +191,9 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             tabIndex={0}
           >
             {isFavorite ? (
-              <FaHeart size={24} color={"var(--gray)"} />
+              <FaHeart size={24} color={"red"} />
             ) : (
-              <FaRegHeart size={24} color={"var(--gray)"} />
+              <FaRegHeart size={24} color={"gray"} />
             )}
           </button>
         </div>
