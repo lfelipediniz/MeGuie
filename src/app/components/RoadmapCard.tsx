@@ -47,39 +47,43 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
     const fetchInitialData = async () => {
       const authToken = localStorage.getItem("authToken");
       if (!authToken) return;
-  
+
       try {
         // Buscar dados do roadmap
         const roadmapResponse = await axios.get(`/api/roadmap/${nameSlug}`, {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const roadmap = roadmapResponse.data;
-  
+
         // Buscar dados do usuário
         const userResponse = await axios.get("/api/user", {
           headers: { Authorization: `Bearer ${authToken}` },
         });
         const user = userResponse.data;
-  
+
         console.log("Roadmap ID:", _id);
         console.log("Favorite Roadmaps:", user.favoriteRoadmaps);
-  
+
         // Verificar se o roadmap está nos favoritos do usuário
         const favorite = user.favoriteRoadmaps.some(
           (fav: { _id: string }) => fav._id.toString() === _id.toString()
         );
         setIsFavorite(favorite);
-               
-  
-        // Calcular o total de conteúdos
-        let totalContents = 0;
+
+        // Extrair todos os IDs de conteúdos atuais do roadmap
+        const currentContentIds = new Set<string>();
         roadmap.nodes.forEach((node: any) => {
           if (node.contents) {
-            totalContents += node.contents.length;
+            node.contents.forEach((content: any) => {
+              currentContentIds.add(content._id);
+            });
           }
         });
-  
-        // Calcular os conteúdos vistos pelo usuário
+
+        // Calcular o total de conteúdos atuais
+        const totalContents = currentContentIds.size;
+
+        // Calcular os conteúdos vistos pelo usuário que ainda existem no roadmap
         let viewedContents = 0;
         if (user.seenContents) {
           const roadmapSeen = user.seenContents.find(
@@ -87,11 +91,15 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
           );
           if (roadmapSeen && roadmapSeen.nodes) {
             roadmapSeen.nodes.forEach((node: any) => {
-              viewedContents += node.contentIds.length;
+              node.contentIds.forEach((contentId: string) => {
+                if (currentContentIds.has(contentId)) {
+                  viewedContents += 1;
+                }
+              });
             });
           }
         }
-  
+
         // Calcular o progresso
         const calculatedProgress =
           totalContents > 0
@@ -109,7 +117,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
         setLoadingProgress(false);
       }
     };
-  
+
     fetchInitialData();
   }, [_id, nameSlug]);
 
@@ -123,7 +131,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
       setLoadingFavorite(false);
       return;
     }
-  
+
     const action = isFavorite ? "favorite_remove" : "favorite_add";
     try {
       await axios.put(
@@ -131,7 +139,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
         { userId: 'userIdHere', action, roadmapId: _id },
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
-  
+
       // Atualizar estado baseado na ação realizada
       setIsFavorite(!isFavorite);
     } catch (error) {
