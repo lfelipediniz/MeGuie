@@ -1,3 +1,5 @@
+// src/pages/roadmap/[slug].tsx
+
 "use client";
 
 import React, { useMemo, useEffect, useState } from "react";
@@ -14,9 +16,10 @@ import {
   Position,
 } from "@xyflow/react";
 import LoadingOverlay from "../../../components/LoadingOverlay";
-import { FaArrowLeft } from "react-icons/fa6";
-import { Select, MenuItem, InputLabel, FormControl } from "@mui/material";
+import { FaArrowLeft, FaRegHeart, FaHeart } from "react-icons/fa6";
+import { Select, MenuItem, InputLabel, FormControl, IconButton } from "@mui/material";
 import MaterialsModal from "../../../components/MaterialsModal";
+import TopicsModal from "../../../components/TopicsModal";
 import "@xyflow/react/dist/style.css";
 import { usePathname, useRouter } from "@/src/navigation";
 import axios from "axios";
@@ -29,6 +32,7 @@ interface IContent {
 }
 
 interface INodeData {
+  _id: string;
   name: string;
   description: string;
   contents: IContent[];
@@ -53,6 +57,20 @@ interface IRoadmap {
   edges: IEdgeData[];
 }
 
+interface IUser {
+  _id: string;
+  favoriteRoadmaps: string[]; // IDs dos roadmaps favoritos
+  seenContents: {
+    roadmapId: {
+      _id: string;
+    };
+    nodes: {
+      nodeId: string;
+      contentIds: string[];
+    }[];
+  }[];
+}
+
 export default function RoadmapPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
@@ -68,69 +86,135 @@ export default function RoadmapPage() {
   const [roadmapData, setRoadmapData] = useState<IRoadmap | null>(null);
   const [selectedNodeData, setSelectedNodeData] = useState<INodeData | null>(null);
 
+  const [userData, setUserData] = useState<IUser | null>(null);
+  const [isFavorite, setIsFavorite] = useState<boolean>(false);
+
+  const [isMaterialsModalOpen, setIsMaterialsModalOpen] = useState<boolean>(false);
+  const [isTopicsModalOpen, setIsTopicsModalOpen] = useState<boolean>(false);
+  const [localTopics, setLocalTopics] = useState<{ title: string; description: string }[]>([]);
+
+  // Fetch roadmap and user data
   useEffect(() => {
-    const authToken = localStorage.getItem("authToken");
-    if (!authToken) {
-      setLoading(false);
-      return;
-    }
+    const fetchData = async () => {
+      setLoading(true);
+      const authToken = localStorage.getItem("authToken");
+      if (!authToken) {
+        setLoading(false);
+        return;
+      }
 
-    if (!slug || slug === "none") {
-      // se não tiver slug válido, tratar como erro
-      setLoading(false);
-      return;
-    }
+      if (!slug || slug === "none") {
+        // Tratar como erro se não houver slug válido
+        setLoading(false);
+        return;
+      }
 
-    // buscar dados do roadmap via slug
-    axios
-      .get(`/api/roadmap/${slug}`, {
-        headers: { Authorization: `Bearer ${authToken}` },
-      })
-      .then((response) => {
-        const data: IRoadmap = response.data;
-        setRoadmapData(data);
+      try {
+        // Buscar roadmap e dados do usuário simultaneamente
+        const [roadmapResponse, userResponse] = await Promise.all([
+          axios.get(`/api/roadmap/${slug}`, {
+            headers: { Authorization: `Bearer ${authToken}` },
+          }),
+          axios.get("/api/user", {
+            headers: { Authorization: `Bearer ${authToken}` },
+          }),
+        ]);
 
-        const convertedEdges: Edge[] = data.edges.map((edgeData, index) => ({
+        const roadmap: IRoadmap = roadmapResponse.data;
+        setRoadmapData(roadmap);
+
+        const user: IUser = userResponse.data;
+        setUserData(user);
+
+        // Verificar se o roadmap está nos favoritos do usuário
+        setIsFavorite(user.favoriteRoadmaps.includes(roadmap._id));
+
+        // Criar um mapa de nomes para IDs dos nodes
+        const nameToIdMap = new Map<string, string>();
+        roadmap.nodes.forEach(node => {
+          nameToIdMap.set(node.name, node._id.toString());
+        });
+
+        // Converter edges usando o mapa
+        const convertedEdges: Edge[] = roadmap.edges.map((edgeData, index) => ({
           id: `${edgeData.source}-${edgeData.target}-${index}`,
-          source: edgeData.source, // Deve ser nodeName
-          target: edgeData.target, // Deve ser nodeName
+          source: nameToIdMap.get(edgeData.source) || edgeData.source, // Substituir nome pelo ID
+          target: nameToIdMap.get(edgeData.target) || edgeData.target,
           sourceHandle: edgeData.sourceHandle,
           targetHandle: edgeData.targetHandle,
         }));
 
-        const convertedNodes: Node[] = data.nodes.map((nodeData, index) => {
-          const borderColor = "gray";
-          return {
-            id: nodeData.name, // Usando nodeName como ID
-            type: "custom",
-            data: {
-              label: nodeData.name,
-            },
-            position: { x: nodeData.position.x, y: nodeData.position.y },
-            style: { border: `1px solid ${borderColor}` },
-          };
-        });
+        // Converter nodes
+        const convertedNodes: Node[] = roadmap.nodes.map((nodeData) => ({
+          id: nodeData._id.toString(), // Usando _id como ID
+          type: "custom",
+          data: { label: nodeData.name },
+          position: { x: nodeData.position.x, y: nodeData.position.y },
+          style: { border: `1px solid gray` },
+        }));
 
         setNodes(convertedNodes);
         setEdges(convertedEdges);
-      })
-      .catch((error) => {
-        console.error("Erro ao carregar roadmap:", error);
-        // redirecionar para 404 caso não encontre
-        // router.push('/404');
-      })
-      .finally(() => {
+      } catch (error) {
+        console.error("Erro ao carregar roadmap ou dados do usuário:", error);
+        // Opcional: redirecionar para página de erro
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, [slug]);
 
+  // Função para alternar o estado de favorito
+  const toggleFavorite = async () => {
+    if (!userData || !roadmapData) return;
+
+    const authToken = localStorage.getItem("authToken");
+    if (!authToken) {
+      alert("Token de autenticação inválido.");
+      return;
+    }
+
+    try {
+      const action = isFavorite ? "remove" : "add";
+
+      // Atualizar favoriteRoadmaps no backend
+      const response = await axios.put(
+        "/api/user",
+        {
+          action,
+          roadmapId: roadmapData._id,
+        },
+        {
+          headers: { Authorization: `Bearer ${authToken}` },
+        }
+      );
+
+      // Atualizar o estado local com a resposta do backend
+      setIsFavorite(response.data.favoriteRoadmaps.includes(roadmapData._id));
+      setUserData((prev) =>
+        prev
+          ? {
+              ...prev,
+              favoriteRoadmaps: response.data.favoriteRoadmaps,
+            }
+          : prev
+      );
+    } catch (error) {
+      console.error("Erro ao atualizar favorito:", error);
+      alert("Não foi possível atualizar o favorito.");
+    }
+  };
+
+  // Funções para gerenciar modais
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     if (!roadmapData) return;
 
-    const nodeData = roadmapData.nodes.find((n) => n.name === node.data.label);
+    const nodeData = roadmapData.nodes.find((n) => n._id.toString() === node.id);
     if (nodeData) {
       setSelectedNode(node);
-      setSelectedNodeData(nodeData); // armazena o nodeData 
+      setSelectedNodeData(nodeData);
 
       const videos = nodeData.contents
         .filter((c) => c.type === "vídeo")
@@ -142,6 +226,7 @@ export default function RoadmapPage() {
 
       setVideosUrls(videos);
       setWebsitesUrls(websites);
+      setIsMaterialsModalOpen(true); // Abrir MaterialsModal ao clicar no nó
     } else {
       setSelectedNodeData(null);
       setVideosUrls([]);
@@ -152,12 +237,28 @@ export default function RoadmapPage() {
   const handleMenuClose = () => {
     setSelectedNode(null);
     setSelectedNodeData(null);
+    setIsMaterialsModalOpen(false);
   };
 
-  const handleNavigation = () => {
+  const handleBack = () => {
     router.back();
   };
 
+  const openTopicsModal = () => {
+    setIsTopicsModalOpen(true);
+  };
+
+  const closeTopicsModal = () => {
+    setIsTopicsModalOpen(false);
+  };
+
+  const handleOpenTopics = (topics: { title: string; description: string }[], event: React.SyntheticEvent) => {
+    event.stopPropagation();
+    setLocalTopics(topics);
+    openTopicsModal();
+  };
+
+  // Definição do CustomNode
   const CustomNode = ({ id, data }: NodeProps) => {
     const { label, style } = data as {
       label: string;
@@ -230,48 +331,55 @@ export default function RoadmapPage() {
             <div className="flex items-center mb-5 xs:mb-0">
               <button
                 className="h-12 w-12 flex justify-center items-center hover:bg-black/5 rounded-full transition duration-500"
-                onClick={handleNavigation}
+                onClick={handleBack}
                 aria-label="Voltar para Roadmaps"
               >
                 <FaArrowLeft size={24} color={"var(--action)"} />
               </button>
               <h2 className="ml-3">{roadmapData.name}</h2>
             </div>
-            <FormControl sx={{ minWidth: "250px" }} size="small">
-              <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
-                Legenda de Cores
-              </InputLabel>
-              <Select
-                labelId="legenda-de-cores"
-                label="Legenda de Cores"
-                id="lista-cores"
-                value=""
-                aria-label="Legenda de Cores"
-                sx={{
-                  "& .MuiOutlinedInput-notchedOutline": {
-                    borderColor: "var(--primary) !important",
-                  },
-                  backgroundColor: "var(--background) !important",
-                  color: "var(--primary)",
-                  "& .MuiSvgIcon-root": {
+
+            <div className="flex items-center gap-2">
+              <IconButton onClick={toggleFavorite} aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
+                {isFavorite ? <FaHeart size={24} color="red" /> : <FaRegHeart size={24} color="gray" />}
+              </IconButton>
+
+              <FormControl sx={{ minWidth: "250px" }} size="small">
+                <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
+                  Legenda de Cores
+                </InputLabel>
+                <Select
+                  labelId="legenda-de-cores"
+                  label="Legenda de Cores"
+                  id="lista-cores"
+                  value=""
+                  aria-label="Legenda de Cores"
+                  sx={{
+                    "& .MuiOutlinedInput-notchedOutline": {
+                      borderColor: "var(--primary) !important",
+                    },
+                    backgroundColor: "var(--background) !important",
                     color: "var(--primary)",
-                  },
-                }}
-              >
-                <MenuItem value="green">
-                  <span style={{ color: "#42b48c" }}>Verde</span>&nbsp;
-                  <span>(Concluído)</span>
-                </MenuItem>
-                <MenuItem value="orange">
-                  <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
-                  <span>(Em progresso)</span>
-                </MenuItem>
-                <MenuItem value="gray">
-                  <span style={{ color: "gray" }}>Cinza</span>&nbsp;
-                  <span>(Não Iniciada)</span>
-                </MenuItem>
-              </Select>
-            </FormControl>
+                    "& .MuiSvgIcon-root": {
+                      color: "var(--primary)",
+                    },
+                  }}
+                >
+                  <MenuItem value="green">
+                    <span style={{ color: "#42b48c" }}>Verde</span>&nbsp;
+                    <span>(Concluído)</span>
+                  </MenuItem>
+                  <MenuItem value="orange">
+                    <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
+                    <span>(Em progresso)</span>
+                  </MenuItem>
+                  <MenuItem value="gray">
+                    <span style={{ color: "gray" }}>Cinza</span>&nbsp;
+                    <span>(Não Iniciada)</span>
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </div>
 
           <ReactFlow
@@ -299,14 +407,22 @@ export default function RoadmapPage() {
         <p>Roadmap não encontrado.</p>
       )}
 
+      {/* Modal de Materiais */}
       <MaterialsModal
-        isOpen={!!selectedNode}
+        isOpen={isMaterialsModalOpen}
         onClose={handleMenuClose}
-        title={typeof selectedNode?.data.label === "string" ? selectedNode.data.label : ""}
+        title={selectedNodeData?.name || ""}
         videos={videosUrls}
         websites={websitesUrls}
-        roadmapId={roadmapData?._id} // Passe o ID do roadmap
-        nodeId={selectedNodeData?.name} // Atualizado para nodeName
+        roadmapId={roadmapData?._id}
+        nodeId={selectedNodeData?._id}
+      />
+
+      {/* Modal de Tópicos */}
+      <TopicsModal
+        topics={localTopics}
+        isOpen={isTopicsModalOpen}
+        onClose={closeTopicsModal}
       />
     </div>
   );
