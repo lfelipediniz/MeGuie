@@ -1,12 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import axios from "axios";
+import ReactFlow, {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Connection,
+  Controls,
+  Background,
+} from "reactflow";
+import "reactflow/dist/style.css";
+
+interface DBNode {
+  _id: string;
+  name: string;
+  description: string;
+  contents: any[];
+  position: { x: number; y: number };
+}
+
+interface DBEdge {
+  source: string;
+  target: string;
+}
 
 interface DBRoadmap {
   _id: string;
   name: string;
   nameSlug: string;
-  nodes: Array<{ _id: string; name: string; description: string; contents: any[]; position: { x: number; y: number } }>;
-  edges: Array<{ source: string; target: string }>;
+  nodes: DBNode[];
+  edges: DBEdge[];
 }
 
 interface EditRoadmapModalProps {
@@ -18,33 +40,37 @@ interface EditRoadmapModalProps {
 const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({ roadmap, onClose, onSave }) => {
   const [name, setName] = useState(roadmap.name);
   const [nameSlug, setNameSlug] = useState(roadmap.nameSlug);
-  const [nodes, setNodes] = useState(roadmap.nodes);
-  const [edges, setEdges] = useState(roadmap.edges);
 
-  // Função para atualizar o nome do nó
-  const updateNodeName = (nodeId: string, newName: string) => {
-    setNodes((prevNodes) =>
-      prevNodes.map((node) => (node._id === nodeId ? { ...node, name: newName } : node))
-    );
-  };
+  // Inicializar os nós com IDs e posições corretas
+  const [nodes, setNodes, onNodesChange] = useNodesState(
+    roadmap.nodes.map((node) => ({
+      id: node._id,
+      data: { label: node.name },
+      position: node.position,
+    }))
+  );
 
-  // Função para adicionar um novo nó
-  const addNode = () => {
-    const newNode = {
-      _id: Date.now().toString(), // ID temporário
-      name: "Novo Nó",
-      description: "",
-      contents: [],
-      position: { x: 100, y: 100 },
-    };
-    setNodes((prevNodes) => [...prevNodes, newNode]);
-  };
+  // Inicializar as conexões com IDs únicos e fontes/destinos corretos
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  // Função para deletar um nó
-  const deleteNode = (nodeId: string) => {
-    setNodes((prevNodes) => prevNodes.filter((node) => node._id !== nodeId));
-    setEdges((prevEdges) => prevEdges.filter((edge) => edge.source !== nodeId && edge.target !== nodeId));
-  };
+  useEffect(() => {
+    // Criar um mapa de nomes para IDs
+    const nameToIdMap = new Map<string, string>();
+    roadmap.nodes.forEach((node) => {
+      nameToIdMap.set(node.name, node._id);
+    });
+
+    const initialEdges = roadmap.edges.map((edge, index) => ({
+      id: `${edge.source}-${edge.target}-${index}`,
+      source: nameToIdMap.get(edge.source) || edge.source,
+      target: nameToIdMap.get(edge.target) || edge.target,
+    }));
+
+    setEdges(initialEdges);
+  }, [roadmap.edges, roadmap.nodes]);
+
+  // Função para adicionar uma nova conexão (edge)
+  const onConnect = useCallback((connection: Connection) => setEdges((eds) => addEdge(connection, eds)), [setEdges]);
 
   // Função para salvar as alterações
   const handleSave = async () => {
@@ -55,15 +81,28 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({ roadmap, onClose, o
     }
 
     try {
+      const updatedNodes = nodes.map((node) => ({
+        _id: node.id,
+        name: node.data.label,
+        description: "",
+        contents: [],
+        position: node.position,
+      }));
+
+      const updatedEdges = edges.map((edge) => ({
+        source: edge.source,
+        target: edge.target,
+      }));
+
       const body = {
         newName: name,
         newNameSlug: nameSlug,
-        nodesToRename: nodes.map((node) => ({ nodeId: node._id, newName: node.name })),
-        nodesToAdd: nodes.filter((node) => node._id.startsWith("temp_")), // Adiciona apenas nós temporários
+        nodesToRename: updatedNodes.map((node) => ({ nodeId: node._id, newName: node.name })),
+        nodesToAdd: updatedNodes.filter((node) => node._id.startsWith("temp_")),
         nodesToDelete: roadmap.nodes
-          .filter((node) => !nodes.some((n) => n._id === node._id))
+          .filter((node) => !updatedNodes.some((n) => n._id === node._id))
           .map((node) => node._id),
-        edgesToAdd: edges,
+        edgesToAdd: updatedEdges,
       };
 
       await axios.put(`/api/roadmap/updateRoadmap?id=${roadmap._id}`, body, {
@@ -81,10 +120,10 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({ roadmap, onClose, o
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-      <div className="bg-white p-5 rounded shadow w-full max-w-4xl">
+      <div className="bg-white p-5 rounded shadow w-full max-w-4xl h-[90vh] overflow-auto">
         <h2 className="text-xl font-bold mb-4">Editar Roadmap</h2>
 
-        <label>
+        <label className="block mb-2">
           Nome:
           <input
             type="text"
@@ -94,7 +133,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({ roadmap, onClose, o
           />
         </label>
 
-        <label>
+        <label className="block mb-4">
           Slug:
           <input
             type="text"
@@ -104,26 +143,23 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({ roadmap, onClose, o
           />
         </label>
 
-        <h3 className="text-lg font-bold mt-4">Nós</h3>
-        {nodes.map((node) => (
-          <div key={node._id} className="flex items-center gap-2">
-            <input
-              type="text"
-              className="border p-2 rounded w-full"
-              value={node.name}
-              onChange={(e) => updateNodeName(node._id, e.target.value)}
-            />
-            <button onClick={() => deleteNode(node._id)} className="bg-red-500 text-white p-2 rounded">
-              Deletar
-            </button>
-          </div>
-        ))}
+        <h3 className="text-lg font-bold mb-2">Editar Conexões</h3>
 
-        <button onClick={addNode} className="mt-2 bg-green-500 text-white p-2 rounded">
-          Adicionar Nó
-        </button>
+        <div className="border rounded h-[60vh] mb-4">
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            fitView
+          >
+            <Controls />
+            <Background />
+          </ReactFlow>
+        </div>
 
-        <div className="flex justify-end gap-2 mt-4">
+        <div className="flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">
             Cancelar
           </button>
