@@ -13,6 +13,7 @@ import ReactFlow, {
 } from "reactflow";
 import "reactflow/dist/style.css";
 import { v4 as uuidv4 } from "uuid"; 
+import AvisosModal from "./AvisosModal";
 
 interface CreateRoadmapModalProps {
   isOpen: boolean;
@@ -20,7 +21,7 @@ interface CreateRoadmapModalProps {
   onRoadmapCreated: () => void;
 }
 
-type Topic = {
+type Aviso = {
   title: string;
   description: string;
 };
@@ -108,6 +109,10 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     []
   );
 
+  // Estados para o AvisosModal
+  const [isAvisosModalOpen, setIsAvisosModalOpen] = useState(false);
+  const [localAvisos, setLocalAvisos] = useState<Aviso[]>([]);
+
   const [nodeName, setNodeName] = useState("");
   const [nodeDescription, setNodeDescription] = useState("");
   const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
@@ -120,7 +125,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     e.preventDefault();
     // Validações básicas
     if (!name || !nameSlug || !imageURL || !imageAlt) {
-      alert("Preencha todos os campos obrigatórios.");
+      showAvisosModal("Erro", "Preencha todos os campos obrigatórios.");
       return;
     }
     setCurrentStep(2);
@@ -129,7 +134,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
   // add um conteúdo ao array de conteúdos do nó
   const addContent = () => {
     if (!contentTitle || !contentUrl) {
-      alert("Título e URL do conteúdo são obrigatórios.");
+      showAvisosModal("Erro", "Título e URL do conteúdo são obrigatórios.");
       return;
     }
 
@@ -144,14 +149,35 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     setContentUrl("");
   };
 
+  //Funcoes para o avisos modal
+  const openAvisosModal = () => {
+    setIsAvisosModalOpen(true);
+  };
+
+  const closeAvisosModal = () => {
+    setIsAvisosModalOpen(false);
+  };
+
+  const showAvisosModal = (title: string, description: string) => {
+    setLocalAvisos([{ title, description }]);
+    setIsAvisosModalOpen(true);
+  };
+  
+
+  function handleOpenAvisos(avisos: Aviso[], event: React.SyntheticEvent) {
+    event.stopPropagation();
+    setLocalAvisos(avisos);
+    openAvisosModal();
+  }
+
   // insere nó no roadmap
   const insertNode = () => {
     if (!nodeName) {
-      alert("O nome do nó é obrigatório.");
+      showAvisosModal("Erro", "O nome do nó é obrigatório.");
       return;
     }
     if (nodeContents.length === 0) {
-      alert("É necessário inserir pelo menos um conteúdo.");
+      showAvisosModal("Erro","É necessário inserir pelo menos um conteúdo.");
       return;
     }
 
@@ -184,7 +210,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
   const handleCreateRoadmap = async () => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      alert("Token inválido.");
+      showAvisosModal("Erro", "Token inválido.");
       return;
     }
 
@@ -431,6 +457,12 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
             </div>
           </div>
         )}
+
+        <AvisosModal
+        messages={localAvisos}
+        isOpen={isAvisosModalOpen}
+        onClose={closeAvisosModal}
+        />
       </div>
     </div>
   );
