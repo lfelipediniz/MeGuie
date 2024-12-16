@@ -1,5 +1,3 @@
-// src/pages/Admin.tsx
-
 "use client";
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "@/src/navigation";

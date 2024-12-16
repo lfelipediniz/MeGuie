@@ -1,5 +1,3 @@
-// models/Roadmap.ts
-
 import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IPosition {
@@ -8,14 +6,14 @@ export interface IPosition {
 }
 
 export interface IContent {
-  _id: string; // Alterado para string
+  _id: string; 
   type: 'vídeo' | 'website';
   title: string;
   url: string;
 }
 
 export interface INode {
-  _id: string; // Alterado para string
+  _id: string; 
   name: string;
   description: string;
   contents: IContent[];
@@ -31,7 +29,7 @@ export interface IEdge {
 }
 
 export interface IRoadmap extends Document {
-  _id: string; // Alterado para string
+  _id: string; 
   name: string;
   nameSlug: string;
   imageURL: string;
@@ -46,7 +44,7 @@ const PositionSchema = new Schema<IPosition>({
 });
 
 const ContentSchema = new Schema<IContent>({
-  _id: { type: String, required: true }, // Alterado para String
+  _id: { type: String, required: true }, 
   type: {
     type: String,
     enum: ['vídeo', 'website'],
@@ -63,7 +61,7 @@ const ContentSchema = new Schema<IContent>({
 });
 
 const NodeSchema = new Schema<INode>({
-  _id: { type: String, required: true }, // Alterado para String
+  _id: { type: String, required: true }, 
   name: { type: String, required: true },
   description: { type: String, required: true, trim: true },
   contents: {
@@ -78,7 +76,7 @@ const NodeSchema = new Schema<INode>({
 });
 
 const EdgeSchema = new Schema<IEdge>({
-  _id: { type: String, required: true }, // Definindo _id como string
+  _id: { type: String, required: true }, 
   source: {
     type: String,
     required: [true, 'A fonte da aresta é obrigatória.'],

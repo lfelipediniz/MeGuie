@@ -205,7 +205,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
       break;
 
-    // Método não permitido
     default:
       res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
       res.status(405).end(`Método ${method} não permitido.`);

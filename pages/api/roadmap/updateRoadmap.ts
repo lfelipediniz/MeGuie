@@ -1,5 +1,3 @@
-// pages/api/roadmap/updateRoadmap.ts
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
@@ -39,9 +37,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: 'Token de autenticação inválido ou expirado.' });
   }
 
-  // Verificar se o usuário é administrador
-  // Mantemos a lógica existente de isAdmin = true conforme solicitado
-  const isAdmin = true; // Substitua com a lógica real, se necessário
+  // essa verificação precisa ser feita
+  const isAdmin = true; 
 
   if (!isAdmin) {
     return res.status(403).json({ message: 'Acesso negado.' });
@@ -83,7 +80,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           newNodeMap[node._id] = node.name;
         });
 
-        // Identificar nodes que tiveram seus nomes alterados
+        // identificar nodes que tiveram seus nomes alterados
         const renamedNodes: { oldName: string; newName: string }[] = [];
         for (const nodeId in existingNodeMap) {
           if (newNodeMap[nodeId] && existingNodeMap[nodeId] !== newNodeMap[nodeId]) {
@@ -94,9 +91,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           }
         }
 
-        // Atualizar os edges se houver renomeação de nodes
+        // atualizar os edges se houver renomeaçao de nodes
         if (renamedNodes.length > 0) {
-          // Atualizar cada edge que referencie os nomes antigos
+          // atualizar cada edge que referencie os nomes antigos
           edges.forEach((edge: any) => {
             renamedNodes.forEach(({ oldName, newName }) => {
               if (edge.source === oldName) {
@@ -109,7 +106,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
         }
 
-        // Atualizar o roadmap com os novos dados
+        // update o roadmap com os novos dados
         existingRoadmap.name = name;
         existingRoadmap.nameSlug = nameSlug;
         existingRoadmap.imageURL = imageURL;
