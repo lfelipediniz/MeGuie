@@ -87,7 +87,7 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
         let viewedContents = 0;
         if (user.seenContents) {
           const roadmapSeen = user.seenContents.find(
-            (entry: any) => entry.roadmapId._id === _id
+            (entry: any) => entry.roadmapId?._id === _id
           );
           if (roadmapSeen && roadmapSeen.nodes) {
             roadmapSeen.nodes.forEach((node: any) => {
