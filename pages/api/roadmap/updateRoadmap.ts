@@ -37,13 +37,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(401).json({ message: 'Token de autenticação inválido ou expirado.' });
   }
 
-  // essa verificação precisa ser feita
-  const isAdmin = true; 
-
-  if (!isAdmin) {
-    return res.status(403).json({ message: 'Acesso negado.' });
-  }
-
   switch (method) {
     case 'PUT':
       try {
