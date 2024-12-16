@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Atualizar favoriteRoadmaps se fornecido diretamente
         if (favoriteRoadmaps) {
           const validRoadmaps = await Roadmap.find({ _id: { $in: favoriteRoadmaps } });
-          user.favoriteRoadmaps = validRoadmaps.map((r) => r._id);
+          user.favoriteRoadmaps = validRoadmaps.map((r) => new mongoose.Types.ObjectId(r._id));
         }
 
         // Lógica para toggle de seenContents
