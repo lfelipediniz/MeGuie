@@ -16,6 +16,7 @@ import {
 } from "@xyflow/react"; 
 import "@xyflow/react/dist/style.css";
 import { v4 as uuidv4 } from "uuid"; 
+import AvisosModal from "./AvisosModal";
 
 interface EditRoadmapModalProps {
   isOpen: boolean;
@@ -23,6 +24,11 @@ interface EditRoadmapModalProps {
   roadmap: DBRoadmap;
   onSave: () => void;
 }
+
+type Aviso = {
+  title: string;
+  description: string;
+};
 
 interface DBContent {
   _id?: string;
@@ -127,6 +133,11 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     title: "",
     url: "",
   });
+
+  // Estados para o AvisosModal
+  const [isAvisosModalOpen, setIsAvisosModalOpen] = useState(false);
+  const [localAvisos, setLocalAvisos] = useState<Aviso[]>([]);
+  
 
   // Estados para adicionar novos nodes
   const [nodeName, setNodeName] = useState("");
@@ -253,7 +264,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   const handleAddContent = () => {
     if (!selectedNodeId) return;
     if (!newContent.title || !newContent.url) {
-      alert("Título e URL do conteúdo são obrigatórios.");
+      showAvisosModal("Erro", "Título e URL do conteúdo são obrigatórios.");
       return;
     }
 
@@ -280,14 +291,35 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setNewContent({ type: "vídeo", title: "", url: "" });
   };
 
+  //Funcoes para o avisos modal
+  const openAvisosModal = () => {
+    setIsAvisosModalOpen(true);
+  };
+
+  const closeAvisosModal = () => {
+    setIsAvisosModalOpen(false);
+  };
+
+  const showAvisosModal = (title: string, description: string) => {
+    setLocalAvisos([{ title, description }]);
+    setIsAvisosModalOpen(true);
+  };
+  
+
+  function handleOpenAvisos(avisos: Aviso[], event: React.SyntheticEvent) {
+    event.stopPropagation();
+    setLocalAvisos(avisos);
+    openAvisosModal();
+  }
+
   // Função para inserir um novo node
   const insertNode = () => {
     if (!nodeName) {
-      alert("O nome do nó é obrigatório.");
+      showAvisosModal("Erro", "O nome do nó é obrigatório.");
       return;
     }
     if (nodeContents.length === 0) {
-      alert("É necessário inserir pelo menos um conteúdo.");
+      showAvisosModal("Erro", "É necessário inserir pelo menos um conteúdo.");
       return;
     }
 
@@ -319,7 +351,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   // Função para adicionar conteúdo a um novo node antes de inseri-lo
   const addContentToNewNode = () => {
     if (!contentTitle || !contentUrl) {
-      alert("Título e URL do conteúdo são obrigatórios.");
+      showAvisosModal("Erro", "Título e URL do conteúdo são obrigatórios.");
       return;
     }
 
@@ -338,7 +370,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   const handleUpdateRoadmap = async () => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      alert("Token inválido.");
+      showAvisosModal("Erro", "Token inválido.");
       return;
     }
 
@@ -382,11 +414,16 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         },
       });
 
-      alert("Roadmap atualizado com sucesso.");
-      onSave();
-      onClose();
+      showAvisosModal("Sucesso", "Roadmap atualizado com sucesso!");
+      // Adiar o fechamento para garantir que o modal apareça
+      setTimeout(() => {
+        onSave();
+        onClose();
+      }, 1000); // 1 segundos para exibir o modal de sucesso
+
     } catch (error: any) {
       console.error("Erro ao atualizar roadmap:", error);
+      
       alert(
         "Erro ao atualizar roadmap: " +
           (error.response?.data?.message || error.message)
@@ -762,6 +799,12 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             </button>
           </div>
         </form>
+
+        <AvisosModal
+        messages={localAvisos}
+        isOpen={isAvisosModalOpen}
+        onClose={closeAvisosModal}
+        />
       </div>
     </div>
   );
