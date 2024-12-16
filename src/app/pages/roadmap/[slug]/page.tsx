@@ -376,10 +376,10 @@ export default function RoadmapPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Botão de Favoritar */}
+              {/* Botão de Favoritar
               <IconButton onClick={toggleFavorite} aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
                 {isFavorite ? <FaHeart size={24} color="red" /> : <FaRegHeart size={24} color="gray" />}
-              </IconButton>
+              </IconButton> */}
 
               <FormControl sx={{ minWidth: "250px" }} size="small">
                 <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
