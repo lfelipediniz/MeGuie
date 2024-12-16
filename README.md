@@ -33,13 +33,13 @@ To install and run the project locally, follow these steps:
 
 5. Use the following test accounts to explore the system:
 
-- Admin Account
+- **Admin Account**
 
   Login: adminteste@gmail.com
 
   Password: admin123
 
-- User Account
+-** User Account**
 
   Login: usuarioteste@gmail.com
 
