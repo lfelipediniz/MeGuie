@@ -18,6 +18,7 @@ import "reactflow/dist/style.css";
 import { ObjectId } from "bson"; // Importa ObjectId da biblioteca 'bson'
 import AvisosModal from "./AvisosModal";
 
+// Interfaces e Tipos
 interface EditRoadmapModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -66,8 +67,23 @@ interface DBRoadmap {
   edges: DBEdge[];
 }
 
+// Tipos Personalizados para Nodes
+interface CustomNodeData {
+  label: string;
+  name: string;
+  description: string;
+  contents: DBContent[];
+}
+
+interface CustomNode extends Node<CustomNodeData> {}
+
 // Componente CustomNode para o ReactFlow
-const CustomNodeComponent = ({ id, data }: any) => {
+interface CustomNodeProps {
+  id: string;
+  data: CustomNodeData;
+}
+
+const CustomNodeComponent: React.FC<CustomNodeProps> = ({ id, data }) => {
   const { label } = data;
   return (
     <div
@@ -105,9 +121,9 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   const [imageURL, setImageURL] = useState("");
   const [imageAlt, setImageAlt] = useState("");
 
-  // Estados para os nodes e edges do ReactFlow
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  // Tipos genéricos corrigidos para CustomNode e Edge
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node<CustomNodeData>>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   // Função para adicionar novas conexões com IDs únicos
   const onConnect = useCallback(
@@ -115,6 +131,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       const newEdge: Edge = {
         ...params,
         id: new ObjectId().toHexString(), // Gera um ObjectId único para a edge
+        sourceHandle: params.sourceHandle ?? undefined, // Remove null
+        targetHandle: params.targetHandle ?? undefined, // Remove null
       };
       setEdges((eds) => addEdge(newEdge, eds));
     },
@@ -154,7 +172,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       setImageURL(roadmap.imageURL);
       setImageAlt(roadmap.imageAlt);
 
-      const initialNodes = roadmap.nodes.map((node) => ({
+      const initialNodes: CustomNode[] = roadmap.nodes.map((node) => ({
         id: node._id,
         type: "custom",
         data: {
@@ -172,14 +190,14 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         },
       }));
 
-      setNodes(initialNodes);
+      setNodes(initialNodes as unknown as Node<Node<CustomNodeData>, string | undefined>[]);
 
-      const initialEdges = roadmap.edges.map((edge) => ({
+      const initialEdges: Edge[] = roadmap.edges.map((edge) => ({
         id: edge._id,
         source: edge.source, // Já é um ID string
         target: edge.target, // Já é um ID string
-        sourceHandle: edge.sourceHandle,
-        targetHandle: edge.targetHandle,
+        sourceHandle: edge.sourceHandle ?? undefined, // Remove null
+        targetHandle: edge.targetHandle ?? undefined, // Remove null
       }));
 
       setEdges(initialEdges);
@@ -192,8 +210,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setSelectedNodeId(nodeId);
     if (nodeId) {
       const node = nodes.find((n) => n.id === nodeId);
-      setRenameNode(typeof node?.data.name === "string" ? node.data.name : "");
-      setViewContents(Array.isArray(node?.data.contents) ? node.data.contents : null);
+      setRenameNode(node && typeof (node.data as unknown as CustomNodeData).name === "string" ? (node.data as unknown as CustomNodeData).name : "");
+      setViewContents(node && Array.isArray((node.data as unknown as CustomNodeData).contents) ? (node.data as unknown as CustomNodeData).contents : null);
     } else {
       setRenameNode("");
       setViewContents(null);
@@ -219,7 +237,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === selectedNodeId) {
-          const updatedContents = (node.data.contents as DBContent[]).filter(
+          const updatedContents = (node.data as unknown as CustomNodeData).contents.filter(
             (c: DBContent) => c._id !== contentId
           );
           return { ...node, data: { ...node.data, contents: updatedContents } };
@@ -243,7 +261,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setNodes((nds) =>
       nds.map((node) => {
         if (node.id === selectedNodeId) {
-          const updatedContents = (node.data.contents as DBContent[]).map((c: DBContent) =>
+          const updatedContents = (node.data as unknown as CustomNodeData).contents.map((c: DBContent) =>
             c._id === editContent._id ? editContent : c
           );
           return { ...node, data: { ...node.data, contents: updatedContents } };
@@ -279,7 +297,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
               ...node,
               data: {
                 ...node.data,
-                contents: [...(node.data.contents as DBContent[]), contentWithId],
+                contents: [...(node.data as unknown as CustomNodeData).contents, contentWithId],
               },
             }
           : node
@@ -321,7 +339,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       return;
     }
 
-    const newNode: Node = {
+    const newNode: CustomNode = {
       id: new ObjectId().toHexString(), // Gera um ObjectId único para o node
       type: "custom",
       data: {
@@ -338,7 +356,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         background: "white",
       },
     };
-    setNodes((nds) => nds.concat(newNode));
+    setNodes((nds) => nds.concat(newNode as unknown as Node<Node<CustomNodeData>, string | undefined>));
 
     // Limpar campos do node
     setNodeName("");
@@ -374,11 +392,11 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
 
     try {
       // Mapear nodes para o formato esperado pelo backend
-      const convertedNodes: DBNode[] = nodes.map((n: Node) => ({
+      const convertedNodes: DBNode[] = (nodes as unknown as CustomNode[]).map((n: CustomNode) => ({
         _id: n.id, // Usando o id gerado no frontend (compatível com ObjectId)
         name: n.data.name || n.id,
         description: n.data.description || "",
-        contents: (n.data.contents || []).map((content: DBContent) => ({
+        contents: n.data.contents.map((content: DBContent) => ({
           _id: content._id || new ObjectId().toHexString(), // Garante que cada conteúdo tenha um _id
           type: content.type,
           title: content.title,
@@ -392,8 +410,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         _id: e.id, // Usando o id gerado no frontend (compatível com ObjectId)
         source: e.source, // Já é um ID string
         target: e.target, // Já é um ID string
-        sourceHandle: e.sourceHandle,
-        targetHandle: e.targetHandle,
+        sourceHandle: e.sourceHandle ?? undefined, // Remove null
+        targetHandle: e.targetHandle ?? undefined, // Remove null
       }));
 
       const body = {
@@ -493,7 +511,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                 <option value="">-- Selecione um Nó --</option>
                 {nodes.map((node) => (
                   <option key={node.id} value={node.id}>
-                    {node.data.name as string}
+                    {(node.data as unknown as CustomNodeData).name}
                   </option>
                 ))}
               </select>
