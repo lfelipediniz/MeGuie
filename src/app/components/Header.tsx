@@ -16,12 +16,16 @@ import { BsPersonArmsUp } from "react-icons/bs";
 import AccessibilityModal from "./AccessibilityModal"; // Import do modal
 import pageNamesData from "@/data/br/pagesTitle.json"; // Ajuste o caminho conforme necessário
 import { RiRoadMapFill } from "react-icons/ri";
+import { MdAdminPanelSettings } from "react-icons/md"; // Importar o ícone de admin
+import axios from "axios";
+import { IUser } from "@/models/User"; // Importar a interface IUser
 
 const Header: FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Estado para rastrear o login
+  const [user, setUser] = useState<IUser | null>(null); // Estado para armazenar o usuário
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -29,10 +33,44 @@ const Header: FC = () => {
     const authToken = localStorage.getItem('authToken');
     setIsLoggedIn(!!authToken);
 
+    if (authToken) {
+      axios
+        .get("/api/user", {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        })
+        .then((response) => {
+          setUser(response.data);
+        })
+        .catch((error) => {
+          console.error("Erro ao buscar dados do usuário:", error);
+          setUser(null); // Em caso de erro, zere o estado do usuário
+        });
+    }
+
     // Sincroniza o estado de login entre múltiplas abas
     const handleStorageChange = () => {
       const updatedToken = localStorage.getItem('authToken');
       setIsLoggedIn(!!updatedToken);
+      if (!updatedToken) {
+        setUser(null);
+      } else {
+        // Opcional: Recarregar os dados do usuário se o token for atualizado
+        axios
+          .get("/api/user", {
+            headers: {
+              Authorization: `Bearer ${updatedToken}`,
+            },
+          })
+          .then((response) => {
+            setUser(response.data);
+          })
+          .catch((error) => {
+            console.error("Erro ao buscar dados do usuário:", error);
+            setUser(null);
+          });
+      }
     };
 
     window.addEventListener('storage', handleStorageChange);
@@ -70,8 +108,17 @@ const Header: FC = () => {
       ? [
           {
             icon: <FaStar aria-label="Ir para os roadmaps favoritos" />,
-            label: "Roadmaps Favoritos",
+            label: "Favoritos",
             path: "/pages/savedroads",
+          },
+        ]
+      : []),
+    ...(user?.admin
+      ? [
+          {
+            icon: <MdAdminPanelSettings aria-label="Ir para o Admin" />,
+            label: "Administrador",
+            path: "/pages/admin",
           },
         ]
       : []),
@@ -84,7 +131,8 @@ const Header: FC = () => {
     // Remove o authToken do localStorage
     localStorage.removeItem('authToken');
     setIsLoggedIn(false);
-    closeModal();
+    setUser(null);
+    setMenuOpen(false);
 
     // Redireciona para a página principal
     router.push('/');
@@ -202,8 +250,12 @@ const Header: FC = () => {
                 <div className="border-t border-gray-300 my-4"></div>
 
                 {/* Accessibility Button */}
-                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center cursor-pointer" >
-                  <button onClick={openModal} className="flex items-center" aria-label="Abrir opções de acessibilidade">
+                <div className="flex items-center space-x-4 p-4 text-lg font-bold w-full justify-center cursor-pointer">
+                  <button
+                    onClick={openModal}
+                    className="flex items-center"
+                    aria-label="Abrir opções de acessibilidade"
+                  >
                     <BsPersonArmsUp style={{ color: "var(--primary)" }} />
                     <span style={{ color: "var(--primary)" }}>
                       Acessibilidade

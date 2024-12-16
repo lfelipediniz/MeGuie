@@ -221,7 +221,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)] h-screen">
+    <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)] min-h-screen h-auto">
       <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
         <SearchBar
           onSearch={(query) => {

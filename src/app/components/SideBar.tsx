@@ -104,7 +104,7 @@ const Sidebar: React.FC = () => {
       ? [
           {
             icon: <FaStar aria-hidden="true" />,
-            label: "Roadmaps Favoritos",
+            label: "Favoritos",
             path: "/pages/savedroads",
           },
         ]
