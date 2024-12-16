@@ -186,12 +186,12 @@ export default function Admin() {
       alert("Token inválido.");
       return;
     }
-  
+
     try {
       const response = await axios.get(`/api/roadmap/${roadmap.nameSlug}`, {
         headers: { Authorization: `Bearer ${authToken}` },
       });
-  
+
       const fullRoadmap: DBRoadmap = response.data;
       setRoadmapToEdit(fullRoadmap);
     } catch (error) {
@@ -199,10 +199,17 @@ export default function Admin() {
       alert("Erro ao carregar o roadmap para edição.");
     }
   };
-  
 
   const closeEditModal = () => {
     setRoadmapToEdit(null);
+  };
+
+  // Função para salvar as alterações após a edição
+  const handleSaveEdit = () => {
+    const authToken = localStorage.getItem("authToken");
+    if (authToken && userData) {
+      fetchRoadmaps(authToken, userData);
+    }
   };
 
   if (isAdmin === false) {
@@ -216,7 +223,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)]">
+    <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)] h-screen">
       <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
         <SearchBar
           onSearch={(query) => {
@@ -282,9 +289,10 @@ export default function Admin() {
       {/* Modal de Edição */}
       {roadmapToEdit && (
         <EditRoadmapModal
-          roadmap={roadmapToEdit}
+          isOpen={!!roadmapToEdit}
           onClose={closeEditModal}
-          onSave={() => fetchRoadmaps(localStorage.getItem("authToken") || "", userData!)}
+          roadmap={roadmapToEdit}
+          onSave={handleSaveEdit}
         />
       )}
     </div>

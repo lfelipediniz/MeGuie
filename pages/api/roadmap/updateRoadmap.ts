@@ -1,7 +1,9 @@
+// pages/api/roadmap/updateRoadmap.ts
+
 import type { NextApiRequest, NextApiResponse } from 'next';
-import mongoose, { Types } from 'mongoose';
+import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
-import Roadmap, { IRoadmap, INode, IEdge, IContent } from '@/models/Roadmap';
+import Roadmap from '@/models/Roadmap';
 import dbConnect from '@/lib/mongodb';
 
 interface JwtPayload {
@@ -11,10 +13,10 @@ interface JwtPayload {
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   await dbConnect();
 
-  const { method, headers, body, query } = req;
+  const { method, headers, body } = req;
 
   // Middleware para verificar o token de autenticação
-  const authenticate = (): string | null => {
+  const authenticate = (): { userId: string } | null => {
     const authHeader = headers.authorization;
 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -25,150 +27,108 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const secret = process.env.JWT_SECRET as string;
       const decoded = jwt.verify(token, secret) as JwtPayload;
-      return decoded.userId;
+      return { userId: decoded.userId };
     } catch {
       return null;
     }
   };
 
-  const userId = authenticate();
+  const auth = authenticate();
 
-  if (!userId) {
+  if (!auth) {
     return res.status(401).json({ message: 'Token de autenticação inválido ou expirado.' });
   }
 
-  if (method !== 'PUT') {
-    return res.setHeader('Allow', ['PUT']).status(405).end(`Método ${method} não permitido.`);
+  // Verificar se o usuário é administrador
+  // Mantemos a lógica existente de isAdmin = true conforme solicitado
+  const isAdmin = true; // Substitua com a lógica real, se necessário
+
+  if (!isAdmin) {
+    return res.status(403).json({ message: 'Acesso negado.' });
   }
 
-  try {
-    const { id } = query;
-    const {
-      newName,
-      newNameSlug,
-      nodesToRename,
-      nodesToDelete,
-      nodesToAdd,
-      edgesToDelete,
-      edgesToAdd,
-      contentsToUpdate,
-      contentsToDelete,
-      contentsToAdd,
-    } = body;
+  switch (method) {
+    case 'PUT':
+      try {
+        const { id, name, nameSlug, imageURL, imageAlt, nodes, edges } = body;
 
-    // Buscar o roadmap existente
-    const roadmap = await Roadmap.findById(id);
-
-    if (!roadmap) {
-      return res.status(404).json({ message: 'Roadmap não encontrado.' });
-    }
-
-    // Renomear roadmap e nameSlug
-    if (newName) roadmap.name = newName;
-    if (newNameSlug) roadmap.nameSlug = newNameSlug;
-
-    // Renomear nós existentes
-    if (nodesToRename && Array.isArray(nodesToRename)) {
-      nodesToRename.forEach((nodeUpdate: { nodeId: string; newName: string }) => {
-        const node = roadmap.nodes.find((n: INode) => n._id.toString() === nodeUpdate.nodeId);
-        if (node) {
-          node.name = nodeUpdate.newName;
+        if (!id) {
+          return res.status(400).json({ message: 'ID do roadmap é obrigatório.' });
         }
-      });
-    }
 
-    // Apagar nós
-    if (nodesToDelete && Array.isArray(nodesToDelete)) {
-      roadmap.nodes = roadmap.nodes.filter(
-        (node: INode) => !nodesToDelete.includes(node._id.toString())
-      );
+        // Validações básicas
+        if (!name || !nameSlug || !imageURL || !imageAlt) {
+          return res.status(400).json({ message: 'Os campos nome, nameSlug, imageURL e imageAlt são obrigatórios.' });
+        }
 
-      // Também remover conexões associadas aos nós deletados
-      roadmap.edges = roadmap.edges.filter(
-        (edge: IEdge) =>
-          !nodesToDelete.includes(edge.source) && !nodesToDelete.includes(edge.target)
-      );
-    }
+        if (!Array.isArray(nodes) || nodes.length === 0) {
+          return res.status(400).json({ message: 'É necessário adicionar pelo menos um node.' });
+        }
 
-    // Adicionar novos nós
-    if (nodesToAdd && Array.isArray(nodesToAdd)) {
-      nodesToAdd.forEach((node: Partial<INode>) => {
-        roadmap.nodes.push({
-          _id: new Types.ObjectId(),
-          name: node.name || '',
-          description: node.description || '',
-          contents: node.contents || [],
-          position: node.position || { x: 0, y: 0 },
+        // Buscar o roadmap existente
+        const existingRoadmap = await Roadmap.findById(id);
+        if (!existingRoadmap) {
+          return res.status(404).json({ message: 'Roadmap não encontrado.' });
+        }
+
+        // Criar um mapeamento de ID para nome para o roadmap existente
+        const existingNodeMap: { [key: string]: string } = {};
+        existingRoadmap.nodes.forEach(node => {
+          existingNodeMap[node._id] = node.name;
         });
-      });
-    }
 
-    // Apagar conexões
-    if (edgesToDelete && Array.isArray(edgesToDelete)) {
-      roadmap.edges = roadmap.edges.filter(
-        (edge: IEdge) =>
-          !edgesToDelete.some(
-            (delEdge: IEdge) => delEdge.source === edge.source && delEdge.target === edge.target
-          )
-      );
-    }
+        // Criar um mapeamento de ID para nome para o novo payload
+        const newNodeMap: { [key: string]: string } = {};
+        nodes.forEach((node: any) => {
+          newNodeMap[node._id] = node.name;
+        });
 
-    // Adicionar conexões
-    if (edgesToAdd && Array.isArray(edgesToAdd)) {
-      edgesToAdd.forEach((edge: IEdge) => {
-        roadmap.edges.push(edge);
-      });
-    }
-
-    // Editar conteúdos dos nós
-    if (contentsToUpdate && Array.isArray(contentsToUpdate)) {
-      contentsToUpdate.forEach((contentUpdate: { nodeId: string; contentId: string; newType: string; newUrl: string }) => {
-        const node = roadmap.nodes.find((n: INode) => n._id.toString() === contentUpdate.nodeId);
-        if (node) {
-          const content = node.contents.find((c: IContent) => c._id.toString() === contentUpdate.contentId);
-          if (content) {
-            if (contentUpdate.newType === 'vídeo' || contentUpdate.newType === 'website') {
-              content.type = contentUpdate.newType;
-            }
-            content.url = contentUpdate.newUrl;
+        // Identificar nodes que tiveram seus nomes alterados
+        const renamedNodes: { oldName: string; newName: string }[] = [];
+        for (const nodeId in existingNodeMap) {
+          if (newNodeMap[nodeId] && existingNodeMap[nodeId] !== newNodeMap[nodeId]) {
+            renamedNodes.push({
+              oldName: existingNodeMap[nodeId],
+              newName: newNodeMap[nodeId],
+            });
           }
         }
-      });
-    }
 
-    // Apagar conteúdos dos nós
-    if (contentsToDelete && Array.isArray(contentsToDelete)) {
-      contentsToDelete.forEach((contentDelete: { nodeId: string; contentId: string }) => {
-        const node = roadmap.nodes.find((n: INode) => n._id.toString() === contentDelete.nodeId);
-        if (node) {
-          node.contents = node.contents.filter(
-            (content: IContent) => content._id.toString() !== contentDelete.contentId
-          );
-        }
-      });
-    }
-
-    // Adicionar novos conteúdos aos nós
-    if (contentsToAdd && Array.isArray(contentsToAdd)) {
-      contentsToAdd.forEach((contentAdd: { nodeId: string; content: IContent }) => {
-        const node = roadmap.nodes.find((n: INode) => n._id.toString() === contentAdd.nodeId);
-        if (node) {
-          node.contents.push({
-            _id: new Types.ObjectId(),
-            type: contentAdd.content.type,
-            title: contentAdd.content.title,
-            url: contentAdd.content.url,
+        // Atualizar os edges se houver renomeação de nodes
+        if (renamedNodes.length > 0) {
+          // Atualizar cada edge que referencie os nomes antigos
+          edges.forEach((edge: any) => {
+            renamedNodes.forEach(({ oldName, newName }) => {
+              if (edge.source === oldName) {
+                edge.source = newName;
+              }
+              if (edge.target === oldName) {
+                edge.target = newName;
+              }
+            });
           });
         }
-      });
-    }
 
-    // Salvar as alterações no roadmap
-    await roadmap.save();
+        // Atualizar o roadmap com os novos dados
+        existingRoadmap.name = name;
+        existingRoadmap.nameSlug = nameSlug;
+        existingRoadmap.imageURL = imageURL;
+        existingRoadmap.imageAlt = imageAlt;
+        existingRoadmap.nodes = nodes;
+        existingRoadmap.edges = edges;
 
-    res.status(200).json({ message: 'Roadmap atualizado com sucesso.', roadmap });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erro ao atualizar o roadmap.' });
+        await existingRoadmap.save();
+
+        res.status(200).json({ message: 'Roadmap atualizado com sucesso.', roadmap: existingRoadmap });
+      } catch (error: any) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao atualizar roadmap.', error: error.message });
+      }
+      break;
+
+    default:
+      res.setHeader('Allow', ['PUT']);
+      res.status(405).end(`Método ${method} não permitido.`);
+      break;
   }
 }

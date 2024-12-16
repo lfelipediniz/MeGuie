@@ -21,6 +21,7 @@ export interface INode {
 }
 
 export interface IEdge {
+  _id: any;
   source: string;
   target: string;
   sourceHandle?: string;
