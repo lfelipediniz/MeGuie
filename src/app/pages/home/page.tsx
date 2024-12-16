@@ -5,7 +5,7 @@ import RoadmapCard from "../../components/RoadmapCard";
 import TopicsModal from "../../components/TopicsModal";
 import SearchBar from "../../components/SearchBar";
 import CreateRoadmapModal from "../../components/CreateRoadmapModal";
-import EditRoadmapModal from "../../components/EditRoadmapModal"; // Import do modal de edição
+import EditRoadmapModal from "../../components/EditRoadmapModal";
 import axios from "axios";
 
 type DBRoadmap = {
@@ -62,33 +62,27 @@ type RoadmapDisplay = {
 
 type IUser = {
   _id: string;
-  admin: boolean;
-  favoriteRoadmaps: string[]; // IDs dos roadmaps favoritos
-  seenContents: any[]; // Ajuste conforme a estrutura real
+  favoriteRoadmaps: string[];
+  seenContents: any[];
 };
 
-export default function Admin() {
+export default function HomePage() {
   const router = useRouter();
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState(false);
   const [localTopics, setLocalTopics] = useState<Topic[]>([]);
   const [roadmaps, setRoadmaps] = useState<RoadmapDisplay[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
 
   // Modal de criação com etapas
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Estados para o modo edição
-  const [isEditMode, setIsEditMode] = useState(false);
   const [roadmapToEdit, setRoadmapToEdit] = useState<DBRoadmap | null>(null);
-
-  // Estado para armazenar os dados do usuário
-  const [userData, setUserData] = useState<IUser | null>(null);
 
   useEffect(() => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-      setIsAdmin(false);
       return;
     }
 
@@ -101,16 +95,12 @@ export default function Admin() {
       .then((response) => {
         const user: IUser = response.data;
         setUserData(user);
-        setIsAdmin(!!user.admin);
 
-        if (user.admin) {
-          // Carregar roadmaps do backend
-          fetchRoadmaps(authToken, user);
-        }
+        // Carregar roadmaps do backend
+        fetchRoadmaps(authToken, user);
       })
       .catch((error) => {
-        console.error("Erro ao verificar admin:", error);
-        setIsAdmin(false);
+        console.error("Erro ao buscar usuário:", error);
       });
   }, []);
 
@@ -139,14 +129,12 @@ export default function Admin() {
       description: node.description,
     }));
 
-    // Calcular o progresso (se necessário)
-    // Aqui, progress está sendo setado como 0, já que o cálculo está sendo feito no RoadmapCard
     return {
       _id: db._id,
       imageURL: db.imageURL || "/image_generic.png",
       imageAlt: db.imageAlt || "Imagem de uma matéria",
       title: db.name,
-      progress: 0, // Pode ser removido se não for mais utilizado
+      progress: 0,
       topics,
       isFavorite: user.favoriteRoadmaps.includes(db._id),
       nameSlug: db.nameSlug,
@@ -177,7 +165,6 @@ export default function Admin() {
     );
   }, [roadmaps, searchQuery]);
 
-  // Função para abrir o modal de edição e buscar o roadmap completo
   const openEditModal = async (roadmap: RoadmapDisplay) => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -202,7 +189,6 @@ export default function Admin() {
     setRoadmapToEdit(null);
   };
 
-  // Função para salvar as alterações após a edição
   const handleSaveEdit = () => {
     const authToken = localStorage.getItem("authToken");
     if (authToken && userData) {
@@ -210,44 +196,29 @@ export default function Admin() {
     }
   };
 
-  if (isAdmin === false) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-red-500 text-xl font-bold">
-          Você não tem os privilégios para acessar o sistema
-        </p>
-      </div>
-    );
-  }
-
   return (
     <div className="mt-16 p-4 md:p-8 bg-[var(--background-secondary)] h-screen">
       <div className="w-full h-12 flex justify-between items-center gap-4 mb-4">
         <SearchBar
-          onSearch={(query) => {
-            setSearchQuery(query);
-          }}
+          onSearch={(query) => setSearchQuery(query)}
           onBack={handleBack}
         />
-
       </div>
       <div className="w-full flex flex-col gap-4">
-        <br />
         <h2 className="text-[var(--dark-blue)] text-xl md:text-2xl font-bold">
-          Roadmaps 
+          Roadmaps
         </h2>
         <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8">
-          {filteredRoadmaps.map((roadmap, index) => (
+          {filteredRoadmaps.map((roadmap) => (
             <RoadmapCard
-              key={roadmap._id} // Usando _id como key único
-              _id={roadmap._id} // Passando _id
+              key={roadmap._id}
+              _id={roadmap._id}
               imageURL={roadmap.imageURL}
               imageAlt={roadmap.imageAlt}
               title={roadmap.title}
               topics={roadmap.topics}
               handleOpenTopics={handleOpenTopics}
               nameSlug={roadmap.nameSlug}
-              isEditMode={isEditMode}
               onEdit={() => openEditModal(roadmap)}
             />
           ))}
@@ -259,7 +230,6 @@ export default function Admin() {
         onClose={closeTopicsModal}
       />
 
-      {/* Componente de Criação de Roadmap */}
       <CreateRoadmapModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
@@ -268,7 +238,6 @@ export default function Admin() {
         }
       />
 
-      {/* Modal de Edição */}
       {roadmapToEdit && (
         <EditRoadmapModal
           isOpen={!!roadmapToEdit}
