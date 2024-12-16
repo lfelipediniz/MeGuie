@@ -205,8 +205,8 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
         _id: e.id, // Usando o id gerado no frontend (string)
         source: e.source, // Já é um ID string
         target: e.target, // Já é um ID string
-        sourceHandle: e.sourceHandle,
-        targetHandle: e.targetHandle,
+        sourceHandle: e.sourceHandle || undefined,
+        targetHandle: e.targetHandle || undefined,
       }));
 
       const body = {
