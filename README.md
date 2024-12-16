@@ -31,3 +31,16 @@ To install and run the project locally, follow these steps:
 
 4. Open your browser and navigate to `http://localhost:3000` to see the website.
 
+5. Use the following test accounts to explore the system:
+
+- Admin Account
+
+  Login: adminteste@gmail.com
+
+  Password: admin123
+
+- User Account
+
+  Login: usuarioteste@gmail.com
+
+  Password: user123
