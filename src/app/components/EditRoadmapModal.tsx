@@ -13,9 +13,9 @@ import {
   Background,
   Node,
   Edge,
-} from "@xyflow/react"; 
-import "@xyflow/react/dist/style.css";
-import { v4 as uuidv4 } from "uuid"; 
+} from "reactflow"; // Certifique-se de que está usando o pacote correto
+import "reactflow/dist/style.css";
+import { ObjectId } from "bson"; // Importa ObjectId da biblioteca 'bson'
 import AvisosModal from "./AvisosModal";
 
 interface EditRoadmapModalProps {
@@ -106,15 +106,15 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   const [imageAlt, setImageAlt] = useState("");
 
   // Estados para os nodes e edges do ReactFlow
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
 
   // Função para adicionar novas conexões com IDs únicos
   const onConnect = useCallback(
     (params: any) => {
       const newEdge: Edge = {
         ...params,
-        id: uuidv4(), // Gera um UUID único para a edge
+        id: new ObjectId().toHexString(), // Gera um ObjectId único para a edge
       };
       setEdges((eds) => addEdge(newEdge, eds));
     },
@@ -137,7 +137,6 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   // Estados para o AvisosModal
   const [isAvisosModalOpen, setIsAvisosModalOpen] = useState(false);
   const [localAvisos, setLocalAvisos] = useState<Aviso[]>([]);
-  
 
   // Estados para adicionar novos nodes
   const [nodeName, setNodeName] = useState("");
@@ -269,7 +268,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     const contentWithId: DBContent = {
-      _id: uuidv4(), // Gera um UUID único para o conteúdo
+      _id: new ObjectId().toHexString(), // Gera um ObjectId único para o conteúdo
       ...newContent,
     };
 
@@ -291,7 +290,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setNewContent({ type: "vídeo", title: "", url: "" });
   };
 
-  //Funcoes para o avisos modal
+  // Funções para o AvisosModal
   const openAvisosModal = () => {
     setIsAvisosModalOpen(true);
   };
@@ -304,7 +303,6 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setLocalAvisos([{ title, description }]);
     setIsAvisosModalOpen(true);
   };
-  
 
   function handleOpenAvisos(avisos: Aviso[], event: React.SyntheticEvent) {
     event.stopPropagation();
@@ -323,8 +321,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       return;
     }
 
-    const newNode = {
-      id: uuidv4(), // Gera um UUID único para o node
+    const newNode: Node = {
+      id: new ObjectId().toHexString(), // Gera um ObjectId único para o node
       type: "custom",
       data: {
         label: nodeName,
@@ -356,7 +354,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     const newContent: DBContent = {
-      _id: uuidv4(), // Adiciona um _id único
+      _id: new ObjectId().toHexString(), // Adiciona um ObjectId único
       type: contentType,
       title: contentTitle,
       url: contentUrl,
@@ -376,12 +374,12 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
 
     try {
       // Mapear nodes para o formato esperado pelo backend
-      const convertedNodes = nodes.map((n: any) => ({
-        _id: n.id, // Usando o id gerado no frontend (string)
+      const convertedNodes: DBNode[] = nodes.map((n: Node) => ({
+        _id: n.id, // Usando o id gerado no frontend (compatível com ObjectId)
         name: n.data.name || n.id,
         description: n.data.description || "",
         contents: (n.data.contents || []).map((content: DBContent) => ({
-          _id: content._id || uuidv4(), // Garante que cada conteúdo tenha um _id
+          _id: content._id || new ObjectId().toHexString(), // Garante que cada conteúdo tenha um _id
           type: content.type,
           title: content.title,
           url: content.url,
@@ -390,8 +388,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       }));
 
       // Mapear edges para o formato esperado pelo backend
-      const convertedEdges = edges.map((e: any) => ({
-        _id: e.id, // Usando o id gerado no frontend (string)
+      const convertedEdges: DBEdge[] = edges.map((e: Edge) => ({
+        _id: e.id, // Usando o id gerado no frontend (compatível com ObjectId)
         source: e.source, // Já é um ID string
         target: e.target, // Já é um ID string
         sourceHandle: e.sourceHandle,
@@ -419,11 +417,10 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       setTimeout(() => {
         onSave();
         onClose();
-      }, 1000); // 1 segundos para exibir o modal de sucesso
+      }, 1000); // 1 segundo para exibir o modal de sucesso
 
     } catch (error: any) {
       console.error("Erro ao atualizar roadmap:", error);
-      
       alert(
         "Erro ao atualizar roadmap: " +
           (error.response?.data?.message || error.message)
@@ -801,9 +798,9 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         </form>
 
         <AvisosModal
-        messages={localAvisos}
-        isOpen={isAvisosModalOpen}
-        onClose={closeAvisosModal}
+          messages={localAvisos}
+          isOpen={isAvisosModalOpen}
+          onClose={closeAvisosModal}
         />
       </div>
     </div>

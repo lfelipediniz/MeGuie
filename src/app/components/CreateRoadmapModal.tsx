@@ -1,3 +1,5 @@
+// src/components/CreateRoadmapModal.tsx
+
 import React, { useState, FormEvent, useCallback } from "react";
 import axios from "axios";
 import ReactFlow, {
@@ -12,7 +14,7 @@ import ReactFlow, {
   Edge,
 } from "reactflow";
 import "reactflow/dist/style.css";
-import { v4 as uuidv4 } from "uuid"; 
+import { ObjectId } from "bson"; // Importa ObjectId da biblioteca 'bson'
 import AvisosModal from "./AvisosModal";
 
 interface CreateRoadmapModalProps {
@@ -105,7 +107,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
   const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge({ ...params, id: uuidv4() }, eds)),
+    (params: any) => setEdges((eds) => addEdge({ ...params, id: new ObjectId().toHexString() }, eds)),
     []
   );
 
@@ -142,14 +144,14 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
       type: contentType,
       title: contentTitle,
       url: contentUrl,
-      _id: uuidv4(), // Gerando ID único para o conteúdo
+      _id: new ObjectId().toHexString(), // Gerando ID único compatível com MongoDB
     };
     setNodeContents((prev) => [...prev, newContent]);
     setContentTitle("");
     setContentUrl("");
   };
 
-  //Funcoes para o avisos modal
+  // Funções para o AvisosModal
   const openAvisosModal = () => {
     setIsAvisosModalOpen(true);
   };
@@ -162,7 +164,6 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     setLocalAvisos([{ title, description }]);
     setIsAvisosModalOpen(true);
   };
-  
 
   function handleOpenAvisos(avisos: Aviso[], event: React.SyntheticEvent) {
     event.stopPropagation();
@@ -170,7 +171,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     openAvisosModal();
   }
 
-  // insere nó no roadmap
+  // Insere nó no roadmap
   const insertNode = () => {
     if (!nodeName) {
       showAvisosModal("Erro", "O nome do nó é obrigatório.");
@@ -182,7 +183,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     }
 
     const newNode: Node = {
-      id: uuidv4(), // gerando ID único  pro node
+      id: new ObjectId().toHexString(), // Gerando ID único compatível com MongoDB
       type: "custom",
       data: {
         label: nodeName,
@@ -200,13 +201,13 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     };
     setNodes((nds) => nds.concat(newNode));
 
-    // limpando campos do nó
+    // Limpando campos do nó
     setNodeName("");
     setNodeDescription("");
     setNodeContents([]);
   };
 
-  // handler final: criar roadmap
+  // Handler final: criar roadmap
   const handleCreateRoadmap = async () => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -215,20 +216,20 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     }
 
     try {
-      // mapea nodes  pro formato esperado pelo backend
+      // Mapeia nodes para o formato esperado pelo backend
       const convertedNodes: DBNode[] = nodes.map((n: Node) => ({
-        _id: n.id, // Usando o id gerado no frontend (string)
+        _id: n.id, // Usando o id gerado no frontend (compatível com ObjectId)
         name: n.data.name || n.id,
         description: n.data.description || "",
         contents: n.data.contents || [],
         position: { x: n.position.x, y: n.position.y },
       }));
 
-      // mapea edges pro formato esperado pelo backend (muito importante)
+      // Mapeia edges para o formato esperado pelo backend
       const convertedEdges: DBEdge[] = edges.map((e: Edge) => ({
-        _id: e.id, // usando o id gerado no frontend (string)
-        source: e.source, 
-        target: e.target, 
+        _id: e.id, // Usando o id gerado no frontend (compatível com ObjectId)
+        source: e.source,
+        target: e.target,
         sourceHandle: e.sourceHandle || undefined,
         targetHandle: e.targetHandle || undefined,
       }));
@@ -248,7 +249,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
         },
       });
 
-      // se criar com sucesso, chama o callback para atualizar a lista de roadmaps
+      // Se criar com sucesso, chama o callback para atualizar a lista de roadmaps
       onRoadmapCreated();
       onClose();
       // Resetar estados
@@ -459,9 +460,9 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
         )}
 
         <AvisosModal
-        messages={localAvisos}
-        isOpen={isAvisosModalOpen}
-        onClose={closeAvisosModal}
+          messages={localAvisos}
+          isOpen={isAvisosModalOpen}
+          onClose={closeAvisosModal}
         />
       </div>
     </div>
