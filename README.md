@@ -10,7 +10,7 @@ IHC -  https://meguie.vercel.app/
 Before you begin, ensure you have met the following requirements:
 
 - You have installed [Node.js](https://nodejs.org/) version 18 or higher.
-- You have installed [Yarn](https://classic.yarnpkg.com/en/docs/install).
+- You have installed [NPM](https://docs.npmjs.com/cli/v9/commands/npm-install).
 
 ## Installation
 
