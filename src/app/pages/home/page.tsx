@@ -229,23 +229,6 @@ export default function HomePage() {
         isOpen={isTopicsModalOpen}
         onClose={closeTopicsModal}
       />
-
-      <CreateRoadmapModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onRoadmapCreated={() =>
-          fetchRoadmaps(localStorage.getItem("authToken") || "", userData!)
-        }
-      />
-
-      {roadmapToEdit && (
-        <EditRoadmapModal
-          isOpen={!!roadmapToEdit}
-          onClose={closeEditModal}
-          roadmap={roadmapToEdit}
-          onSave={handleSaveEdit}
-        />
-      )}
     </div>
   );
 }
