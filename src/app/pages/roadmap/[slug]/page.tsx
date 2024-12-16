@@ -61,9 +61,7 @@ interface IUser {
   _id: string;
   favoriteRoadmaps: string[]; // IDs dos roadmaps favoritos
   seenContents: {
-    roadmapId: {
-      _id: string;
-    };
+    roadmapId: string; // Alterado para string
     nodes: {
       nodeId: string;
       contentIds: string[];
@@ -93,7 +91,26 @@ export default function RoadmapPage() {
   const [isTopicsModalOpen, setIsTopicsModalOpen] = useState<boolean>(false);
   const [localTopics, setLocalTopics] = useState<{ title: string; description: string }[]>([]);
 
-  // Fetch roadmap and user data
+  // Função auxiliar para determinar a cor da borda
+  const getNodeProgressColor = (
+    nodeId: string,
+    totalContents: number,
+    seenContents: string[] | undefined
+  ): string => {
+    const seenCount = seenContents ? seenContents.length : 0;
+
+    if (seenCount === 0) {
+      return "#808080"; // Cinza
+    } else if (seenCount > 0 && seenCount < totalContents) {
+      return "#FFA500"; // Amarelo
+    } else if (seenCount === totalContents) {
+      return "#008000"; // Verde
+    }
+
+    return "#808080"; // Default para segurança
+  };
+
+  // Primeiro useEffect: Buscar roadmap e dados do usuário
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -128,33 +145,6 @@ export default function RoadmapPage() {
 
         // Verificar se o roadmap está nos favoritos do usuário
         setIsFavorite(user.favoriteRoadmaps.includes(roadmap._id));
-
-        // Criar um mapa de nomes para IDs dos nodes
-        const nameToIdMap = new Map<string, string>();
-        roadmap.nodes.forEach(node => {
-          nameToIdMap.set(node.name, node._id.toString());
-        });
-
-        // Converter edges usando o mapa
-        const convertedEdges: Edge[] = roadmap.edges.map((edgeData, index) => ({
-          id: `${edgeData.source}-${edgeData.target}-${index}`,
-          source: nameToIdMap.get(edgeData.source) || edgeData.source, // Substituir nome pelo ID
-          target: nameToIdMap.get(edgeData.target) || edgeData.target,
-          sourceHandle: edgeData.sourceHandle,
-          targetHandle: edgeData.targetHandle,
-        }));
-
-        // Converter nodes
-        const convertedNodes: Node[] = roadmap.nodes.map((nodeData) => ({
-          id: nodeData._id.toString(), // Usando _id como ID
-          type: "custom",
-          data: { label: nodeData.name },
-          position: { x: nodeData.position.x, y: nodeData.position.y },
-          style: { border: `1px solid gray` },
-        }));
-
-        setNodes(convertedNodes);
-        setEdges(convertedEdges);
       } catch (error) {
         console.error("Erro ao carregar roadmap ou dados do usuário:", error);
         // Opcional: redirecionar para página de erro
@@ -164,7 +154,53 @@ export default function RoadmapPage() {
     };
 
     fetchData();
-  }, [slug]);
+  }, [slug]); // Dependência apenas de slug
+
+  // Segundo useEffect: Processar nodes e edges quando roadmapData ou userData mudar
+  useEffect(() => {
+    if (!roadmapData || !userData) return;
+  
+    const convertedNodes: Node[] = roadmapData.nodes.map((nodeData) => {
+      const totalContents = nodeData.contents.length;
+  
+      // Encontrar os conteúdos vistos pelo usuário para este nó
+      let seenContents: string[] | undefined;
+      const roadmapSeen = userData.seenContents.find(
+        (rc) => rc.roadmapId === roadmapData._id
+      );
+  
+      if (roadmapSeen) {
+        const nodeSeen = roadmapSeen.nodes.find((n) => n.nodeId === nodeData._id);
+        if (nodeSeen) {
+          seenContents = nodeSeen.contentIds;
+        }
+      }
+  
+      // Obter a cor da borda com base no progresso
+      const borderColor = getNodeProgressColor(nodeData._id, totalContents, seenContents);
+  
+      return {
+        id: nodeData._id.toString(),
+        type: "custom",
+        data: { label: nodeData.name },
+        position: { x: nodeData.position.x, y: nodeData.position.y },
+        style: { border: `2px solid ${borderColor}` },
+      };
+    });
+  
+    setNodes(convertedNodes);
+  
+    const convertedEdges: Edge[] = roadmapData.edges.map((edgeData, index) => ({
+      id: `${edgeData.source}-${edgeData.target}-${index}`,
+      source: edgeData.source,
+      target: edgeData.target,
+      sourceHandle: edgeData.sourceHandle,
+      targetHandle: edgeData.targetHandle,
+    }));
+  
+    setEdges(convertedEdges);
+  }, [roadmapData, userData]);
+  
 
   // Função para alternar o estado de favorito
   const toggleFavorite = async () => {
@@ -340,9 +376,10 @@ export default function RoadmapPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* <IconButton onClick={toggleFavorite} aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
+              {/* Botão de Favoritar */}
+              <IconButton onClick={toggleFavorite} aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
                 {isFavorite ? <FaHeart size={24} color="red" /> : <FaRegHeart size={24} color="gray" />}
-              </IconButton> */}
+              </IconButton>
 
               <FormControl sx={{ minWidth: "250px" }} size="small">
                 <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
@@ -370,7 +407,7 @@ export default function RoadmapPage() {
                     <span>(Concluído)</span>
                   </MenuItem>
                   <MenuItem value="orange">
-                    <span style={{ color: "#FA8F32" }}>Laranja</span>&nbsp;
+                    <span style={{ color: "#FFA500" }}>Amarelo</span>&nbsp;
                     <span>(Em progresso)</span>
                   </MenuItem>
                   <MenuItem value="gray">
