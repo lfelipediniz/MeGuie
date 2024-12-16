@@ -11,6 +11,8 @@ import {
   Handle,
   Position,
   Background,
+  Node,
+  Edge,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import mongoose from "mongoose";
@@ -58,7 +60,8 @@ interface DBRoadmap {
   edges: DBEdge[];
 }
 
-const CustomNode = ({ id, data }: any) => {
+// Definição única do CustomNode
+const CustomNodeComponent = ({ id, data }: any) => {
   const { label } = data;
   return (
     <div
@@ -95,8 +98,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   const [imageURL, setImageURL] = useState("");
   const [imageAlt, setImageAlt] = useState("");
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const onConnect = useCallback(
     (params: any) => setEdges((eds: any[]) => addEdge(params, eds)),
     []
@@ -142,15 +145,22 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         },
       }));
 
+      setNodes(initialNodes);
+
+      // Criar um mapa de nome para ID dos nodes
+      const nameToIdMap = new Map<string, string>();
+      initialNodes.forEach((node) => {
+        nameToIdMap.set(node.data.name, node.id);
+      });
+
       const initialEdges = roadmap.edges.map((edge) => ({
         id: edge._id,
-        source: edge.source,
-        target: edge.target,
+        source: nameToIdMap.get(edge.source) || edge.source, // Mapear nome para ID
+        target: nameToIdMap.get(edge.target) || edge.target, // Mapear nome para ID
         sourceHandle: edge.sourceHandle,
         targetHandle: edge.targetHandle,
       }));
 
-      setNodes(initialNodes);
       setEdges(initialEdges);
     }
   }, [roadmap, setNodes, setEdges]);
@@ -320,20 +330,25 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     try {
+      // Mapear IDs de volta para nomes dos nodes para os edges
+      const convertedEdges = edges.map((e: any) => {
+        const sourceNode = nodes.find((n) => n.id === e.source);
+        const targetNode = nodes.find((n) => n.id === e.target);
+        return {
+          _id: e.id,
+          source: sourceNode ? sourceNode.data.name : e.source,
+          target: targetNode ? targetNode.data.name : e.target,
+          sourceHandle: e.sourceHandle,
+          targetHandle: e.targetHandle,
+        };
+      });
+
       const convertedNodes = nodes.map((n: any) => ({
         _id: n.id, // Usando o id gerado
         name: n.data.name || n.id,
         description: n.data.description || "",
         contents: n.data.contents || [],
         position: { x: n.position.x, y: n.position.y },
-      }));
-
-      const convertedEdges = edges.map((e: any) => ({
-        _id: e.id,
-        source: e.source,
-        target: e.target,
-        sourceHandle: e.sourceHandle,
-        targetHandle: e.targetHandle,
       }));
 
       const body = {
@@ -364,7 +379,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
   };
 
-  const nodeTypes = React.useMemo(() => ({ custom: CustomNode }), []);
+  const nodeTypes = React.useMemo(() => ({ custom: CustomNodeComponent }), []);
 
   if (!isOpen) return null;
 
@@ -462,7 +477,12 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                       {viewContents.map((content) => (
                         <li key={content._id} className="mb-2">
                           <strong>{content.type}:</strong> {content.title} (
-                          <a href={content.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
+                          <a
+                            href={content.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 underline"
+                          >
                             {content.url}
                           </a>
                           )
@@ -512,7 +532,10 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                         className="border p-1 rounded w-full md:flex-1"
                         value={newContent.title}
                         onChange={(e) =>
-                          setNewContent((prev) => ({ ...prev, title: e.target.value }))
+                          setNewContent((prev) => ({
+                            ...prev,
+                            title: e.target.value,
+                          }))
                         }
                       />
                       <input
@@ -521,7 +544,10 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                         className="border p-1 rounded w-full md:flex-1"
                         value={newContent.url}
                         onChange={(e) =>
-                          setNewContent((prev) => ({ ...prev, url: e.target.value }))
+                          setNewContent((prev) => ({
+                            ...prev,
+                            url: e.target.value,
+                          }))
                         }
                       />
                       <button
