@@ -1,5 +1,6 @@
+// pages/api/roadmap/index.ts
+
 import type { NextApiRequest, NextApiResponse } from 'next';
-import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import Roadmap, { IRoadmap } from '@/models/Roadmap';
 import dbConnect from '@/lib/mongodb';
@@ -79,13 +80,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ message: 'Os nomes dos nodes devem ser únicos dentro do roadmap.' });
         }
 
+        // Verificar se todos os IDs dos nodes e edges são strings
+        for (const node of nodes) {
+          if (typeof node._id !== 'string') {
+            return res.status(400).json({ message: 'Todos os nodes devem ter um _id do tipo string.' });
+          }
+          // Opcional: Verificar se os nodes têm conteúdos válidos
+          if (!Array.isArray(node.contents) || node.contents.length === 0) {
+            return res.status(400).json({ message: 'Cada node deve ter pelo menos um conteúdo.' });
+          }
+          for (const content of node.contents) {
+            if (typeof content._id !== 'string') {
+              return res.status(400).json({ message: 'Todos os conteúdos devem ter um _id do tipo string.' });
+            }
+          }
+        }
+
+        for (const edge of edges) {
+          if (typeof edge._id !== 'string') {
+            return res.status(400).json({ message: 'Todas as edges devem ter um _id do tipo string.' });
+          }
+          if (typeof edge.source !== 'string' || typeof edge.target !== 'string') {
+            return res.status(400).json({ message: 'Os campos source e target das edges devem ser do tipo string.' });
+          }
+        }
+
         const newRoadmap = new Roadmap({ name, nameSlug, imageURL, imageAlt, nodes, edges });
         await newRoadmap.save();
 
         res.status(201).json({ message: 'Roadmap criado com sucesso.', roadmap: newRoadmap });
       } catch (error: any) {
         console.error(error);
-        res.status(500).json({ message: 'Erro ao criar roadmap.' });
+        res.status(500).json({ message: 'Erro ao criar roadmap.', error: error.message });
       }
       break;
 
@@ -114,6 +140,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           return res.status(400).json({ message: 'Os nomes dos nodes devem ser únicos dentro do roadmap.' });
         }
 
+        // Verificar se todos os IDs dos nodes e edges são strings
+        for (const node of nodes) {
+          if (typeof node._id !== 'string') {
+            return res.status(400).json({ message: 'Todos os nodes devem ter um _id do tipo string.' });
+          }
+          // Opcional: Verificar se os nodes têm conteúdos válidos
+          if (!Array.isArray(node.contents) || node.contents.length === 0) {
+            return res.status(400).json({ message: 'Cada node deve ter pelo menos um conteúdo.' });
+          }
+          for (const content of node.contents) {
+            if (typeof content._id !== 'string') {
+              return res.status(400).json({ message: 'Todos os conteúdos devem ter um _id do tipo string.' });
+            }
+          }
+        }
+
+        for (const edge of edges) {
+          if (typeof edge._id !== 'string') {
+            return res.status(400).json({ message: 'Todas as edges devem ter um _id do tipo string.' });
+          }
+          if (typeof edge.source !== 'string' || typeof edge.target !== 'string') {
+            return res.status(400).json({ message: 'Os campos source e target das edges devem ser do tipo string.' });
+          }
+        }
+
         // Atualizar o roadmap
         const updatedRoadmap = await Roadmap.findByIdAndUpdate(
           id,
@@ -136,6 +187,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     case 'DELETE':
       try {
         const { id } = query;
+
+        if (!id || typeof id !== 'string') {
+          return res.status(400).json({ message: 'ID do roadmap é obrigatório e deve ser uma string.' });
+        }
 
         const deletedRoadmap = await Roadmap.findByIdAndDelete(id);
 

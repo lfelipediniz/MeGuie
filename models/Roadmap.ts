@@ -1,4 +1,6 @@
-import mongoose, { Document, Model, Schema, Types } from 'mongoose';
+// models/Roadmap.ts
+
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
 export interface IPosition {
   x: number;
@@ -6,14 +8,14 @@ export interface IPosition {
 }
 
 export interface IContent {
-  _id: Types.ObjectId; // ID gerado automaticamente
+  _id: string; // Alterado para string
   type: 'vídeo' | 'website';
   title: string;
   url: string;
 }
 
 export interface INode {
-  _id: Types.ObjectId;
+  _id: string; // Alterado para string
   name: string;
   description: string;
   contents: IContent[];
@@ -21,7 +23,7 @@ export interface INode {
 }
 
 export interface IEdge {
-  _id: any;
+  _id: string; // Alterado para string
   source: string;
   target: string;
   sourceHandle?: string;
@@ -29,7 +31,7 @@ export interface IEdge {
 }
 
 export interface IRoadmap extends Document {
-  _id: Types.ObjectId;
+  _id: string; // Alterado para string
   name: string;
   nameSlug: string;
   imageURL: string;
@@ -44,7 +46,7 @@ const PositionSchema = new Schema<IPosition>({
 });
 
 const ContentSchema = new Schema<IContent>({
-  _id: { type: Schema.Types.ObjectId, auto: true }, // ID gerado automaticamente pelo MongoDB
+  _id: { type: String, required: true }, // Alterado para String
   type: {
     type: String,
     enum: ['vídeo', 'website'],
@@ -61,7 +63,7 @@ const ContentSchema = new Schema<IContent>({
 });
 
 const NodeSchema = new Schema<INode>({
-  _id: { type: Schema.Types.ObjectId, auto: true }, // ID gerado automaticamente para o node
+  _id: { type: String, required: true }, // Alterado para String
   name: { type: String, required: true },
   description: { type: String, required: true, trim: true },
   contents: {
@@ -76,6 +78,7 @@ const NodeSchema = new Schema<INode>({
 });
 
 const EdgeSchema = new Schema<IEdge>({
+  _id: { type: String, required: true }, // Definindo _id como string
   source: {
     type: String,
     required: [true, 'A fonte da aresta é obrigatória.'],
@@ -106,11 +109,11 @@ const RoadmapSchema: Schema<IRoadmap> = new Schema<IRoadmap>(
     },
     imageURL: {
       type: String,
-      required: [true, 'A URL da imagem é obrigatório.'],
+      required: [true, 'A URL da imagem é obrigatória.'],
     },
     imageAlt: {
       type: String,
-      required: [true, 'O texto alternativo da imagem é obrigatório.'],
+      required: [true, 'O texto alternativo da imagem é obrigatória.'],
     },
     nodes: [NodeSchema],
     edges: [EdgeSchema],

@@ -74,7 +74,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         // Criar um mapeamento de ID para nome para o roadmap existente
         const existingNodeMap: { [key: string]: string } = {};
         existingRoadmap.nodes.forEach(node => {
-          existingNodeMap[node._id] = node.name;
+          existingNodeMap[node._id.toString()] = node.name;
         });
 
         // Criar um mapeamento de ID para nome para o novo payload

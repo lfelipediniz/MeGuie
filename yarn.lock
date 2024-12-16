@@ -5506,6 +5506,11 @@ util@^0.10.3:
   dependencies:
     inherits "2.0.3"
 
+uuid@^11.0.3:
+  version "11.0.3"
+  resolved "https://registry.npmjs.org/uuid/-/uuid-11.0.3.tgz"
+  integrity sha512-d0z310fCWv5dJwnX1Y/MncBAqGMKEzlBb1AOf7z9K8ALnd0utBX/msg/fA0+sbyN1ihbMsLhrBlnl1ak7Wa0rg==
+
 victory-vendor@^36.6.8:
   version "36.9.2"
   resolved "https://registry.npmjs.org/victory-vendor/-/victory-vendor-36.9.2.tgz"

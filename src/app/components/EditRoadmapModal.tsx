@@ -1,6 +1,6 @@
 // src/components/EditRoadmapModal.tsx
 
-import React, { useState, useEffect, useCallback, FormEvent } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   ReactFlow,
@@ -13,9 +13,9 @@ import {
   Background,
   Node,
   Edge,
-} from "@xyflow/react";
+} from "@xyflow/react"; // Verifique se a importação está correta
 import "@xyflow/react/dist/style.css";
-import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid"; // Importando a função v4 do uuid
 
 interface EditRoadmapModalProps {
   isOpen: boolean;
@@ -60,7 +60,7 @@ interface DBRoadmap {
   edges: DBEdge[];
 }
 
-// Definição única do CustomNode
+// Componente CustomNode para o ReactFlow
 const CustomNodeComponent = ({ id, data }: any) => {
   const { label } = data;
   return (
@@ -93,25 +93,33 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
   roadmap,
   onSave,
 }) => {
+  // Estados para os campos principais do Roadmap
   const [name, setName] = useState("");
   const [nameSlug, setNameSlug] = useState("");
   const [imageURL, setImageURL] = useState("");
   const [imageAlt, setImageAlt] = useState("");
 
+  // Estados para os nodes e edges do ReactFlow
   const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
+
+  // Função para adicionar novas conexões com IDs únicos
   const onConnect = useCallback(
-    (params: any) => setEdges((eds: any[]) => addEdge(params, eds)),
-    []
+    (params: any) => {
+      const newEdge: Edge = {
+        ...params,
+        id: uuidv4(), // Gera um UUID único para a edge
+      };
+      setEdges((eds) => addEdge(newEdge, eds));
+    },
+    [setEdges]
   );
 
-  // Estado para gerenciamento de seleção de nó
+  // Estados para gerenciamento de seleção e edição de nodes
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-
-  // Estados para renomear o nó
   const [renameNode, setRenameNode] = useState<string>("");
 
-  // Estados para gerenciamento de conteúdo
+  // Estados para gerenciamento de conteúdos
   const [viewContents, setViewContents] = useState<DBContent[] | null>(null);
   const [editContent, setEditContent] = useState<DBContent | null>(null);
   const [newContent, setNewContent] = useState<DBContent>({
@@ -120,6 +128,15 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     url: "",
   });
 
+  // Estados para adicionar novos nodes
+  const [nodeName, setNodeName] = useState("");
+  const [nodeDescription, setNodeDescription] = useState("");
+  const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
+  const [contentType, setContentType] = useState<"vídeo" | "website">("vídeo");
+  const [contentTitle, setContentTitle] = useState("");
+  const [contentUrl, setContentUrl] = useState("");
+
+  // Inicializar os campos e ReactFlow com os dados do roadmap
   useEffect(() => {
     if (roadmap) {
       setName(roadmap.name);
@@ -147,16 +164,10 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
 
       setNodes(initialNodes);
 
-      // Criar um mapa de nome para ID dos nodes
-      const nameToIdMap = new Map<string, string>();
-      initialNodes.forEach((node) => {
-        nameToIdMap.set(node.data.name, node.id);
-      });
-
       const initialEdges = roadmap.edges.map((edge) => ({
         id: edge._id,
-        source: nameToIdMap.get(edge.source) || edge.source, // Mapear nome para ID
-        target: nameToIdMap.get(edge.target) || edge.target, // Mapear nome para ID
+        source: edge.source, // Já é um ID string
+        target: edge.target, // Já é um ID string
         sourceHandle: edge.sourceHandle,
         targetHandle: edge.targetHandle,
       }));
@@ -165,6 +176,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
   }, [roadmap, setNodes, setEdges]);
 
+  // Função para selecionar um node
   const handleNodeSelection = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const nodeId = e.target.value;
     setSelectedNodeId(nodeId);
@@ -179,6 +191,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setEditContent(null);
   };
 
+  // Função para renomear um node
   const handleRenameNode = () => {
     if (!selectedNodeId) return;
     setNodes((nds) =>
@@ -190,6 +203,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     );
   };
 
+  // Função para deletar um conteúdo de um node
   const handleDeleteContent = (contentId: string) => {
     if (!selectedNodeId) return;
     setNodes((nds) =>
@@ -208,10 +222,12 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     );
   };
 
+  // Função para editar um conteúdo existente
   const handleEditContent = (content: DBContent) => {
     setEditContent(content);
   };
 
+  // Função para salvar as alterações de um conteúdo
   const handleSaveEditContent = () => {
     if (!selectedNodeId || !editContent) return;
     setNodes((nds) =>
@@ -233,6 +249,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setEditContent(null);
   };
 
+  // Função para adicionar um novo conteúdo a um node selecionado
   const handleAddContent = () => {
     if (!selectedNodeId) return;
     if (!newContent.title || !newContent.url) {
@@ -242,7 +259,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
 
     const contentWithId: DBContent = {
       ...newContent,
-      _id: new mongoose.Types.ObjectId().toString(),
+      _id: uuidv4(), // Gera um UUID único para o conteúdo
     };
 
     setNodes((nds) =>
@@ -263,6 +280,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setNewContent({ type: "vídeo", title: "", url: "" });
   };
 
+  // Função para inserir um novo node
   const insertNode = () => {
     if (!nodeName) {
       alert("O nome do nó é obrigatório.");
@@ -274,7 +292,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     const newNode = {
-      id: new mongoose.Types.ObjectId().toString(), // Gerar um ID único
+      id: uuidv4(), // Gera um UUID único para o node
       type: "custom",
       data: {
         label: nodeName,
@@ -292,20 +310,13 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     };
     setNodes((nds) => nds.concat(newNode));
 
-    // Limpar campos do nó
+    // Limpar campos do node
     setNodeName("");
     setNodeDescription("");
     setNodeContents([]);
   };
 
-  // Estados para adicionar nós (mantido do CreateRoadmapModal)
-  const [nodeName, setNodeName] = useState("");
-  const [nodeDescription, setNodeDescription] = useState("");
-  const [nodeContents, setNodeContents] = useState<DBContent[]>([]);
-  const [contentType, setContentType] = useState<"vídeo" | "website">("vídeo");
-  const [contentTitle, setContentTitle] = useState("");
-  const [contentUrl, setContentUrl] = useState("");
-
+  // Função para adicionar conteúdo a um novo node antes de inseri-lo
   const addContentToNewNode = () => {
     if (!contentTitle || !contentUrl) {
       alert("Título e URL do conteúdo são obrigatórios.");
@@ -322,6 +333,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     setContentUrl("");
   };
 
+  // Função para atualizar o roadmap no backend
   const handleUpdateRoadmap = async () => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
@@ -330,25 +342,22 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     try {
-      // Mapear IDs de volta para nomes dos nodes para os edges
-      const convertedEdges = edges.map((e: any) => {
-        const sourceNode = nodes.find((n) => n.id === e.source);
-        const targetNode = nodes.find((n) => n.id === e.target);
-        return {
-          _id: e.id,
-          source: sourceNode ? sourceNode.data.name : e.source,
-          target: targetNode ? targetNode.data.name : e.target,
-          sourceHandle: e.sourceHandle,
-          targetHandle: e.targetHandle,
-        };
-      });
-
+      // Mapear nodes para o formato esperado pelo backend
       const convertedNodes = nodes.map((n: any) => ({
-        _id: n.id, // Usando o id gerado
+        _id: n.id, // Usando o id gerado no frontend (string)
         name: n.data.name || n.id,
         description: n.data.description || "",
         contents: n.data.contents || [],
         position: { x: n.position.x, y: n.position.y },
+      }));
+
+      // Mapear edges para o formato esperado pelo backend
+      const convertedEdges = edges.map((e: any) => ({
+        _id: e.id, // Usando o id gerado no frontend (string)
+        source: e.source, // Já é um ID string
+        target: e.target, // Já é um ID string
+        sourceHandle: e.sourceHandle,
+        targetHandle: e.targetHandle,
       }));
 
       const body = {
@@ -361,7 +370,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         edges: convertedEdges,
       };
 
-      await axios.put("/api/roadmap/updateRoadmap", body, {
+      await axios.put("/api/roadmap", body, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -379,6 +388,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
   };
 
+  // Definição dos tipos personalizados para o ReactFlow
   const nodeTypes = React.useMemo(() => ({ custom: CustomNodeComponent }), []);
 
   if (!isOpen) return null;
@@ -388,6 +398,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
       <div className="bg-white p-5 rounded shadow w-full max-w-6xl max-h-[90vh] overflow-auto">
         <h2 className="text-xl font-bold mb-4">Editar Roadmap</h2>
         <form className="flex flex-col gap-4">
+          {/* Campos Principais do Roadmap */}
           <div className="flex flex-col md:flex-row gap-4">
             <label className="flex-1">
               Nome*:
@@ -429,7 +440,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             </label>
           </div>
 
-          {/* Dropdown para selecionar nós existentes */}
+          {/* Gerenciamento de Nodes */}
           <div className="border p-3 rounded">
             <h3 className="font-bold mb-2">Gerenciar Nós</h3>
             <label className="block mb-2">
@@ -469,7 +480,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                   </button>
                 </div>
 
-                {/* Visualizar Conteúdos */}
+                {/* Visualizar e Gerenciar Conteúdos */}
                 <div className="mb-4">
                   <h4 className="font-semibold">Conteúdos do Nó</h4>
                   {viewContents && viewContents.length > 0 ? (
@@ -626,7 +637,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             </div>
           )}
 
-          {/* Área para adicionar novos nós */}
+          {/* Área para adicionar novos nodes */}
           <div className="border p-3 rounded">
             <h3 className="font-bold">Adicionar Novo Nó</h3>
             <div className="flex flex-col md:flex-row gap-4">
@@ -739,7 +750,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             <button
               type="button"
               onClick={handleUpdateRoadmap}
-              className="px-4 py-2 rounded-lg bg-[var(--action)] text-white hover:opacity-90"
+              className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
             >
               Salvar Alterações
             </button>

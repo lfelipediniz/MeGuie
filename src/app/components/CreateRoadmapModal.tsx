@@ -2,8 +2,7 @@
 
 import React, { useState, FormEvent, useCallback } from "react";
 import axios from "axios";
-import {
-  ReactFlow,
+import ReactFlow, {
   useNodesState,
   useEdgesState,
   addEdge,
@@ -11,8 +10,11 @@ import {
   Handle,
   Position,
   Background,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
+  Node,
+  Edge,
+} from "reactflow";
+import "reactflow/dist/style.css";
+import { v4 as uuidv4 } from "uuid"; // Importando a função v4 do uuid
 
 interface CreateRoadmapModalProps {
   isOpen: boolean;
@@ -26,12 +28,14 @@ type Topic = {
 };
 
 interface DBContent {
+  _id?: string; // Adicionado para compatibilidade
   type: "vídeo" | "website";
   title: string;
   url: string;
 }
 
 interface DBNode {
+  _id?: string; // Opcional no frontend, obrigatório no backend
   name: string;
   description: string;
   contents: DBContent[];
@@ -42,6 +46,7 @@ interface DBNode {
 }
 
 interface DBEdge {
+  _id?: string; // Opcional no frontend, obrigatório no backend
   source: string;
   target: string;
   sourceHandle?: string;
@@ -58,6 +63,7 @@ interface DBRoadmap {
   edges: DBEdge[];
 }
 
+// Componente CustomNode para o ReactFlow
 const CustomNode = ({ id, data }: any) => {
   const { label } = data;
   return (
@@ -97,10 +103,10 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
   const [imageURL, setImageURL] = useState("");
   const [imageAlt, setImageAlt] = useState("");
 
-  const [nodes, setNodes, onNodesChange] = useNodesState<any>([]);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<any>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node[]>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const onConnect = useCallback(
-    (params: any) => setEdges((eds: any[]) => addEdge(params, eds)),
+    (params: any) => setEdges((eds) => addEdge({ ...params, id: uuidv4() }, eds)),
     []
   );
 
@@ -133,6 +139,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
       type: contentType,
       title: contentTitle,
       url: contentUrl,
+      _id: uuidv4(), // Gerando ID único para o conteúdo
     };
     setNodeContents((prev) => [...prev, newContent]);
     setContentTitle("");
@@ -150,8 +157,8 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
       return;
     }
 
-    const newNode = {
-      id: nodeName, // Usando nodeName como ID
+    const newNode: Node = {
+      id: uuidv4(), // Gerando ID único para o node
       type: "custom",
       data: {
         label: nodeName,
@@ -184,16 +191,20 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     }
 
     try {
-      const convertedNodes = nodes.map((n: any) => ({
-        name: n.data.name || n.id, // Agora n.id é nodeName
+      // Mapear nodes para o formato esperado pelo backend
+      const convertedNodes: DBNode[] = nodes.map((n: Node) => ({
+        _id: n.id, // Usando o id gerado no frontend (string)
+        name: n.data.name || n.id,
         description: n.data.description || "",
         contents: n.data.contents || [],
         position: { x: n.position.x, y: n.position.y },
       }));
 
-      const convertedEdges = edges.map((e: any) => ({
-        source: e.source, // Deve ser nodeName
-        target: e.target, // Deve ser nodeName
+      // Mapear edges para o formato esperado pelo backend
+      const convertedEdges: DBEdge[] = edges.map((e: Edge) => ({
+        _id: e.id, // Usando o id gerado no frontend (string)
+        source: e.source, // Já é um ID string
+        target: e.target, // Já é um ID string
         sourceHandle: e.sourceHandle,
         targetHandle: e.targetHandle,
       }));
@@ -241,10 +252,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
       <div className="bg-white p-5 rounded shadow w-full max-w-4xl max-h-[90vh] overflow-auto">
         {currentStep === 1 && (
-          <form
-            onSubmit={handleStep1Submit}
-            className="flex flex-col gap-4"
-          >
+          <form onSubmit={handleStep1Submit} className="flex flex-col gap-4">
             <h2 className="text-xl font-bold">Criar Roadmap - Etapa 1</h2>
             <label>
               Nome*:
@@ -293,7 +301,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded-lg bg-[var(--action)] text-white hover:opacity-90"
+                className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
               >
                 Próximo
               </button>
@@ -418,7 +426,7 @@ const CreateRoadmapModal: React.FC<CreateRoadmapModalProps> = ({
               <button
                 type="button"
                 onClick={handleCreateRoadmap}
-                className="px-4 py-2 rounded-lg bg-[var(--action)] text-white hover:opacity-90"
+                className="px-4 py-2 rounded-lg bg-blue-500 text-white hover:bg-blue-600"
               >
                 Concluir Roadmap
               </button>
