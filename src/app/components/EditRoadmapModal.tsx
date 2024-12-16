@@ -1,3 +1,5 @@
+// src/components/EditRoadmapModal.tsx
+
 import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
@@ -256,8 +258,8 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     const contentWithId: DBContent = {
-      ...newContent,
       _id: uuidv4(), // Gera um UUID único para o conteúdo
+      ...newContent,
     };
 
     setNodes((nds) =>
@@ -322,6 +324,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
     }
 
     const newContent: DBContent = {
+      _id: uuidv4(), // Adiciona um _id único
       type: contentType,
       title: contentTitle,
       url: contentUrl,
@@ -345,7 +348,12 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
         _id: n.id, // Usando o id gerado no frontend (string)
         name: n.data.name || n.id,
         description: n.data.description || "",
-        contents: n.data.contents || [],
+        contents: (n.data.contents || []).map((content: DBContent) => ({
+          _id: content._id || uuidv4(), // Garante que cada conteúdo tenha um _id
+          type: content.type,
+          title: content.title,
+          url: content.url,
+        })),
         position: { x: n.position.x, y: n.position.y },
       }));
 
@@ -478,7 +486,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                   </button>
                 </div>
 
-                {/* ver e gerenciar conteúdos */}
+                {/* Ver e Gerenciar Conteúdos */}
                 <div className="mb-4">
                   <h4 className="font-semibold">Conteúdos do Nó</h4>
                   {viewContents && viewContents.length > 0 ? (
@@ -518,7 +526,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
                     <p className="text-gray-500">Nenhum conteúdo disponível.</p>
                   )}
 
-                  {/* forms pra adicionar novo conteúdo */}
+                  {/* Formulários para Adicionar Novo Conteúdo */}
                   <div className="mt-4">
                     <h5 className="font-semibold">Adicionar Novo Conteúdo</h5>
                     <div className="flex flex-col md:flex-row gap-2 mt-2">
@@ -573,7 +581,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             )}
           </div>
 
-          {/* se o content para editar estiver selecionado */}
+          {/* Se o conteúdo para editar estiver selecionado */}
           {editContent && (
             <div className="border p-3 rounded mb-4">
               <h4 className="font-semibold">Editar Conteúdo</h4>
@@ -635,7 +643,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             </div>
           )}
 
-          {/* adicionar novos nodes */}
+          {/* Adicionar novos nodes */}
           <div className="border p-3 rounded">
             <h3 className="font-bold">Adicionar Novo Nó</h3>
             <div className="flex flex-col md:flex-row gap-4">
@@ -736,7 +744,7 @@ const EditRoadmapModal: React.FC<EditRoadmapModalProps> = ({
             </ReactFlow>
           </div>
 
-          {/* botões de ação no rodapé */}
+          {/* Botões de ação no rodapé */}
           <div className="flex justify-end gap-2 mt-4">
             <button
               type="button"
