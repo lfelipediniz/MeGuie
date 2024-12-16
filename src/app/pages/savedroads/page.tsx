@@ -75,7 +75,7 @@ export default function FavoritesPage() {
 
   const fetchFavoriteRoadmaps = async (authToken: string) => {
     try {
-      // Fazer a requisição para obter os IDs dos roadmaps favoritos
+      // fazer a requisição para obter os IDs dos roadmaps favoritos
       const favoriteResponse = await axios.get("/api/favoriteRoadmaps", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
@@ -87,14 +87,14 @@ export default function FavoritesPage() {
         return;
       }
 
-      // Fazer a requisição para obter os detalhes dos roadmaps com base nos IDs favoritos
+      // requisição para obter os detalhes dos roadmaps com base nos IDs favoritos
       const roadmapsResponse = await axios.get("/api/roadmap", {
         headers: { Authorization: `Bearer ${authToken}` },
       });
 
       const dbRoadmaps: DBRoadmap[] = roadmapsResponse.data;
 
-      // Filtrar os roadmaps que estão na lista de IDs favoritos
+      // filtra os roadmaps que estão na lista de IDs favoritos
       const favoriteRoadmaps = dbRoadmaps.filter((db) =>
         favoriteRoadmapIds.includes(db._id)
       );
