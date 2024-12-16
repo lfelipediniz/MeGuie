@@ -1,4 +1,4 @@
-import mongoose, { Document, Model, Schema, Types } from 'mongoose';
+import mongoose, { Document, Model, Schema } from 'mongoose';
 
 //
 // Interfaces
@@ -6,7 +6,7 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose';
 
 // Interface para conteúdos
 interface IContent extends Document {
-  _id: Types.ObjectId;
+  _id: string;
   type: 'video' | 'website';
   title: string;
   url: string;
@@ -14,33 +14,33 @@ interface IContent extends Document {
 
 // Interface para nodes
 interface INode extends Document {
-  _id: Types.ObjectId;
+  _id: string;
   name: string;
   description: string;
-  contents: Types.ObjectId[]; // Referência para os conteúdos
+  contents: string[]; // Referência para os conteúdos (IDs como strings)
 }
 
 // Interface para conteúdos vistos agrupados por nodeId
 interface ISeenNodeContents {
-  nodeId: Types.ObjectId;
-  contentIds: Types.ObjectId[];
+  nodeId: string;
+  contentIds: string[];
 }
 
 // Interface para conteúdos vistos agrupados por roadmapId
 interface ISeenRoadmapContents {
-  roadmapId: Types.ObjectId;
+  roadmapId: string;
   nodes: ISeenNodeContents[];
 }
 
 // Interface para o documento do usuário
 export interface IUser extends Document {
-  _id: Types.ObjectId;
+  _id: string;
   name: string;
   email: string;
   password: string;
   admin: boolean;
-  favoriteRoadmaps: Types.ObjectId[];       // Array de IDs de roadmaps favoritos
-  seenContents: ISeenRoadmapContents[];      // Array de conteúdos vistos agrupados por roadmapId e nodeId
+  favoriteRoadmaps: string[];         // Array de IDs de roadmaps favoritos
+  seenContents: ISeenRoadmapContents[]; // Array de conteúdos vistos agrupados por roadmapId e nodeId
 }
 
 //
@@ -75,7 +75,7 @@ const NodeSchema = new Schema<INode>({
     required: true,
   },
   contents: [{
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Content', // Referência para o modelo 'Content'
   }],
 });
@@ -83,12 +83,12 @@ const NodeSchema = new Schema<INode>({
 // Esquema para conteúdos vistos agrupados por nodeId
 const SeenNodeContentsSchema = new Schema<ISeenNodeContents>({
   nodeId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Node', // Referência para o modelo 'Node'
     required: true,
   },
   contentIds: {
-    type: [Schema.Types.ObjectId],
+    type: [String],
     ref: 'Content', // Referência para o modelo 'Content'
     required: true,
     default: [],
@@ -98,7 +98,7 @@ const SeenNodeContentsSchema = new Schema<ISeenNodeContents>({
 // Esquema para conteúdos vistos agrupados por roadmapId
 const SeenRoadmapContentsSchema = new Schema<ISeenRoadmapContents>({
   roadmapId: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'Roadmap', // Referência para o modelo 'Roadmap'
     required: true,
   },
@@ -133,7 +133,7 @@ const UserSchema = new Schema<IUser>({
     select: false,
   },
   favoriteRoadmaps: {
-    type: [Schema.Types.ObjectId],
+    type: [String],
     ref: 'Roadmap', // Referência para o modelo 'Roadmap'
     default: [],
   },

@@ -27,6 +27,7 @@ const MaterialsModal: React.FC<{
 }> = ({ title, videos, websites, isOpen, onClose, roadmapId, nodeId }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [checkedItems, setCheckedItems] = useState<Record<string, boolean>>({});
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // Novo estado para erros
 
   // Função para buscar os conteúdos vistos do usuário
   const fetchSeenContents = async () => {
@@ -54,16 +55,16 @@ const MaterialsModal: React.FC<{
 
       // Adicionando logs para cada roadmapId
       seenContents.forEach((entry: any) => {
-        console.log("RoadmapId entry:", entry.roadmapId?._id?.toString());
+        console.log("RoadmapId entry:", entry.roadmapId);
       });
 
       const seenForRoadmap = seenContents.find(
-        (entry: any) => entry.roadmapId?._id?.toString() === roadmapId
+        (entry: any) => entry.roadmapId === roadmapId
       );
       console.log("seenForRoadmap:", seenForRoadmap);
 
       const seenForNode = seenForRoadmap?.nodes.find(
-        (node: any) => node.nodeId.toString() === nodeId
+        (node: any) => node.nodeId === nodeId
       );
       console.log("seenForNode:", seenForNode);
 
@@ -85,8 +86,9 @@ const MaterialsModal: React.FC<{
       }
 
       setCheckedItems(initialCheckedItems);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao buscar conteúdos vistos:", error);
+      setErrorMessage("Erro ao buscar conteúdos vistos.");
     }
   };
 
@@ -106,12 +108,14 @@ const MaterialsModal: React.FC<{
 
     if (!roadmapId || !nodeId) {
       console.error("roadmapId ou nodeId não definido.");
+      setErrorMessage("roadmapId ou nodeId não definido.");
       return;
     }
 
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
       console.error("Token de autenticação não encontrado.");
+      setErrorMessage("Token de autenticação não encontrado.");
       return;
     }
 
@@ -127,8 +131,9 @@ const MaterialsModal: React.FC<{
       );
 
       console.log("Resposta do backend:", response.data);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erro ao atualizar conteúdos vistos:", error);
+      setErrorMessage(error.response?.data?.message || "Erro ao atualizar conteúdos vistos.");
     }
   };
 
@@ -201,6 +206,12 @@ const MaterialsModal: React.FC<{
         </div>
 
         <div className="p-4">
+          {errorMessage && (
+            <div className="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+              <span className="font-medium">Erro:</span> {errorMessage}
+            </div>
+          )}
+
           <h3 className="text-[var(--dark-blue)] text-lg font-bold mb-4">Vídeo-aulas</h3>
           {videos?.length ? (
             videos.map((video) => {
