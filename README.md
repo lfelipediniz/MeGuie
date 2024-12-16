@@ -37,10 +37,10 @@ To install and run the project locally, follow these steps:
 
   Login: adminteste@gmail.com
 
-  Password: admin123
+  Password: 123456
 
 -** User Account**
 
   Login: usuarioteste@gmail.com
 
-  Password: user123
+  Password: 123456
