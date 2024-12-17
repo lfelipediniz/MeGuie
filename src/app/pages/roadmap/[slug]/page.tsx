@@ -110,7 +110,7 @@ export default function RoadmapPage() {
       return "#42b48c"; // Verde
     }
 
-    return "gray"; // Default para segurança
+    return "gray"; // default para segurança
   };
 
   // Primeiro useEffect: Buscar roadmap e dados do usuário
@@ -168,7 +168,6 @@ export default function RoadmapPage() {
   
       // Encontrar os conteúdos vistos pelo usuário para este nó
       let seenContents: any[] | undefined;
-      console.log(userData)
       const roadmapSeen = userData.seenContents?.find(
         (rc) => rc.roadmapId?._id.toString() === roadmapData._id
       );

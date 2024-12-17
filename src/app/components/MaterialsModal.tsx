@@ -47,36 +47,24 @@ const MaterialsModal: React.FC<{
       });
 
       const user = response.data;
-      console.log("Dados do usuário:", user);
 
       const seenContents = user.seenContents || [];
-      console.log("seenContents:", seenContents);
-
-      // Adicionando logs para cada roadmapId
-      seenContents.forEach((entry: any) => {
-        console.log("RoadmapId entry:", entry.roadmapId?._id?.toString());
-      });
 
       const seenForRoadmap = seenContents.find(
         (entry: any) => entry.roadmapId?._id?.toString() === roadmapId
       );
-      console.log("seenForRoadmap:", seenForRoadmap);
 
       const seenForNode = seenForRoadmap?.nodes.find(
         (node: any) => node.nodeId.toString() === nodeId
       );
-      console.log("seenForNode:", seenForNode);
 
       const initialCheckedItems: Record<string, boolean> = {};
 
       if (seenForNode) {
         seenForNode.contentIds.forEach((contentId: string) => {
-          console.log("Processing contentId:", contentId);
           if (videos.some(video => video._id === contentId)) {
-            console.log(`Setting video-${contentId} to true`);
             initialCheckedItems[`video-${contentId}`] = true;
           } else if (websites.some(website => website._id === contentId)) {
-            console.log(`Setting website-${contentId} to true`);
             initialCheckedItems[`website-${contentId}`] = true;
           } else {
             console.log(`ContentId ${contentId} not found in videos or websites`);
@@ -117,8 +105,6 @@ const MaterialsModal: React.FC<{
 
     const action = isChecked ? 'remove' : 'add';
 
-    console.log("Enviando requisição PUT com:", { action, roadmapId, nodeId, contentId });
-
     try {
       const response = await axios.put(
         '/api/user',
@@ -126,7 +112,6 @@ const MaterialsModal: React.FC<{
         { headers: { Authorization: `Bearer ${authToken}` } }
       );
 
-      console.log("Resposta do backend:", response.data);
     } catch (error) {
       console.error("Erro ao atualizar conteúdos vistos:", error);
     }

@@ -61,9 +61,6 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
         });
         const user = userResponse.data;
 
-        console.log("Roadmap ID:", _id);
-        console.log("Favorite Roadmaps:", user.favoriteRoadmaps);
-
         // Verificar se o roadmap está nos favoritos do usuário
         const favorite = user.favoriteRoadmaps.some(
           (fav: { _id: string }) => fav._id.toString() === _id.toString()
@@ -107,7 +104,6 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
             : 0;
         setProgress(calculatedProgress);
       } catch (error: any) {
-        console.error("Erro ao buscar dados iniciais:", error);
         if (error.response && error.response.data && error.response.data.message) {
           setErrorProgress(error.response.data.message);
         } else {
@@ -143,7 +139,6 @@ const RoadmapCard: React.FC<RoadmapCardProps> = ({
       // Atualizar estado baseado na ação realizada
       setIsFavorite(!isFavorite);
     } catch (error) {
-      console.error("Erro ao atualizar favorito:", error);
       setErrorFavorite("Falha ao atualizar favorito.");
     } finally {
       setLoadingFavorite(false);

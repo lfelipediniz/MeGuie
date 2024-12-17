@@ -21,7 +21,7 @@
 
 ## Introduction  
 
-**MeGuie** is an innovative platform that helps organize and structure study plans based on roadmaps designed for middle and high school subjects. By curating quality content, we provide a clear and practical guide to optimize study time and improve outcomes for students preparing for college entrance exams.  
+**MeGuie** is an  platform that helps organize and structure study plans based on roadmaps designed for middle and high school subjects. By curating quality content, we provide a clear and practical guide to optimize study time and improve outcomes for students preparing for college entrance exams.  
 
 
 ## Requirements  
@@ -58,7 +58,6 @@ npm run dev
 
 The server will run at `http://localhost:3000` by default.  
 
----
 
 ## How to Use  
 
@@ -83,7 +82,6 @@ The server will run at `http://localhost:3000` by default.
    - Organize study paths.  
    - Manage user settings.  
 
----
 
 ## Project Variants  
 
@@ -106,7 +104,6 @@ Developed for the **Human-Computer Interaction and User Experience** course, thi
 
 **Live Prototype**: [https://meguie.vercel.app](https://meguie.vercel.app)  
 
----
 
 ## Environment Variables  
 
