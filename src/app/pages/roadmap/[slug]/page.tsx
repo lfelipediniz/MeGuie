@@ -61,7 +61,10 @@ interface IUser {
   _id: string;
   favoriteRoadmaps: string[]; // IDs dos roadmaps favoritos
   seenContents: {
-    roadmapId: string; // Alterado para string
+    roadmapId: {
+      name: string;
+      _id: string;
+    }; // Alterado para string
     nodes: {
       nodeId: string;
       contentIds: string[];
@@ -100,14 +103,14 @@ export default function RoadmapPage() {
     const seenCount = seenContents ? seenContents.length : 0;
 
     if (seenCount === 0) {
-      return "#808080"; // Cinza
+      return "gray"; // Cinza
     } else if (seenCount > 0 && seenCount < totalContents) {
-      return "#FFA500"; // Amarelo
+      return "#FFA500"; // Laranja
     } else if (seenCount === totalContents) {
-      return "#008000"; // Verde
+      return "#42b48c"; // Verde
     }
 
-    return "#808080"; // Default para segurança
+    return "gray"; // Default para segurança
   };
 
   // Primeiro useEffect: Buscar roadmap e dados do usuário
@@ -164,9 +167,10 @@ export default function RoadmapPage() {
       const totalContents = nodeData.contents.length;
   
       // Encontrar os conteúdos vistos pelo usuário para este nó
-      let seenContents: string[] | undefined;
-      const roadmapSeen = userData.seenContents.find(
-        (rc) => rc.roadmapId === roadmapData._id
+      let seenContents: any[] | undefined;
+      console.log(userData)
+      const roadmapSeen = userData.seenContents?.find(
+        (rc) => rc.roadmapId?._id.toString() === roadmapData._id
       );
   
       if (roadmapSeen) {
@@ -376,11 +380,6 @@ export default function RoadmapPage() {
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Botão de Favoritar
-              <IconButton onClick={toggleFavorite} aria-label={isFavorite ? "Remover dos favoritos" : "Adicionar aos favoritos"}>
-                {isFavorite ? <FaHeart size={24} color="red" /> : <FaRegHeart size={24} color="gray" />}
-              </IconButton> */}
-
               <FormControl sx={{ minWidth: "250px" }} size="small">
                 <InputLabel id="legenda-de-cores" sx={{ color: "var(--primary)" }}>
                   Legenda de Cores
