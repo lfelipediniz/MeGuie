@@ -39,7 +39,7 @@ cd MeGuie
 ### 2. Install Dependencies
 
 ```bash
-npm install --force
+npm install 
 ```
 
 ### 3. Start the Development Server
