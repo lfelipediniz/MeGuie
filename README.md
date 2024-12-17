@@ -1,73 +1,72 @@
-# MeGuie  
-<p align="center"> <img src="https://meguie.netlify.app/favicon.ico" alt="MeGuie Logo" width="150"> </p>  
+# MeGuie
 
-## Table of Contents  
+<p align="center"><img src="https://meguie.netlify.app/favicon.ico" alt="MeGuie Logo" width="150"></p>
 
-- [MeGuie](#meguie)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-    - [Clone the Repository](#clone-the-repository)
-    - [Install Dependencies](#install-dependencies)
-    - [Start the Development Server](#start-the-development-server)
-  - [How to Use](#how-to-use)
-  - [Project Variants](#project-variants)
-    - [APOO Version](#apoo-version)
-    - [IHC Version](#ihc-version)
-  - [Environment Variables](#environment-variables)
-    - [Explanation](#explanation)
+## Table of Contents
 
+1. [Introduction](#introduction)  
+2. [Requirements](#requirements)  
+3. [Installation](#installation)  
+4. [How to Use](#how-to-use)  
+5. [Project Variants](#project-variants)  
+6. [Environment Variables](#environment-variables)  
 
-## Introduction  
+## Introduction
 
+<<<<<<< HEAD
 **MeGuie** is an  platform that helps organize and structure study plans based on roadmaps designed for middle and high school subjects. By curating quality content, we provide a clear and practical guide to optimize study time and improve outcomes for students preparing for college entrance exams.  
+=======
+**MeGuie** is an innovative platform that helps organize and structure study plans based on roadmaps for middle and high school subjects. By curating quality content, MeGuie provides a clear and practical guide to optimize study time and improve outcomes for students preparing for college entrance exams.
+>>>>>>> refs/remotes/origin/main
 
+## Requirements
 
-## Requirements  
+To run the project locally, you will need:
 
-To run the project, you'll need:  
+- [**Node.js** (v20 or higher)](https://nodejs.org/)  
+- [**MongoDB Atlas** (Cloud Database)](https://www.mongodb.com/cloud/atlas)  
 
-- **Node.js** (v20 or higher)  
-- **MongoDB Atlas** (Cloud Database)  
-- **npm** (Node Package Manager)  
+## Installation
 
-
-## Installation  
-
-### Clone the Repository  
-
-```bash  
-git clone https://github.com/lfelipediniz/MeGuie.git  
-```  
+### 1. Clone the Repository
 
 ```bash
-cd MeGuie  
+git clone https://github.com/lfelipediniz/MeGuie.git
 ```
-### Install Dependencies  
 
-```bash  
-npm install --force  
-```  
+Navigate to the project folder:
 
-### Start the Development Server  
+```bash
+cd MeGuie
+```
 
-```bash  
-npm run dev  
-```  
+### 2. Install Dependencies
 
-The server will run at `http://localhost:3000` by default.  
+```bash
+npm install --force
+```
 
+<<<<<<< HEAD
+=======
+### 3. Start the Development Server
+>>>>>>> refs/remotes/origin/main
 
-## How to Use  
+```bash
+npm run dev
+```
+
+By default, the server will run at `http://localhost:3000`.
+
+## How to Use
 
 1. **Access the Application**:  
-   Open `http://localhost:3000` or the hosted versions:  
-   
-   - **APOO Version (Full Project)**: [https://meguie.netlify.app](https://meguie.netlify.app)  
+   Open `http://localhost:3000` or use the hosted versions:
+
+   - **Full Project (APOO Version)**: [https://meguie.netlify.app](https://meguie.netlify.app)  
    - **IHC Prototype**: [https://meguie.vercel.app](https://meguie.vercel.app)  
 
-2. **Login with Test Accounts**:  
+2. **Log in with Test Accounts (APOO Version Only)**:  
+   These credentials are valid only for the **APOO Version** hosted at [https://meguie.netlify.app](https://meguie.netlify.app).
 
    - **Admin Account**  
      - **Email**: `adminteste@gmail.com`  
@@ -77,61 +76,53 @@ The server will run at `http://localhost:3000` by default.
      - **Email**: `usuarioteste@gmail.com`  
      - **Password**: `123456`  
 
-3. **Explore the Features**:  
-   - Browse roadmaps.  
-   - Organize study paths.  
-   - Manage user settings.  
 
+<<<<<<< HEAD
+=======
+## Project Variants
+>>>>>>> refs/remotes/origin/main
 
-## Project Variants  
+### 1. APOO Version (Object-Oriented Analysis and Design)
 
-### APOO Version  
-
-Developed for the **Object-Oriented Analysis and Design** course, this version includes:  
+Developed for the **Object-Oriented Analysis and Design** course, this version includes:
 
 - Full backend integration with **MongoDB Atlas**.  
 - User authentication with **JWT tokens**.  
-- Full-featured study roadmap functionality.  
+- Complete study roadmap functionality.  
 
-**Live Site**: [https://meguie.netlify.app](https://meguie.netlify.app)  
+**Live Site**: [https://meguie.netlify.app](https://meguie.netlify.app)
 
-### IHC Version  
+### 2. IHC Version (Human-Computer Interaction)
 
-Developed for the **Human-Computer Interaction and User Experience** course, this prototype focuses on:  
+Developed for the **Human-Computer Interaction** course, this prototype focuses on:
 
 - Basic frontend features.  
-- Accessibility-focused design.  
+- Accessibility-centered design.  
 
-**Live Prototype**: [https://meguie.vercel.app](https://meguie.vercel.app)  
+**Live Prototype**: [https://meguie.vercel.app](https://meguie.vercel.app)
 
+<<<<<<< HEAD
+=======
+## Environment Variables
+>>>>>>> refs/remotes/origin/main
 
-## Environment Variables  
+To run the project locally, create a `.env` file in the root directory and add the following variables:
 
-To replicate the project locally, create a `.env` file in the root directory and set the following variables:  
+```plaintext
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/meguie
+JWT_SECRET=your_jwt_secret_key
+```
 
-- **`MONGODB_URI`**: The connection string for your MongoDB database. Example:  
-  ```plaintext  
-  MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/meguie  
-  ```  
+- **`MONGODB_URI`**: The connection string for your MongoDB Atlas database. Ensure your credentials are correct.  
+- **`JWT_SECRET`**: A secret key for signing and verifying JWT tokens for authentication.
 
-- **`JWT_SECRET`**: Secret key for signing JWT tokens. Example:  
-  ```plaintext  
-  JWT_SECRET=your_jwt_secret_key  
-  ```  
+## About the Project
 
-### Explanation  
+This project was developed as part of the **Human-Computer Interaction** and **Object-Oriented Analysis and Design** courses at **USP**.
 
-- **MONGODB_URI**: This is the URL to connect to your MongoDB Atlas database. Ensure your credentials and cluster details are correct.  
-- **JWT_SECRET**: This key is used to securely sign and verify JSON Web Tokens for authentication purposes.  
+For more information about these courses, visit:
 
-
----
-
-**Happy Learning! 📚🚀**  
-
-This project was developed as part of the **Human-Computer Interaction and User Experience** and **Object-Oriented Analysis and Design** courses at USP. For more information about these courses, visit:  
-
-- [SCC0260 - Human-Computer Interaction and User Experience](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=SCC0260&codcur=55041&codhab=0)  
+- [SCC0260 - Human-Computer Interaction](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=SCC0260&codcur=55041&codhab=0)  
 - [SSC0124 - Object-Oriented Analysis and Design](https://uspdigital.usp.br/jupiterweb/obterDisciplina?sgldis=SSC0124&codcur=55041&codhab=0)  
-  
---- 
+
+**Happy Learning! 📚🚀**
