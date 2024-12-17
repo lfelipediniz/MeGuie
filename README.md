@@ -69,10 +69,6 @@ By default, the server will run at `http://localhost:3000`.
      - **Email**: `usuarioteste@gmail.com`  
      - **Password**: `123456`  
 
-3. **Explore the Features**:  
-   - Browse study roadmaps.  
-   - Organize study plans.  
-   - Manage user settings.
 
 ## Project Variants
 
