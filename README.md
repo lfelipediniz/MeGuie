@@ -3,21 +3,12 @@
 
 ## Table of Contents  
 
-- [MeGuie](#meguie)
-  - [Table of Contents](#table-of-contents)
-  - [Introduction](#introduction)
-  - [Requirements](#requirements)
-  - [Installation](#installation)
-    - [Clone the Repository](#clone-the-repository)
-    - [Install Dependencies](#install-dependencies)
-    - [Start the Development Server](#start-the-development-server)
-  - [How to Use](#how-to-use)
-  - [Project Variants](#project-variants)
-    - [APOO Version](#apoo-version)
-    - [IHC Version](#ihc-version)
-  - [Environment Variables](#environment-variables)
-    - [Explanation](#explanation)
-
+- [Introduction](#introduction)  
+- [Requirements](#requirements)  
+- [Installation](#installation)  
+- [How to Use](#how-to-use)  
+- [Project Variants](#project-variants)  
+- [Environment Variables](#environment-variables)  
 
 ## Introduction  
 
@@ -28,10 +19,8 @@
 
 To run the project, you'll need:  
 
-- **Node.js** (v20 or higher)  
-- **MongoDB Atlas** (Cloud Database)  
-- **npm** (Node Package Manager)  
-
+- [**Node.js** (v20 or higher)](https://nodejs.org/)  
+- [**MongoDB Atlas** (Cloud Database)](https://www.mongodb.com/cloud/atlas)   
 
 ## Installation  
 
