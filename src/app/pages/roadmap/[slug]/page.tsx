@@ -159,52 +159,63 @@ export default function RoadmapPage() {
     fetchData();
   }, [slug]); // Dependência apenas de slug
 
-  // Segundo useEffect: Processar nodes e edges quando roadmapData ou userData mudar
-  useEffect(() => {
-    if (!roadmapData || !userData) return;
-  
-    const convertedNodes: Node[] = roadmapData.nodes.map((nodeData) => {
-      const totalContents = nodeData.contents.length;
-  
-      // Encontrar os conteúdos vistos pelo usuário para este nó
-      let seenContents: any[] | undefined;
-      console.log(userData)
-      const roadmapSeen = userData.seenContents?.find(
-        (rc) => rc.roadmapId?._id.toString() === roadmapData._id
-      );
-  
-      if (roadmapSeen) {
-        const nodeSeen = roadmapSeen.nodes.find((n) => n.nodeId === nodeData._id);
-        if (nodeSeen) {
-          seenContents = nodeSeen.contentIds;
-        }
+ // Segundo useEffect: Processar nodes e edges quando roadmapData ou userData mudar
+useEffect(() => {
+  if (!roadmapData || !userData) return;
+
+  const convertedNodes: Node[] = roadmapData.nodes.map((nodeData) => {
+    const totalContents = nodeData.contents.length;
+
+    // Encontrar os conteúdos vistos pelo usuário para este nó
+    let seenContents: string[] | undefined;
+    console.log("User Data:", userData); // Log para verificar a estrutura do userData
+
+    const roadmapSeen = userData.seenContents?.find(
+      (rc) => rc.roadmapId?._id.toString() === roadmapData._id
+    );
+
+    if (roadmapSeen) {
+      const nodeSeen = roadmapSeen.nodes.find((n) => n.nodeId === nodeData._id);
+      if (nodeSeen) {
+        // Filtrar contentIds que ainda existem no roadmap atual
+        seenContents = nodeSeen.contentIds.filter((cid) =>
+          nodeData.contents.some((content) => content._id === cid)
+        );
       }
-  
-      // Obter a cor da borda com base no progresso
-      const borderColor = getNodeProgressColor(nodeData._id, totalContents, seenContents);
-  
-      return {
-        id: nodeData._id.toString(),
-        type: "custom",
-        data: { label: nodeData.name },
-        position: { x: nodeData.position.x, y: nodeData.position.y },
-        style: { border: `2px solid ${borderColor}` },
-      };
-    });
-  
-    setNodes(convertedNodes);
-  
-    const convertedEdges: Edge[] = roadmapData.edges.map((edgeData, index) => ({
-      id: `${edgeData.source}-${edgeData.target}-${index}`,
-      source: edgeData.source,
-      target: edgeData.target,
-      sourceHandle: edgeData.sourceHandle,
-      targetHandle: edgeData.targetHandle,
-    }));
-  
-    setEdges(convertedEdges);
-  }, [roadmapData, userData]);
-  
+    }
+
+    const viewedContents = seenContents ? seenContents.length : 0;
+
+    // Logs de depuração para cada nó
+    console.log(`Node ID: ${nodeData._id}`);
+    console.log(`Total Contents: ${totalContents}`);
+    console.log(`Seen Contents: ${seenContents}`);
+    console.log(`Viewed Contents: ${viewedContents}`);
+
+    // Obter a cor da borda com base no progresso
+    const borderColor = getNodeProgressColor(nodeData._id, totalContents, seenContents);
+
+    return {
+      id: nodeData._id.toString(),
+      type: "custom",
+      data: { label: nodeData.name },
+      position: { x: nodeData.position.x, y: nodeData.position.y },
+      style: { border: `2px solid ${borderColor}` },
+    };
+  });
+
+  setNodes(convertedNodes);
+
+  const convertedEdges: Edge[] = roadmapData.edges.map((edgeData, index) => ({
+    id: `${edgeData.source}-${edgeData.target}-${index}`,
+    source: edgeData.source,
+    target: edgeData.target,
+    sourceHandle: edgeData.sourceHandle,
+    targetHandle: edgeData.targetHandle,
+  }));
+
+  setEdges(convertedEdges);
+}, [roadmapData, userData]);  
 
   // Função para alternar o estado de favorito
   const toggleFavorite = async () => {
