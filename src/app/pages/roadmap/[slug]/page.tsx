@@ -168,7 +168,6 @@ export default function RoadmapPage() {
 
       // Encontrar os conteúdos vistos pelo usuário para este nó
       let seenContents: string[] | undefined;
-      console.log("User Data:", userData); // Log para verificar a estrutura do userData
 
       const roadmapSeen = userData.seenContents?.find(
         (rc) => rc.roadmapId?._id.toString() === roadmapData._id
@@ -185,12 +184,6 @@ export default function RoadmapPage() {
       }
 
       const viewedContents = seenContents ? seenContents.length : 0;
-
-      // Logs de depuração para cada nó
-      console.log(`Node ID: ${nodeData._id}`);
-      console.log(`Total Contents: ${totalContents}`);
-      console.log(`Seen Contents: ${seenContents}`);
-      console.log(`Viewed Contents: ${viewedContents}`);
 
       // Obter a cor da borda com base no progresso
       const borderColor = getNodeProgressColor(nodeData._id, totalContents, seenContents);
