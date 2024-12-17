@@ -13,11 +13,7 @@
 
 ## Introduction
 
-<<<<<<< HEAD
-**MeGuie** is an  platform that helps organize and structure study plans based on roadmaps designed for middle and high school subjects. By curating quality content, we provide a clear and practical guide to optimize study time and improve outcomes for students preparing for college entrance exams.  
-=======
 **MeGuie** is an innovative platform that helps organize and structure study plans based on roadmaps for middle and high school subjects. By curating quality content, MeGuie provides a clear and practical guide to optimize study time and improve outcomes for students preparing for college entrance exams.
->>>>>>> refs/remotes/origin/main
 
 ## Requirements
 
@@ -46,10 +42,7 @@ cd MeGuie
 npm install --force
 ```
 
-<<<<<<< HEAD
-=======
 ### 3. Start the Development Server
->>>>>>> refs/remotes/origin/main
 
 ```bash
 npm run dev
@@ -77,10 +70,7 @@ By default, the server will run at `http://localhost:3000`.
      - **Password**: `123456`  
 
 
-<<<<<<< HEAD
-=======
 ## Project Variants
->>>>>>> refs/remotes/origin/main
 
 ### 1. APOO Version (Object-Oriented Analysis and Design)
 
@@ -101,10 +91,7 @@ Developed for the **Human-Computer Interaction** course, this prototype focuses 
 
 **Live Prototype**: [https://meguie.vercel.app](https://meguie.vercel.app)
 
-<<<<<<< HEAD
-=======
 ## Environment Variables
->>>>>>> refs/remotes/origin/main
 
 To run the project locally, create a `.env` file in the root directory and add the following variables:
 
