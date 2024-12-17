@@ -35,7 +35,6 @@ export default async function handler(
       res.status(405).json({ error: `Método ${req.method} não permitido` });
     }
   } catch (error) {
-    console.error('Erro ao buscar roadmaps favoritos:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }

@@ -116,8 +116,6 @@ export default function SignUp() {
         password: formData.password,
       });
 
-      console.log("Resposta da API:", response.data);
-
       if (response.status === 201 || response.status === 200) {
         localStorage.setItem("authToken", response.data.token);
         localStorage.setItem("userId", response.data.userId || "");
